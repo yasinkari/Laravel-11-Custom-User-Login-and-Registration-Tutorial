@@ -65,7 +65,7 @@
                         <div class="card shadow-sm">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0">Latest Orders</h5>
-                                <a href="{{ route('orders.index') }}" class="btn btn-sm btn-primary">View All</a>
+                                <a href="{{ route('admin.orders.index') }}" class="btn btn-sm btn-primary">View All</a>
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">

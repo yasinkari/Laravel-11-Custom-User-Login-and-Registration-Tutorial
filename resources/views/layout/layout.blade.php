@@ -83,7 +83,7 @@
         <img class="logo" src="{{ asset('image/IMG_7281-removebg-preview.png') }}" width="100px" alt="Logo">
         <div>
             <a href="{{ url('/') }}">Home</a>
-            <a href="{{ url('/products') }}">Products</a>
+            <a href="{{ route('products.customer') }}">Products</a>
             <a href="{{ url('/payment') }}">Shopping cart</a>
             <a href="{{ url('/about') }}">About us</a>
             <a href="{{ url('/contact') }}">Contact Us</a>

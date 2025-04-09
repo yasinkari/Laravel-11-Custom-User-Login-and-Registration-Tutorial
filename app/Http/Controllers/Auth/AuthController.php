@@ -229,7 +229,7 @@ class AuthController extends Controller
             'user_role' => 'admin'
         ]);
 
-        return redirect()->route('admin.login')
+        return redirect()->route('login')
             ->with('success', 'Admin account created successfully!');
     }
 

@@ -33,18 +33,18 @@ class AdminController extends Controller
                     ->withSuccess('You have successfully logged in as admin.');
             } else {
                 Auth::logout();
-                return redirect()->route('admin.login')
+                return redirect()->route('login')
                     ->withErrors(['email' => 'You do not have admin privileges.']);
             }
         }
 
-        return redirect()->route('admin.login')->withErrors(['email' => 'Invalid credentials.']);
+        return redirect()->route('login')->withErrors(['email' => 'Invalid credentials.']);
     }
 
     public function logout()
     {
         Auth::logout();
-        return redirect()->route('admin.login')->with('success', 'Logged out successfully.');
+        return redirect()->route('login')->with('success', 'Logged out successfully.');
     }
 
     public function dashboard()
