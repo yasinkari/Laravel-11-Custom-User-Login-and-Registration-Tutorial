@@ -12,11 +12,7 @@ class AdminMiddleware
      */
     public function handle($request, Closure $next)
     {
-<<<<<<< HEAD
-        if (Auth::check() && Auth::user()->role === 'admin') {
-=======
         if (Auth::check() && Auth::user()->user_role === 'admin') {
->>>>>>> master
             return $next($request);
         }
 

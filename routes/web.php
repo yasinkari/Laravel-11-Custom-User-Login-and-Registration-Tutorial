@@ -1,10 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-<<<<<<< HEAD
-
-=======
->>>>>>> master
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AdminController;
@@ -12,41 +8,14 @@ use App\Http\Middleware\AdminMiddleware;
 
 // Public Routes
 Route::get('/', function () {
-<<<<<<< HEAD
-    return view('customer.dashboard'); // Update path to match new location
-});
-
-
-
-=======
     return view('customer.dashboard');
 });
 
 // Authentication Routes
->>>>>>> master
 Route::get('login', [AuthController::class, 'index'])->name('login');
 Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post'); 
 Route::get('registration', [AuthController::class, 'registration'])->name('register');
 Route::post('post-registration', [AuthController::class, 'postRegistration'])->name('register.post'); 
-<<<<<<< HEAD
-Route::get('dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
-Route::post('logout', [AuthController::class, 'logout'])->name('logout');
-Route::get('/products', [ProductController::class, 'index'])->name('products');
-Route::get('/payment', function () {return view('customer.payment');})->name('payment');
-Route::get('/about', function () {return view('customer.about');})->name('about');
-
-
-
-// Forgot Password Routes
-Route::get('password/forgot', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
-Route::post('password/email', [AuthController::class, 'handleForgotPassword'])->name('password.email');
-
-// Reset Password Routes
-Route::get('password/reset/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
-Route::post('password/reset', [AuthController::class, 'resetPassword'])->name('password.update');
-
-// Change Password Route
-=======
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
 // Customer Routes
@@ -61,7 +30,6 @@ Route::get('password/forgot', [AuthController::class, 'showForgotPasswordForm'])
 Route::post('password/email', [AuthController::class, 'handleForgotPassword'])->name('password.email');
 Route::get('password/reset/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
 Route::post('password/reset', [AuthController::class, 'resetPassword'])->name('password.update');
->>>>>>> master
 Route::get('password/change', [AuthController::class, 'showChangePasswordForm'])->name('auth.change-password-form');
 Route::post('password/change', [AuthController::class, 'changePassword'])->name('auth.change-password');
 
@@ -71,35 +39,11 @@ Route::post('admin/login', [AdminController::class, 'login'])->name('admin.login
 
 // Admin Routes (Protected by AdminMiddleware)
 Route::middleware([AdminMiddleware::class])->group(function () {
-<<<<<<< HEAD
-=======
     // Admin Dashboard & Authentication
->>>>>>> master
     Route::get('admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::post('admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
     Route::get('admin/register', [AdminController::class, 'showRegisterForm'])->name('admin.register');
     Route::post('admin/register', [AuthController::class, 'registerAdmin'])->name('admin.register.post');
-<<<<<<< HEAD
-});
-
-
-// Admin Product 
-Route::get('/admin/products', [ProductController::class, 'index'])->name('products.index');
-Route::get('/admin/products/create', [ProductController::class, 'create'])->name('products.create');
-Route::post('/admin/products', [ProductController::class, 'store'])->name('products.store');
-Route::patch('/admin/products/{product}/toggleVisibility', [ProductController::class, 'toggleVisibility'])->name('products.toggleVisibility');
-Route::patch('/admin/products/{product}/toggleStatus', [ProductController::class, 'toggleStatus'])->name('products.toggleStatus');
-Route::delete('/admin/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
-
-
-// Correct route for editing a product
-Route::get('/admin/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
-Route::put('/admin/products/{product}', [ProductController::class, 'update'])->name('products.update');
-
-
-//customer display product
-Route::get('/products', [ProductController::class, 'showToCustomer'])->name('products.customer');
-=======
     
     // Product Management
     Route::get('/admin/products', [ProductController::class, 'index'])->name('products.index');
@@ -110,4 +54,3 @@ Route::get('/products', [ProductController::class, 'showToCustomer'])->name('pro
     Route::delete('/admin/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
     Route::patch('/products/{id}/status', [ProductController::class, 'updateProductStatus'])->name('products.updateStatus');
 });
->>>>>>> master

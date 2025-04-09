@@ -11,26 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-<<<<<<< HEAD
-        // Create users table with role column
-        Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->enum('role', ['user', 'admin'])->default('user'); // Add role column
-            $table->rememberToken();
-=======
         Schema::create('users', function (Blueprint $table) {
             $table->id('userID');
             $table->string('user_name');
             $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('user_phone');
             $table->text('user_address');
             $table->enum('user_role', ['admin', 'user'])->default('user');
->>>>>>> master
+            $table->rememberToken();
             $table->timestamps();
         });
 
@@ -44,14 +34,10 @@ return new class extends Migration
         // Create sessions table
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
-<<<<<<< HEAD
-            $table->foreignId('user_id')->nullable()->index();
-=======
             $table->foreignId('user_id')
                 ->nullable()
                 ->index()
                 ->constrained('users', 'userID');  // Changed to reference userID
->>>>>>> master
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->longText('payload');
