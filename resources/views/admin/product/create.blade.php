@@ -28,10 +28,10 @@
 
     <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
-        <!-- Product Basic Info Card -->
+        <!-- Basic Info Card -->
         <div class="card shadow-sm mb-4">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Basic Information</h6>
+                <h6 class="m-0 font-weight-bold text-primary">Basic Product Information</h6>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -44,7 +44,8 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-
+                    </div>
+                    <div class="col-md-6">
                         <div class="mb-3">
                             <label for="product_price" class="form-label">Base Price (RM)</label>
                             <input type="number" class="form-control @error('product_price') is-invalid @enderror" 
@@ -55,9 +56,9 @@
                             @enderror
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-12">
                         <div class="mb-3">
-                            <label for="product_description" class="form-label">Description</label>
+                            <label for="product_description" class="form-label">Product Description</label>
                             <textarea class="form-control @error('product_description') is-invalid @enderror" 
                                       id="product_description" name="product_description" 
                                       rows="4" required>{{ old('product_description') }}</textarea>
@@ -93,15 +94,6 @@
         </div>
     </form>
 </div>
-
-<style>
-.variants-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1rem;
-}
-</style>
-@endsection
 
 <!-- Variant Template -->
 <template id="variantTemplate">
@@ -152,6 +144,16 @@
     </div>
 </template>
 
+@push('styles')
+<style>
+.variants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+}
+</style>
+@endpush
+
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -185,8 +187,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     document.getElementById('addVariant').addEventListener('click', addVariant);
-
-    // Add first variant automatically
+    
+    // Add at least one variant by default
     addVariant();
 });
 </script>

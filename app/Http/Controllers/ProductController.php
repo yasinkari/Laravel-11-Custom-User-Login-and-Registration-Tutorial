@@ -28,7 +28,47 @@ class ProductController extends Controller
     {
         $tones = Tone::all();
         $colors = ProductColor::all();
-        return view('admin.product.create', compact('tones', 'colors'));
+        
+        // Color suggestions based on skin tone from the image
+        $colorSuggestions = [
+            'Fair' => [
+                'Navy' => '#000080',
+                'Brown' => '#8B4513',
+                'Burgundy' => '#800020',
+                'Green' => '#006400',
+                'Olive' => '#808000'
+            ],
+            'Olive' => [
+                'Burgundy' => '#800020',
+                'Maroon' => '#800000',
+                'Purple' => '#800080',
+                'Green' => '#006400',
+                'Navy' => '#000080'
+            ],
+            'Light Brown' => [
+                'Navy' => '#000080',
+                'Royal Blue' => '#4169E1',
+                'Teal' => '#008080',
+                'Grey' => '#808080',
+                'Burgundy' => '#800020'
+            ],
+            'Brown' => [
+                'Navy' => '#000080',
+                'Mid Blue' => '#0000CD',
+                'Green' => '#006400',
+                'Bright Yellow' => '#FFFF00',
+                'Sky Blue' => '#87CEEB'
+            ],
+            'Black Brown' => [
+                'Black' => '#000000',
+                'Navy' => '#000080',
+                'Burgundy' => '#800020',
+                'Pink' => '#FFC0CB',
+                'Pastel Blue' => '#ADD8E6'
+            ]
+        ];
+    
+        return view('admin.product.create', compact('tones', 'colors', 'colorSuggestions'));
     }
 
     // Add these methods to your existing ProductController

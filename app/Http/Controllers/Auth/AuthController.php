@@ -232,6 +232,16 @@ class AuthController extends Controller
         return redirect()->route('admin.login')
             ->with('success', 'Admin account created successfully!');
     }
+
+    /**
+     * Show the dashboard page.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function dashboard()
+    {
+        return view('customer.dashboard');
+    }
 }
     
 

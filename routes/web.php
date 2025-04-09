@@ -39,6 +39,7 @@ Route::get('admin/login', [AdminController::class, 'showLoginForm'])->name('admi
 Route::post('admin/login', [AdminController::class, 'login'])->name('admin.login.post');
 
 // Admin Routes (Protected by AdminMiddleware)
+// Inside the admin middleware group
 Route::middleware([AdminMiddleware::class])->group(function () {
     // Admin Dashboard & Authentication
     Route::get('admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
@@ -51,7 +52,8 @@ Route::middleware([AdminMiddleware::class])->group(function () {
     Route::get('/admin/orders/{order}', [AdminController::class, 'showOrder'])->name('orders.show');
     Route::patch('/admin/orders/{order}/status', [AdminController::class, 'updateOrderStatus'])->name('orders.updateStatus');
     
-    // Product Management
+    // Product Management Routes
+    Route::resource('products', ProductController::class);
     Route::get('/admin/products', [ProductController::class, 'index'])->name('products.index');
     Route::get('/admin/products/create', [ProductController::class, 'create'])->name('products.create');
     Route::post('/admin/products', [ProductController::class, 'store'])->name('products.store');

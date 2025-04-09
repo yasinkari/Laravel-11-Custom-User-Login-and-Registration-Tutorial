@@ -135,23 +135,21 @@
                             </table>
                         </div>
                     </div>
-                    <div class="card-footer">
+                    {{-- <div class="card-footer">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="text-muted">
                                 Showing {{ $variants->firstItem() ?? 0 }} to {{ $variants->lastItem() ?? 0 }} 
-                                of {{ $variants->total() }} entries
+                                of {{ $variants->total() }} entries 
                             </div>
-                            <div>
-                                {{ $variants->links('pagination::bootstrap-5') }}
-                            </div>
+                            {{ $variants->links() }}
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
 
                 @include('admin.product.partials.variant_modal')
 
                 <!-- Replace the existing pagination section -->
-                <x-table-pagination :data="$variants" />
+              
 
                 @push('scripts')
                 <script>
