@@ -23,7 +23,7 @@
                         <div class="card bg-success text-white shadow-sm">
                             <div class="card-body">
                                 <h5 class="card-title">Total Orders</h5>
-                                <h3 class="card-text"> 700</h3>
+                                <h3 class="card-text"> 600</h3>
                             </div>
                         </div>
                     </div>
