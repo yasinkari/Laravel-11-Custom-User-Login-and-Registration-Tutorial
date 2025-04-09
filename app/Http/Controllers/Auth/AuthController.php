@@ -14,53 +14,17 @@ use Illuminate\Http\RedirectResponse;
 
 class AuthController extends Controller
 {
-    /**
-     * Show Login Page
-     */
     public function index(): View
     {
         return view('auth.login');
     }
 
-    /**
-     * Show Registration Page
-     */
     public function registration(): View
     {
         return view('auth.registration');
     }
 
-    /**
-     * Handle Login Submission
-     */
     public function postLogin(Request $request): RedirectResponse
-<<<<<<< HEAD
-{
-    $request->validate([
-        'email' => 'required',
-        'password' => 'required',
-    ]);
-
-    $credentials = $request->only('email', 'password');
-    // dd($credentials);
-    if (Auth::attempt($credentials)) {
-        return redirect()->intended('dashboard')->withSuccess('You have successfully logged in.');
-    } else {
-        // Debug failed login attempt
-        $user = User::where('email', $request->email)->first();
-        if (!$user) {
-            return redirect("login")->withErrors(['email' => 'User not found.']);
-        }
-
-        // Check if the password matches the hash
-        if (!Hash::check($request->password, $user->password)) {
-            return redirect("login")->withErrors(['password' => 'Password is incorrect.']);
-        }
-
-        return redirect("login")->withErrors(['email' => 'Invalid credentials.']);
-    }
-}
-=======
     {
         $request->validate([
             'email' => 'required',
@@ -70,71 +34,51 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
         
         if (Auth::attempt($credentials)) {
-            // Check user role and redirect accordingly
             if (Auth::user()->user_role === 'admin') {
                 return redirect()->route('admin.dashboard')->withSuccess('Welcome, Admin!');
             } else {
                 return redirect()->intended('dashboard')->withSuccess('You have successfully logged in.');
             }
-        } else {
-            // Debug failed login attempt
-            $user = User::where('email', $request->email)->first();
-            if (!$user) {
-                return redirect("login")->withErrors(['email' => 'User not found.']);
-            }
-
-            // Check if the password matches the hash
-            if (!Hash::check($request->password, $user->password)) {
-                return redirect("login")->withErrors(['password' => 'Password is incorrect.']);
-            }
-
-            return redirect("login")->withErrors(['email' => 'Invalid credentials.']);
         }
+
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return redirect("login")->withErrors(['email' => 'User not found.']);
+        }
+
+        if (!Hash::check($request->password, $user->password)) {
+            return redirect("login")->withErrors(['password' => 'Password is incorrect.']);
+        }
+
+        return redirect("login")->withErrors(['email' => 'Invalid credentials.']);
     }
->>>>>>> master
 
-
-    /**
-     * Handle Registration Submission
-     */
     public function postRegistration(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => 'required',
+            'user_name' => 'required',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6',
+            'user_phone' => 'required',
+            'user_address' => 'required',
         ]);
 
         $data = $request->all();
         $user = $this->create($data);
-
         Auth::login($user);
 
-        return redirect("login")->withSuccess('Great! You have successfully registered and logged in.');
+        return redirect("login")->withSuccess('Registration successful! Please log in.');
     }
 
-    /**
- * Dashboard Access
- */
-    public function dashboard(): View|RedirectResponse
-    {
-        if (Auth::check()) {
-            return view('customer.dashboard');
-        }
-
-        return redirect("login")->withErrors('Oops! You do not have access.');
-    }
-
-
-    /**
-     * Create a New User
-     */
     public function create(array $data)
     {
         return User::create([
-            'name' => $data['name'],
+            'user_name' => $data['user_name'],
             'email' => $data['email'],
-            'password' => Hash::make($data['password'])
+            'password' => Hash::make($data['password']),
+            'user_phone' => $data['user_phone'],
+            'user_address' => $data['user_address'],
+            'user_role' => 'user'
         ]);
     }
 
@@ -259,33 +203,35 @@ class AuthController extends Controller
 
         $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt(array_merge($credentials, ['role' => 'admin']))) {
+        if (Auth::attempt(array_merge($credentials, ['user_role' => 'admin']))) {
             return redirect()->intended('/admin/dashboard')->withSuccess('Welcome, Admin!');
         }
 
         return back()->withErrors(['email' => 'Invalid admin credentials.']);
     }
 
-    public function registerAdmin(Request $request)
-{
-    $request->validate([
-        'name' => 'required',
-        'email' => 'required|email|unique:users',
-        'password' => 'required|min:6',
-    ]);
+    public function registerAdmin(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'user_name' => 'required',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:6',
+            'user_phone' => 'required',
+            'user_address' => 'required',
+        ]);
 
-    $admin = User::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'password' => Hash::make($request->password),
-        'role' => 'admin', // Assign admin role
-    ]);
+        User::create([
+            'user_name' => $request->user_name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'user_phone' => $request->user_phone,
+            'user_address' => $request->user_address,
+            'user_role' => 'admin'
+        ]);
 
-    return redirect()->route('admin.login')->with('success', 'Admin account created successfully!');
+        return redirect()->route('admin.login')
+            ->with('success', 'Admin account created successfully!');
+    }
 }
-
-
-        
- }
     
 

@@ -1,8 +1,5 @@
 @extends("layout.layout")
 @section("css")
-<<<<<<< HEAD
-<!-- You can include your custom styles here -->
-=======
 <style>
     .product-section {
         padding: 60px 0;
@@ -143,39 +140,11 @@
     }
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
->>>>>>> master
 @endsection
 
 @section('title', 'Our Products')
 
 @section('content')
-<<<<<<< HEAD
-<div class="container mt-5">
-    <h1 class="text-center mb-4">Our Products</h1>
-
-    @if(isset($message))
-        <p>{{ $message }}</p>  <!-- Display the 'No products found' message -->
-    @else
-    <div class="row">
-        @forelse ($products as $product)
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-sm h-100">
-                    <img src="{{ asset('storage/' . $product->image) }}" class="card-img-top" alt="{{ $product->name }}" style="height: 200px; object-fit: cover;">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">{{ $product->name }}</h5>
-                        <p class="card-text text-muted">Price: RM {{ number_format($product->price, 2) }}</p>
-                        <a href="{{ url('/products/' . $product->id) }}" class="btn btn-primary">View Details</a>
-                    </div>
-                </div>
-            </div>
-        @empty
-            <div class="col-12">
-                <p class="text-center text-muted">No products available at the moment.</p>
-            </div>
-        @endforelse
-    </div>
-    @endif
-=======
 <div class="product-section">
     <div class="container">
         <div class="section-title text-center">
@@ -183,10 +152,9 @@
         </div>
         
         <div class="filters-row text-center">
-            <button class="filter-btn active">All</button>
-            <button class="filter-btn">New Arrivals</button>
-            <button class="filter-btn">Best Sellers</button>
-            <button class="filter-btn">Special Offers</button>
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="in-stock">In Stock</button>
+            <button class="filter-btn" data-filter="out-of-stock">Out of Stock</button>
         </div>
 
         @if(isset($message))
@@ -198,15 +166,33 @@
             @forelse ($products as $product)
                 <div class="col-md-4 col-lg-3 mb-4">
                     <div class="card product-card h-100">
-                        @if(rand(0,1))
-                            <span class="product-badge">NEW</span>
+                        @if($product->variants->isNotEmpty() && $product->variants->first()->product_stock > 0)
+                            <span class="product-badge">IN STOCK</span>
+                        @else
+                            <span class="product-badge" style="background-color: #999;">OUT OF STOCK</span>
                         @endif
-                        <!-- Replace this line in the products loop -->
-                        <img src="{{ $product->product_image ? asset('storage/' . $product->product_image) : asset('image/IMG_7282.jpg') }}" class="card-img-top" alt="{{ $product->product_name }}">
+                        
+                        <img src="{{ $product->variants->isNotEmpty() && $product->variants->first()->product_image 
+                            ? asset('storage/' . $product->variants->first()->product_image) 
+                            : asset('image/IMG_7282.jpg') }}" 
+                            class="card-img-top" 
+                            alt="{{ $product->product_name }}">
+                            
                         <div class="card-body text-center">
                             <h5 class="card-title">{{ $product->product_name }}</h5>
+                            <p class="card-text">{{ Str::limit($product->product_description, 100) }}</p>
                             <p class="card-text price">RM {{ number_format($product->product_price, 2) }}</p>
-                            <a href="{{ url('/products/' . $product->productID) }}" class="btn btn-view-details">View Details</a>
+                            
+                            @if($product->variants->isNotEmpty())
+                                <div class="available-variants mb-3">
+                                    <small class="text-muted">
+                                        Available in {{ $product->variants->count() }} variants
+                                    </small>
+                                </div>
+                            @endif
+                            
+                            <a href="{{ url('/products/' . $product->productID) }}" 
+                               class="btn btn-view-details">View Details</a>
                         </div>
                     </div>
                 </div>
@@ -218,6 +204,38 @@
         </div>
         @endif
     </div>
->>>>>>> master
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const products = document.querySelectorAll('.product-card');
+
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const filter = button.getAttribute('data-filter');
+            
+            // Update active button
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            
+            // Filter products
+            products.forEach(product => {
+                const badge = product.querySelector('.product-badge');
+                const isInStock = badge.textContent === 'IN STOCK';
+                
+                if (filter === 'all' || 
+                    (filter === 'in-stock' && isInStock) || 
+                    (filter === 'out-of-stock' && !isInStock)) {
+                    product.closest('.col-md-4').style.display = 'block';
+                } else {
+                    product.closest('.col-md-4').style.display = 'none';
+                }
+            });
+        });
+    });
+});
+</script>
+@endpush
 @endsection

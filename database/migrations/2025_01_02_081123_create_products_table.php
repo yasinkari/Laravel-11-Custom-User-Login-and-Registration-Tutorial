@@ -13,9 +13,6 @@ class CreateProductsTable extends Migration
             $table->string('product_name');
             $table->decimal('product_price', 10, 2);
             $table->text('product_description');
-            $table->boolean('is_new_arrival')->default(false);
-            $table->boolean('is_best_seller')->default(false);
-            $table->boolean('is_special_offer')->default(false);
             $table->timestamps();
         });
     }

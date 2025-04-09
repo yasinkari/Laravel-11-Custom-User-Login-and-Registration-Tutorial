@@ -14,23 +14,10 @@ class Product extends Model
     protected $fillable = [
         'product_name',
         'product_price',
-        'product_description',
-        'is_new_arrival',
-        'is_best_seller',
-        'is_special_offer',
-        'image',
-        'is_visible',
-        'details'
+        'product_description'
     ];
 
-    protected $casts = [
-        'details' => 'array',
-        'is_new_arrival' => 'boolean',
-        'is_best_seller' => 'boolean',
-        'is_special_offer' => 'boolean',
-        'is_visible' => 'boolean'
-    ];
-
+    // Keep existing relationships
     public function productColors()
     {
         return $this->hasMany(ProductColor::class, 'productID');
