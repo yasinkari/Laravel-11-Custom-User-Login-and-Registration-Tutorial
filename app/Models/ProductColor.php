@@ -15,18 +15,9 @@ class ProductColor extends Model
         'color_code'
     ];
 
+    // Remove product() and toneRecords() relationships as they don't exist in migrations
     public function variants()
     {
         return $this->hasMany(ProductVariant::class, 'colorID');
-    }
-
-    public function product()
-    {
-        return $this->belongsTo(Product::class, 'productID');
-    }
-
-    public function toneRecords()
-    {
-        return $this->hasMany(ToneRecord::class, 'colorID');
     }
 }

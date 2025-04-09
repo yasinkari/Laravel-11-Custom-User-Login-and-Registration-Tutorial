@@ -16,7 +16,11 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::with('variants')->get();
+        $products = Product::with('variants')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->withQueryString(); // Preserves other query parameters
+    
         return view('admin.product.index', compact('products'));
     }
 
@@ -27,12 +31,14 @@ class ProductController extends Controller
         return view('admin.product.create', compact('tones', 'colors'));
     }
 
+    // Add these methods to your existing ProductController
+    
     public function store(Request $request)
     {
         try {
             $validatedData = $request->validate([
                 'product_name' => 'required|string|max:255',
-                'product_price' => 'required|numeric',
+                'product_price' => 'required|numeric|min:0',
                 'product_description' => 'required|string',
                 'variants' => 'required|array|min:1',
                 'variants.*.toneID' => 'required|exists:tones,toneID',
@@ -41,68 +47,86 @@ class ProductController extends Controller
                 'variants.*.product_stock' => 'required|integer|min:0',
                 'variants.*.product_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
-
+    
             DB::beginTransaction();
-            
-            try {
-                $product = Product::create([
-                    'product_name' => $validatedData['product_name'],
-                    'product_price' => $validatedData['product_price'],
-                    'product_description' => $validatedData['product_description'],
-                    'product_stock' => array_sum(array_column($validatedData['variants'], 'product_stock')),
-                    
+    
+            // Create product
+            $product = Product::create([
+                'product_name' => $validatedData['product_name'],
+                'product_price' => $validatedData['product_price'],
+                'product_description' => $validatedData['product_description'],
+            ]);
+    
+            // Create variants
+            foreach ($validatedData['variants'] as $variantData) {
+                $imagePath = $variantData['product_image']->store('product_images', 'public');
+                
+                ProductVariant::create([
+                    'productID' => $product->productID,
+                    'toneID' => $variantData['toneID'],
+                    'colorID' => $variantData['colorID'],
+                    'product_size' => $variantData['product_size'],
+                    'product_stock' => $variantData['product_stock'],
+                    'product_image' => $imagePath,
                 ]);
-                
-                foreach ($validatedData['variants'] as $variantData) {
-                    $imagePath = $variantData['product_image']->store('variant_images', 'public');
-                    
-                    ProductVariant::create([
-                        'productID' => $product->productID,
-                        'toneID' => $variantData['toneID'],
-                        'colorID' => $variantData['colorID'],
-                        'product_size' => $variantData['product_size'],
-                        'product_stock' => $variantData['product_stock'],
-                        'product_image' => $imagePath,
-                    ]);
-                }
-                
-                DB::commit();
-                return redirect()->route('products.index')->with('success', 'Product and variants added successfully');
-            } catch (\Exception $e) {
-                DB::rollBack();
-                throw $e;
             }
+    
+            DB::commit();
+            return redirect()->route('products.index')
+                ->with('success', 'Product created successfully');
         } catch (\Exception $e) {
-            \Log::error('Error creating product: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Failed to add product: ' . $e->getMessage())->withInput();
+            DB::rollBack();
+            return redirect()->back()
+                ->with('error', 'Error creating product: ' . $e->getMessage())
+                ->withInput();
         }
     }
-
+    
+    // Add these methods to your ProductController class
+    
     public function edit(Product $product)
     {
-        $product->load('variants.tone', 'variants.color');
-        $tones = Tone::all();
-        $colors = ProductColor::all();
-        return view('admin.product.edit', compact('product', 'tones', 'colors'));
+        // Load the product with paginated variants
+        $variants = ProductVariant::where('productID', $product->productID)
+            ->with(['tone', 'color'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(5);
+        
+        // Get all tones and colors for the variant form
+        $tones = Tone::orderBy('tone_name')->get();
+        $colors = ProductColor::orderBy('color_name')->get();
+        
+        return view('admin.product.edit', compact('product', 'variants', 'tones', 'colors'));
     }
-
+    
+    // Add this new method for AJAX pagination
+    public function getVariants(Product $product)
+    {
+        $variants = $product->variants()
+            ->with(['tone', 'color'])
+            ->paginate(10);
+    
+        if (request()->ajax()) {
+            return view('admin.product.partials.variants_table', compact('variants'))->render();
+        }
+    
+        return view('admin.product.edit', compact('product', 'variants'));
+    }
+    
     public function update(Request $request, Product $product)
     {
         $validatedData = $request->validate([
             'product_name' => 'required|string|max:255',
             'product_price' => 'required|numeric|min:0',
-            'product_description' => 'required|string'
+            'product_description' => 'required|string',
         ]);
     
         $product->update($validatedData);
-        return redirect()->route('products.index')->with('success', 'Product updated successfully');
+    
+        return redirect()->route('products.index')
+            ->with('success', 'Product updated successfully');
     }
-
-    public function editVariant(ProductVariant $variant)
-    {
-        return response()->json($variant->load('tone', 'color'));
-    }
-
+    
     public function updateVariant(Request $request, ProductVariant $variant)
     {
         $validatedData = $request->validate([
@@ -110,43 +134,49 @@ class ProductController extends Controller
             'colorID' => 'required|exists:product_colors,colorID',
             'product_size' => 'required|in:XS,S,M,L,XL,XXL',
             'product_stock' => 'required|integer|min:0',
-            'product_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'product_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
     
         if ($request->hasFile('product_image')) {
-            Storage::delete($variant->product_image);
-            $validatedData['product_image'] = $request->file('product_image')->store('product_images', 'public');
+            Storage::disk('public')->delete($variant->product_image);
+            $validatedData['product_image'] = $request->file('product_image')
+                ->store('product_images', 'public');
         }
     
         $variant->update($validatedData);
-        return response()->json(['success' => true]);
+        return redirect()->back()->with('success', 'Variant updated successfully');
     }
-
+    
     public function destroyVariant(ProductVariant $variant)
     {
-        Storage::delete($variant->product_image);
-        $variant->delete();
-        return response()->json(['success' => true]);
+        try {
+            Storage::disk('public')->delete($variant->product_image);
+            $variant->delete();
+            return redirect()->back()->with('success', 'Variant deleted successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error deleting variant');
+        }
     }
-
+    
     public function destroy(Product $product)
     {
         try {
             DB::beginTransaction();
-            
+    
             foreach ($product->variants as $variant) {
                 Storage::disk('public')->delete($variant->product_image);
                 $variant->delete();
             }
-            
+    
             $product->delete();
-            
+    
             DB::commit();
-            return redirect()->route('products.index')->with('success', 'Product and all variants deleted successfully');
+            return redirect()->route('products.index')
+                ->with('success', 'Product deleted successfully');
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Error deleting product: ' . $e->getMessage());
-            return redirect()->route('products.index')->with('error', 'Failed to delete product: ' . $e->getMessage());
+            return redirect()->route('products.index')
+                ->with('error', 'Error deleting product');
         }
     }
 
@@ -175,5 +205,16 @@ class ProductController extends Controller
         ]);
     
         return redirect()->back()->with('success', 'Product status updated successfully');
+    }
+    
+    // Add this method to your ProductController class
+    public function showProductDetails(Product $product)
+    {
+        $product->load(['variants' => function($query) {
+            $query->with(['tone', 'color'])
+                ->orderBy('product_stock', 'desc');
+        }]);
+        
+        return view('customer.products.product_view', compact('product'));
     }
 }

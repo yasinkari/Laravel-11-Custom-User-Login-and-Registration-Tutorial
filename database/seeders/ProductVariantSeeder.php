@@ -12,7 +12,7 @@ class ProductVariantSeeder extends Seeder
 {
     public function run(): void
     {
-        $sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+        $sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL']; // Added 'XXXL' to match migration
         
         $products = Product::all();
         $tones = Tone::all();

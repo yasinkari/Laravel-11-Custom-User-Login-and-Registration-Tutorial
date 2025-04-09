@@ -10,29 +10,26 @@ class ProductColorSeeder extends Seeder
     public function run(): void
     {
         $colors = [
-            ['name' => 'Navy', 'code' => '#0A1747'],
-            ['name' => 'Brown', 'code' => '#6B4423'],
-            ['name' => 'Burgundy', 'code' => '#800020'],
-            ['name' => 'Green', 'code' => '#2E5D4B'],
-            ['name' => 'Olive', 'code' => '#808000'],
-            ['name' => 'Maroon', 'code' => '#800000'],
-            ['name' => 'Purple', 'code' => '#800080'],
-            ['name' => 'Royal Blue', 'code' => '#4169E1'],
-            ['name' => 'Teal', 'code' => '#008080'],
-            ['name' => 'Grey', 'code' => '#808080'],
-            ['name' => 'Mid Blue', 'code' => '#0000CD'],
-            ['name' => 'Bright Yellow', 'code' => '#FFFF00'],
-            ['name' => 'Sky Blue', 'code' => '#87CEEB'],
-            ['name' => 'Black', 'code' => '#000000'],
-            ['name' => 'Pink', 'code' => '#FFC0CB'],
-            ['name' => 'Pastel Blue', 'code' => '#ADD8E6']
+            ['color_name' => 'Navy', 'color_code' => '#0A1747'],
+            ['color_name' => 'Brown', 'color_code' => '#6B4423'],
+            ['color_name' => 'Burgundy', 'color_code' => '#800020'],
+            ['color_name' => 'Green', 'color_code' => '#2E5D4B'],
+            ['color_name' => 'Olive', 'color_code' => '#808000'],
+            ['color_name' => 'Maroon', 'color_code' => '#800000'],
+            ['color_name' => 'Purple', 'color_code' => '#800080'],
+            ['color_name' => 'Royal Blue', 'color_code' => '#4169E1'],
+            ['color_name' => 'Teal', 'color_code' => '#008080'],
+            ['color_name' => 'Grey', 'color_code' => '#808080'],
+            ['color_name' => 'Mid Blue', 'color_code' => '#0000CD'],
+            ['color_name' => 'Bright Yellow', 'color_code' => '#FFFF00'],
+            ['color_name' => 'Sky Blue', 'color_code' => '#87CEEB'],
+            ['color_name' => 'Black', 'color_code' => '#000000'],
+            ['color_name' => 'Pink', 'color_code' => '#FFC0CB'],
+            ['color_name' => 'Pastel Blue', 'color_code' => '#ADD8E6']
         ];
 
         foreach ($colors as $color) {
-            ProductColor::create([
-                'color_name' => $color['name'],
-                'color_code' => $color['code']
-            ]);
+            ProductColor::create($color);
         }
     }
 }

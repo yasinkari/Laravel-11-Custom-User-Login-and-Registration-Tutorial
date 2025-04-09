@@ -14,9 +14,7 @@ class Order extends Model
     protected $fillable = [
         'userID',
         'cartID',
-        'order_date',
-        'total_amount',
-        'status'
+        'order_date'
     ];
 
     public function cart()
@@ -24,21 +22,11 @@ class Order extends Model
         return $this->belongsTo(Cart::class, 'cartID');
     }
 
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'userID');
-    }
-
+    // Remove user() relationship as it's accessed through cart
+    // Remove products() relationship as there's no order_product table
     public function payment()
     {
-        return $this->belongsTo(Payment::class, 'paymentID');
-    }
-
-    public function products()
-    {
-        return $this->belongsToMany(Product::class, 'order_product', 'orderID', 'productID')
-                    ->withPivot('quantity', 'price')
-                    ->withTimestamps();
+        return $this->hasOne(Payment::class, 'orderID');
     }
 
     public function tracking()

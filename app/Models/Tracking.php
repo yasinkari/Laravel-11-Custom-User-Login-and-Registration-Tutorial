@@ -15,4 +15,9 @@ class Tracking extends Model
         'order_status',
         'timestamp'
     ];
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class, 'orderID');
+    }
 }

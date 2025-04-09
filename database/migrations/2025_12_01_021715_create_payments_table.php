@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id('paymentID');
+            $table->foreignId('orderID')->constrained('orders', 'orderID')->onDelete('cascade');
             $table->dateTime('payment_date');
             $table->enum('payment_status', ['pending', 'completed', 'failed']);
             $table->timestamps();

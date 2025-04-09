@@ -14,12 +14,13 @@
                             <select class="form-select tone-select" name="toneID" id="toneID" required>
                                 <option value="">Select Tone</option>
                                 @foreach($tones as $tone)
-                                    <option value="{{ $tone->toneID }}" data-tone="{{ $tone->tone_code }}">
+                                    <option value="{{ $tone->toneID }}" 
+                                            data-tone="{{ $tone->tone_code }}">
                                         {{ $tone->tone_name }}
                                     </option>
                                 @endforeach
                             </select>
-                            <div class="color-preview rounded-circle border" style="width: 30px; height: 30px;"></div>
+                            <div class="tone-preview rounded-circle border" style="width: 30px; height: 30px;"></div>
                         </div>
                     </div>
 
@@ -29,7 +30,8 @@
                             <select class="form-select color-select" name="colorID" id="colorID" required>
                                 <option value="">Select Color</option>
                                 @foreach($colors as $color)
-                                    <option value="{{ $color->colorID }}" data-color="{{ $color->color_code }}">
+                                    <option value="{{ $color->colorID }}" 
+                                            data-color="{{ $color->color_code }}">
                                         {{ $color->color_name }}
                                     </option>
                                 @endforeach
@@ -50,13 +52,14 @@
 
                     <div class="mb-3">
                         <label class="form-label">Stock</label>
-                        <input type="number" class="form-control" name="product_stock" id="product_stock" 
-                               min="0" required>
+                        <input type="number" class="form-control" name="product_stock" 
+                               id="product_stock" min="0" required>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Image</label>
-                        <input type="file" class="form-control" name="product_image" accept="image/*">
+                        <input type="file" class="form-control" name="product_image" 
+                               accept="image/*">
                         <small class="text-muted">Leave empty to keep existing image</small>
                     </div>
                 </form>
@@ -68,3 +71,16 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Update color/tone previews
+    $('.tone-select, .color-select').change(function() {
+        const option = $(this).find('option:selected');
+        const preview = $(this).next('.color-preview');
+        preview.css('background-color', option.data('color') || option.data('tone'));
+    });
+});
+</script>
+@endpush

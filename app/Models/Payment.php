@@ -11,7 +11,13 @@ class Payment extends Model
 
     protected $primaryKey = 'paymentID';
     protected $fillable = [
+        'orderID',
         'payment_date',
         'payment_status'
     ];
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class, 'orderID');
+    }
 }

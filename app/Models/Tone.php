@@ -15,13 +15,10 @@ class Tone extends Model
         'tone_code'
     ];
 
+    // Remove toneRecords() as it doesn't exist in migrations
     public function variants()
     {
         return $this->hasMany(ProductVariant::class, 'toneID');
     }
 
-    public function toneRecords()
-    {
-        return $this->hasMany(ToneRecord::class, 'toneID');
-    }
 }

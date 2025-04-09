@@ -16,7 +16,6 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     @stack('scripts')
->>>>>>> master
     <style>
         body {
             min-height: 100vh;
@@ -58,6 +57,22 @@
             flex-grow: 1; /* Allow the main content to grow */
         }
     </style>
+    <!-- In your head section -->
+    <style>
+        .pagination {
+            --bs-pagination-color: #333;
+            --bs-pagination-active-bg: #4e73df;
+            --bs-pagination-active-border-color: #4e73df;
+        }
+        .pagination .page-link {
+            padding: 0.5rem 0.75rem;
+            margin: 0 2px;
+            border-radius: 0.25rem;
+        }
+        .pagination .active .page-link {
+            color: white;
+        }
+    </style>
 </head>
 <body>
     <div class="sidebar">
@@ -96,14 +111,11 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<<<<<<< HEAD
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-=======
     <!-- Replace this -->
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
     
     <!-- With this official version -->
-    <script src="https://kit.fontawesome.com/your-kit-code.js" crossorigin="anonymous"></script>
+    {{-- <script src="https://kit.fontawesome.com/your-kit-code.js" crossorigin="anonymous"></script> --}}
     <!-- Add this in your layout file where you want to display messages -->
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -122,6 +134,5 @@
             </button>
         </div>
     @endif
->>>>>>> master
 </body>
 </html>

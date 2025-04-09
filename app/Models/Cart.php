@@ -12,17 +12,13 @@ class Cart extends Model
     protected $primaryKey = 'cartID';
     protected $fillable = [
         'userID',
-        'totalAmount'
+        'total_amount'  // Changed from totalAmount to match migration
     ];
 
+    // Remove product() relationship as it's not in the migration
     public function user()
     {
         return $this->belongsTo(User::class, 'userID');
-    }
-
-    public function product()
-    {
-        return $this->belongsTo(Product::class, 'productID');
     }
 
     public function cartRecords()

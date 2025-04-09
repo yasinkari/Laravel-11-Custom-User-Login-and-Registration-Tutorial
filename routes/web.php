@@ -21,6 +21,7 @@ Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 // Customer Routes
 Route::get('dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
 Route::get('/products', [ProductController::class, 'showToCustomer'])->name('products.customer');
+Route::get('/products/{product}', [ProductController::class, 'showProductDetails'])->name('products.view');
 Route::get('/payment', function () { return view('customer.payment'); })->name('payment');
 Route::get('/about', function () { return view('customer.about'); })->name('about');
 Route::get('/contact', function () { return view('customer.contact'); })->name('contact');
@@ -45,6 +46,11 @@ Route::middleware([AdminMiddleware::class])->group(function () {
     Route::get('admin/register', [AdminController::class, 'showRegisterForm'])->name('admin.register');
     Route::post('admin/register', [AuthController::class, 'registerAdmin'])->name('admin.register.post');
     
+    // Order Management
+    Route::get('/admin/orders', [AdminController::class, 'orders'])->name('orders.index');
+    Route::get('/admin/orders/{order}', [AdminController::class, 'showOrder'])->name('orders.show');
+    Route::patch('/admin/orders/{order}/status', [AdminController::class, 'updateOrderStatus'])->name('orders.updateStatus');
+    
     // Product Management
     Route::get('/admin/products', [ProductController::class, 'index'])->name('products.index');
     Route::get('/admin/products/create', [ProductController::class, 'create'])->name('products.create');
@@ -53,4 +59,9 @@ Route::middleware([AdminMiddleware::class])->group(function () {
     Route::put('/admin/products/{product}', [ProductController::class, 'update'])->name('products.update');
     Route::delete('/admin/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
     Route::patch('/products/{id}/status', [ProductController::class, 'updateProductStatus'])->name('products.updateStatus');
+    Route::get('/products/{product}/variants', [ProductController::class, 'getVariants'])
+        ->name('products.variants');
+    Route::get('/products/{product}/variants', [ProductController::class, 'getVariants'])
+    ->name('products.variants');
 });
+

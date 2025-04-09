@@ -12,16 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('orders', function (Blueprint $table) {
-            $table->id('orderID');  // Changed to be consistent with naming
-            $table->unsignedBigInteger('userID');  // Changed from user_id to userID
-            $table->decimal('total_price', 10, 2);
-            $table->string('status')->default('pending'); // pending, completed, canceled
+            $table->id('orderID');
+            $table->foreignId('cartID')->constrained('carts', 'cartID')->onDelete('cascade');
+            $table->timestamp('order_date')->useCurrent();
             $table->timestamps();
-    
-            $table->foreign('userID')
-                  ->references('userID')
-                  ->on('users')
-                  ->onDelete('cascade');
         });
     }
 
