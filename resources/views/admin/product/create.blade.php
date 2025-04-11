@@ -80,6 +80,34 @@
                 </button>
             </div>
             <div class="card-body">
+                <!-- Color Suggestion Panel -->
+                <div class="card mb-4 border-left-info">
+                    <div class="card-body">
+                        <h6 class="font-weight-bold text-info mb-3">Color Suggestions by Skin Tone</h6>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="toneSuggestion">Select Skin Tone</label>
+                                    <select class="form-select" id="toneSuggestion">
+                                        <option value="">Select a tone for suggestions</option>
+                                        @foreach($tones as $tone)
+                                            <option value="{{ $tone->tone_name }}">{{ $tone->tone_name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div id="colorSuggestions" class="d-none">
+                                    <label>Suggested Colors:</label>
+                                    <div class="d-flex flex-wrap" id="suggestedColorsList">
+                                        <!-- Suggested colors will appear here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <div id="variantsContainer" class="variants-grid">
                     <!-- Variants will be added here dynamically -->
                 </div>
@@ -151,6 +179,21 @@
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1rem;
 }
+
+.color-suggestion-item {
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.color-suggestion-item:hover {
+    background-color: #f8f9fa;
+}
+
+.border-left-info {
+    border-left: 4px solid #36b9cc !important;
+}
 </style>
 @endpush
 
@@ -160,6 +203,53 @@ document.addEventListener('DOMContentLoaded', function() {
     const container = document.getElementById('variantsContainer');
     const template = document.getElementById('variantTemplate');
     let variantCount = 0;
+
+    // Color suggestions data from backend
+    const colorSuggestions = @json($colorSuggestions);
+    
+    // Setup tone suggestion dropdown
+    const toneSelect = document.getElementById('toneSuggestion');
+    const suggestionsContainer = document.getElementById('colorSuggestions');
+    const suggestedColorsList = document.getElementById('suggestedColorsList');
+    
+    toneSelect.addEventListener('change', function() {
+        const selectedTone = this.value;
+        suggestedColorsList.innerHTML = '';
+        
+        if (selectedTone && colorSuggestions[selectedTone]) {
+            suggestionsContainer.classList.remove('d-none');
+            
+            // Display the suggested colors
+            Object.entries(colorSuggestions[selectedTone]).forEach(([colorName, colorCode]) => {
+                const colorItem = document.createElement('div');
+                colorItem.className = 'color-suggestion-item me-3 mb-2';
+                colorItem.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <div class="color-swatch" style="width: 25px; height: 25px; background-color: ${colorCode}; 
+                                border-radius: 50%; margin-right: 8px; border: 1px solid #ddd;"></div>
+                        <span>${colorName}</span>
+                    </div>
+                `;
+                
+                // Make the color suggestion clickable to auto-select in new variants
+                colorItem.addEventListener('click', function() {
+                    // Find the color in the dropdown options
+                    const colorOptions = document.querySelectorAll('.variant-item select[name$="[colorID]"]');
+                    colorOptions.forEach(select => {
+                        Array.from(select.options).forEach(option => {
+                            if (option.text.includes(colorName)) {
+                                select.value = option.value;
+                            }
+                        });
+                    });
+                });
+                
+                suggestedColorsList.appendChild(colorItem);
+            });
+        } else {
+            suggestionsContainer.classList.add('d-none');
+        }
+    });
 
     function addVariant() {
         const variantContent = template.content.cloneNode(true);
@@ -174,6 +264,19 @@ document.addEventListener('DOMContentLoaded', function() {
         variantDiv.querySelector('.remove-variant').addEventListener('click', function() {
             variantDiv.remove();
             updateVariantNumbers();
+        });
+        
+        // Add tone change listener to update color suggestions
+        const toneSelect = variantDiv.querySelector('select[name$="[toneID]"]');
+        const colorSelect = variantDiv.querySelector('select[name$="[colorID]"]');
+        
+        toneSelect.addEventListener('change', function() {
+            // Get the tone name from the selected option text
+            const selectedToneText = this.options[this.selectedIndex].text;
+            
+            // Update the suggestion dropdown to match
+            document.getElementById('toneSuggestion').value = selectedToneText;
+            document.getElementById('toneSuggestion').dispatchEvent(new Event('change'));
         });
 
         container.appendChild(variantDiv);

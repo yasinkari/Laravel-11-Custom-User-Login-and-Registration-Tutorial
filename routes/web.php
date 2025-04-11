@@ -67,5 +67,11 @@ Route::middleware([AdminMiddleware::class])->group(function () {
     Route::delete('/admin/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
     Route::patch('/admin/products/{id}/status', [ProductController::class, 'updateProductStatus'])->name('products.updateStatus');
     Route::get('/admin/products/{product}/variants', [ProductController::class, 'getVariants'])->name('products.variants');
+    
+    // Variant routes - organized together
+    Route::get('/admin/products/variants/{variant}/edit', [ProductController::class, 'editVariant'])->name('products.variants.edit');
+    Route::put('/admin/products/variants/{variant}', [ProductController::class, 'updateVariant'])->name('products.variants.update');
+    Route::post('/admin/products/{productID}/variants', [ProductController::class, 'storeVariant'])->name('products.variants.store');
+    Route::delete('/admin/products/variants/{variant}', [ProductController::class, 'destroyVariant'])->name('products.variants.destroy');
 });
 

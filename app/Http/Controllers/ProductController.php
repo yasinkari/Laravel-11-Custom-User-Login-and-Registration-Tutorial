@@ -29,7 +29,7 @@ class ProductController extends Controller
         $tones = Tone::all();
         $colors = ProductColor::all();
         
-        // Color suggestions based on skin tone from the image
+        // Color suggestions based on skin tone
         $colorSuggestions = [
             'Fair' => [
                 'Navy' => '#000080',
@@ -67,7 +67,7 @@ class ProductController extends Controller
                 'Pastel Blue' => '#ADD8E6'
             ]
         ];
-    
+
         return view('admin.product.create', compact('tones', 'colors', 'colorSuggestions'));
     }
 
@@ -256,5 +256,57 @@ class ProductController extends Controller
         }]);
         
         return view('customer.products.product_view', compact('product'));
+    }
+
+    public function storeVariant(Request $request, $productID)
+    {
+        try {
+            $product = Product::findOrFail($productID);
+            
+            $validatedData = $request->validate([
+                'toneID' => 'required|exists:tones,toneID',
+                'colorID' => 'required|exists:product_colors,colorID',
+                'product_size' => 'required|in:XS,S,M,L,XL,XXL',
+                'product_stock' => 'required|integer|min:0',
+                'product_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+            
+            $imagePath = $request->file('product_image')->store('product_images', 'public');
+            
+            ProductVariant::create([
+                'productID' => $product->productID,
+                'toneID' => $validatedData['toneID'],
+                'colorID' => $validatedData['colorID'],
+                'product_size' => $validatedData['product_size'],
+                'product_stock' => $validatedData['product_stock'],
+                'product_image' => $imagePath,
+            ]);
+            
+            return redirect()->back()->with('success', 'Variant added successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Error adding variant: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+    
+    // Add this method after the edit() method
+    public function editVariant(ProductVariant $variant)
+    {
+        try {
+            $variant->load(['tone', 'color']);
+            return response()->json([
+                'variant' => [
+                    'product_variantID' => $variant->product_variantID,
+                    'toneID' => $variant->toneID,
+                    'colorID' => $variant->colorID,
+                    'product_size' => $variant->product_size,
+                    'product_stock' => $variant->product_stock,
+                    'product_image' => $variant->product_image
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to load variant details'], 500);
+        }
     }
 }
