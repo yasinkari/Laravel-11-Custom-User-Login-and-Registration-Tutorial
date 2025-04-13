@@ -255,7 +255,86 @@ class ProductController extends Controller
                 ->orderBy('product_stock', 'desc');
         }]);
         
-        return view('customer.products.product_view', compact('product'));
+        // Create a structured data array with product info, tones, colors, and sizes
+        $data = [
+            'product' => [
+                'productID' => $product->productID,
+                'product_name' => $product->product_name,
+                'product_price' => $product->product_price,
+                'product_description' => $product->product_description,
+                'is_new_arrival' => $product->is_new_arrival ?? false,
+                'is_best_seller' => $product->is_best_seller ?? false,
+                'is_special_offer' => $product->is_special_offer ?? false,
+                'is_visible' => $product->is_visible ?? true,
+                'created_at' => $product->created_at,
+                'updated_at' => $product->updated_at,
+            ],
+            'tones' => []
+        ];
+        
+        foreach ($product->variants as $variant) {
+            $toneID = $variant->toneID;
+            $colorID = $variant->colorID;
+            $size = $variant->product_size;
+            
+            // Initialize tone if it doesn't exist in data array
+            if (!isset($data['tones'][$toneID])) {
+                $data['tones'][$toneID] = [
+                    'tone_id' => $toneID,
+                    'tone_name' => $variant->tone->tone_name,
+                    'tone_code' => $variant->tone->tone_code,
+                    'colors' => []
+                ];
+            }
+            
+            // Initialize color if it doesn't exist in this tone's colors
+            if (!isset($data['tones'][$toneID]['colors'][$colorID])) {
+                $data['tones'][$toneID]['colors'][$colorID] = [
+                    'color_id' => $colorID,
+                    'color_name' => $variant->color->color_name,
+                    'color_code' => $variant->color->color_code,
+                    'sizes' => []
+                ];
+            }
+            
+            // Add size information
+            $data['tones'][$toneID]['colors'][$colorID]['sizes'][$size] = [
+                'product_size' => $size,
+                'product_image' => $variant->product_image,
+                'product_stock' => $variant->product_stock,
+                'product_variantID' => $variant->product_variantID
+            ];
+        }
+        
+        // Convert associative arrays to indexed arrays for easier iteration in the view
+        foreach ($data['tones'] as &$tone) {
+            $tone['colors'] = array_values($tone['colors']);
+            
+            foreach ($tone['colors'] as &$color) {
+                // Sort sizes in a standard order (XS, S, M, L, XL, XXL)
+                $sizeOrder = ['XS' => 0, 'S' => 1, 'M' => 2, 'L' => 3, 'XL' => 4, 'XXL' => 5];
+                
+                // Convert sizes to array and sort
+                $sizesArray = [];
+                foreach ($color['sizes'] as $sizeKey => $sizeData) {
+                    $sizeData['size_name'] = $sizeKey; // Add size name for easier access
+                    $sizesArray[] = $sizeData;
+                }
+                
+                // Sort by the predefined order
+                usort($sizesArray, function($a, $b) use ($sizeOrder) {
+                    return $sizeOrder[$a['size_name']] - $sizeOrder[$b['size_name']];
+                });
+                
+                $color['sizes'] = $sizesArray;
+            }
+        }
+        
+        // Convert tones to indexed array
+        $data['tones'] = array_values($data['tones']);
+        
+        // Pass only the structured data to the view
+        return view('customer.products.product_view', compact('data'));
     }
 
     public function storeVariant(Request $request, $productID)

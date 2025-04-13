@@ -191,7 +191,7 @@
                                 </div>
                             @endif
                             
-                            <a href="{{ url('/products/' . $product->productID) }}" 
+                            <a href="{{ route('products.view', $product) }}" 
                                class="btn btn-view-details">View Details</a>
                         </div>
                     </div>

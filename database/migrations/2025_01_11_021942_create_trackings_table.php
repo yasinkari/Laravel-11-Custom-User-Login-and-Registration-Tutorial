@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('trackings', function (Blueprint $table) {
             $table->id('trackingID');
             $table->foreignId('orderID')->constrained('orders', 'orderID');
-            $table->enum('order_status', ['pending', 'processing', 'shipped', 'delivered']);
+            $table->enum('order_status', allowed: ['pending', 'processing', 'shipped', 'delivered']);
             $table->timestamp('timestamp');
             $table->timestamps();
         });

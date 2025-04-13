@@ -12,7 +12,8 @@ class Cart extends Model
     protected $primaryKey = 'cartID';
     protected $fillable = [
         'userID',
-        'total_amount'  // Changed from totalAmount to match migration
+        'total_amount',
+        'status'  // Added status field
     ];
 
     // Remove product() relationship as it's not in the migration
@@ -24,5 +25,10 @@ class Cart extends Model
     public function cartRecords()
     {
         return $this->hasMany(CartRecord::class, 'cartID');
+    }
+    
+    public function order()
+    {
+        return $this->hasOne(Order::class, 'cartID');
     }
 }

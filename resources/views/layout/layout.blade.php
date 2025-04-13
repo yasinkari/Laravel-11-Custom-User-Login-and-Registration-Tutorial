@@ -1,6 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NILLforMan - Your Premium Makeup Store">
+    <meta name="keywords" content="makeup, cosmetics, beauty, men's makeup">
+    <meta name="author" content="NILLforMan">
+    <meta name="theme-color" content="#ffffff">
     <title>Laravel - NILLforMan.com</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <style type="text/css">
@@ -115,5 +121,6 @@
     @yield('content')
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+@stack('scripts')  <!-- Add this line to render pushed scripts -->
 </body>
 </html>

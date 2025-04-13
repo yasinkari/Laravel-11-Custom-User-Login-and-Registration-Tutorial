@@ -5,7 +5,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AdminController;
 use App\Http\Middleware\AdminMiddleware;
-
+use App\Http\Controllers\CartController;
 // Public Routes
 Route::get('/', function () {
     return view('customer.dashboard');
@@ -73,5 +73,14 @@ Route::middleware([AdminMiddleware::class])->group(function () {
     Route::put('/admin/products/variants/{variant}', [ProductController::class, 'updateVariant'])->name('products.variants.update');
     Route::post('/admin/products/{productID}/variants', [ProductController::class, 'storeVariant'])->name('products.variants.store');
     Route::delete('/admin/products/variants/{variant}', [ProductController::class, 'destroyVariant'])->name('products.variants.destroy');
+});
+
+// Cart routes
+Route::middleware(['auth'])->group(function () {
+    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+    Route::get('/cart', [CartController::class, 'view'])->name('cart.view');
+    Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/remove/{record}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::get('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
 });
 

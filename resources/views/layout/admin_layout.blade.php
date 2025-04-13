@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NILLforMan Admin Dashboard">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="author" content="NILLforMan">
+    <meta name="theme-color" content="#343a40">
     <title>@yield('title')</title>
-<<<<<<< HEAD
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://kit.fontawesome.com/a076d05399.css">
-=======
-    <!-- In the head section -->
+    
+    <!-- Bootstrap CSS - removed duplicate link -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome - removed outdated link -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <!-- At the end of body, before your @stack('scripts') -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    @stack('scripts')
+    
     <style>
         body {
             min-height: 100vh;
@@ -32,6 +31,7 @@
             color: white;
             padding-top: 20px;
             overflow-y: auto; /* Scrollable sidebar for content overflow */
+            width: 200px; /* Added explicit width */
         }
 
         .sidebar .nav-link {
@@ -56,9 +56,8 @@
             padding: 20px;
             flex-grow: 1; /* Allow the main content to grow */
         }
-    </style>
-    <!-- In your head section -->
-    <style>
+        
+        /* Pagination styles */
         .pagination {
             --bs-pagination-color: #333;
             --bs-pagination-active-bg: #4e73df;
@@ -71,6 +70,12 @@
         }
         .pagination .active .page-link {
             color: white;
+        }
+        
+        /* Alert styles for Bootstrap 5 */
+        .alert .btn-close {
+            padding: 0.5rem 0.5rem;
+            margin: -0.5rem -0.5rem -0.5rem auto;
         }
     </style>
 </head>
@@ -107,32 +112,28 @@
     </div>
 
     <main>
+        <!-- Flash messages -->
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+        
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+        
         @yield('content')
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Replace this -->
-    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <!-- JavaScript dependencies - removed duplicates -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- With this official version -->
-    {{-- <script src="https://kit.fontawesome.com/your-kit-code.js" crossorigin="anonymous"></script> --}}
-    <!-- Add this in your layout file where you want to display messages -->
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    @endif
-    
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{ session('error') }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    @endif
+    @stack('scripts')
 </body>
 </html>
