@@ -56,6 +56,15 @@
                             @enderror
                         </div>
                     </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label d-block">Visibility</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="is_visible" name="is_visible" value="1" checked>
+                                <label class="form-check-label" for="is_visible">Product is visible to customers</label>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-12">
                         <div class="mb-3">
                             <label for="product_description" class="form-label">Product Description</label>

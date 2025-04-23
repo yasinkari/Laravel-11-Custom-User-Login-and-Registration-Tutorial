@@ -49,7 +49,8 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
-
+                                </div>
+                                <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="product_price" class="form-label">Base Price (RM)</label>
                                         <input type="number" class="form-control @error('product_price') is-invalid @enderror" 
@@ -63,7 +64,17 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="product_description" class="form-label">Description</label>
+                                        <label class="form-label d-block">Visibility</label>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="is_visible" name="is_visible" 
+                                                   value="1" {{ $product->is_visible ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="is_visible">Product is visible to customers</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <label for="product_description" class="form-label">Product Description</label>
                                         <textarea class="form-control @error('product_description') is-invalid @enderror" 
                                                   id="product_description" name="product_description" 
                                                   rows="4" required>{{ old('product_description', $product->product_description) }}</textarea>

@@ -181,7 +181,36 @@
                         <div class="card-body text-center">
                             <h5 class="card-title">{{ $product->product_name }}</h5>
                             <p class="card-text">{{ Str::limit($product->product_description, 100) }}</p>
+                            <!-- Inside the product card, after the price -->
                             <p class="card-text price">RM {{ number_format($product->product_price, 2) }}</p>
+                            
+                            @if($product->promotions && $product->promotions->where('is_active', true)->isNotEmpty())
+                                @php
+                                    $promotion = $product->promotions->where('is_active', true)->first();
+                                    $discountedPrice = $product->product_price;
+                                    
+                                    if ($promotion->promotion_type == 'percentage') {
+                                        $discountedPrice = $product->product_price * (1 - ($promotion->discount_amount / 100));
+                                    } elseif ($promotion->promotion_type == 'fixed') {
+                                        $discountedPrice = $product->product_price - $promotion->discount_amount;
+                                    }
+                                    
+                                    // Ensure price doesn't go below zero
+                                    $discountedPrice = max(0, $discountedPrice);
+                                @endphp
+                                
+                                <div class="promotion-badge">
+                                    <span class="badge bg-danger">{{ $promotion->promotion_name }}</span>
+                                </div>
+                                <p class="card-text discounted-price">
+                                    <span class="original-price text-muted text-decoration-line-through">
+                                        RM {{ number_format($product->product_price, 2) }}
+                                    </span>
+                                    <span class="new-price text-danger fw-bold">
+                                        RM {{ number_format($discountedPrice, 2) }}
+                                    </span>
+                                </p>
+                            @endif
                             
                             @if($product->variants->isNotEmpty())
                                 <div class="available-variants mb-3">

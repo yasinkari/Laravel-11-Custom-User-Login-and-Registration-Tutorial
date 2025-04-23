@@ -376,11 +376,55 @@
                         }
                     @endphp
                     
+                    <!-- Inside the product info section, update the price display -->
                     <div class="stock-status {{ $hasStock ? 'in-stock' : 'out-of-stock' }}">
                         {{ $hasStock ? 'In Stock' : 'Out of Stock' }}
                     </div>
                     
-                    <p class="product-price">RM {{ number_format($data['product']['product_price'], 2) }}</p>
+                    @php
+                        $product = $data['product'];
+                        $hasPromotion = false;
+                        $discountedPrice = $product['product_price'];
+                        
+                        // Check if there's an active promotion
+                        if (isset($product['promotions']) && count($product['promotions']) > 0) {
+                            foreach ($product['promotions'] as $promo) {
+                                if ($promo['is_active'] && 
+                                    strtotime($promo['start_date']) <= time() && 
+                                    (is_null($promo['end_date']) || strtotime($promo['end_date']) >= time())) {
+                                    
+                                    $hasPromotion = true;
+                                    
+                                    if ($promo['promotion_type'] == 'percentage') {
+                                        $discountedPrice = $product['product_price'] * (1 - ($promo['discount_amount'] / 100));
+                                    } elseif ($promo['promotion_type'] == 'fixed') {
+                                        $discountedPrice = $product['product_price'] - $promo['discount_amount'];
+                                    }
+                                    
+                                    // Ensure price doesn't go below zero
+                                    $discountedPrice = max(0, $discountedPrice);
+                                    $promotionName = $promo['promotion_name'];
+                                    break;
+                                }
+                            }
+                        }
+                    @endphp
+                    
+                    @if($hasPromotion)
+                        <div class="promotion-badge mb-2">
+                            <span class="badge bg-danger">{{ $promotionName }}</span>
+                        </div>
+                        <p class="product-price">
+                            <span class="original-price text-muted text-decoration-line-through">
+                                RM {{ number_format($product['product_price'], 2) }}
+                            </span>
+                            <span class="new-price text-danger fw-bold">
+                                RM {{ number_format($discountedPrice, 2) }}
+                            </span>
+                        </p>
+                    @else
+                        <p class="product-price">RM {{ number_format($product['product_price'], 2) }}</p>
+                    @endif
                     <p class="product-description">{{ $data['product']['product_description'] }}</p>
 
                     @if(count($data['tones']) > 0)

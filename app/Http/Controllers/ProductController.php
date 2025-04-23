@@ -75,51 +75,43 @@ class ProductController extends Controller
     
     public function store(Request $request)
     {
-        try {
-            $validatedData = $request->validate([
-                'product_name' => 'required|string|max:255',
-                'product_price' => 'required|numeric|min:0',
-                'product_description' => 'required|string',
-                'variants' => 'required|array|min:1',
-                'variants.*.toneID' => 'required|exists:tones,toneID',
-                'variants.*.colorID' => 'required|exists:product_colors,colorID',
-                'variants.*.product_size' => 'required|in:XS,S,M,L,XL,XXL',
-                'variants.*.product_stock' => 'required|integer|min:0',
-                'variants.*.product_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        $validated = $request->validate([
+            'product_name' => 'required|string|max:255',
+            'product_price' => 'required|numeric|min:0',
+            'product_description' => 'required|string',
+            'variants' => 'required|array|min:1',
+            'variants.*.toneID' => 'required|exists:tones,toneID',
+            'variants.*.colorID' => 'required|exists:product_colors,colorID',
+            'variants.*.product_size' => 'required|string|max:10',
+            'variants.*.product_stock' => 'required|integer|min:0',
+            'variants.*.product_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        // Create the product
+        $product = Product::create([
+            'product_name' => $request->product_name,
+            'product_price' => $request->product_price,
+            'product_description' => $request->product_description,
+            'is_visible' => $request->has('is_visible') ? 1 : 0,
+        ]);
+
+        // Create variants
+        foreach ($validated['variants'] as $variantData) {
+            $imagePath = $variantData['product_image']->store('product_images', 'public');
+            
+            ProductVariant::create([
+                'productID' => $product->productID,
+                'toneID' => $variantData['toneID'],
+                'colorID' => $variantData['colorID'],
+                'product_size' => $variantData['product_size'],
+                'product_stock' => $variantData['product_stock'],
+                'product_image' => $imagePath,
             ]);
-    
-            DB::beginTransaction();
-    
-            // Create product
-            $product = Product::create([
-                'product_name' => $validatedData['product_name'],
-                'product_price' => $validatedData['product_price'],
-                'product_description' => $validatedData['product_description'],
-            ]);
-    
-            // Create variants
-            foreach ($validatedData['variants'] as $variantData) {
-                $imagePath = $variantData['product_image']->store('product_images', 'public');
-                
-                ProductVariant::create([
-                    'productID' => $product->productID,
-                    'toneID' => $variantData['toneID'],
-                    'colorID' => $variantData['colorID'],
-                    'product_size' => $variantData['product_size'],
-                    'product_stock' => $variantData['product_stock'],
-                    'product_image' => $imagePath,
-                ]);
-            }
-    
-            DB::commit();
-            return redirect()->route('products.index')
-                ->with('success', 'Product created successfully');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->back()
-                ->with('error', 'Error creating product: ' . $e->getMessage())
-                ->withInput();
         }
+    
+        DB::commit();
+        return redirect()->route('products.index')
+            ->with('success', 'Product created successfully');
     }
     
     // Add these methods to your ProductController class
@@ -155,16 +147,33 @@ class ProductController extends Controller
     
     public function update(Request $request, Product $product)
     {
-        $validatedData = $request->validate([
+        $validated = $request->validate([
             'product_name' => 'required|string|max:255',
             'product_price' => 'required|numeric|min:0',
             'product_description' => 'required|string',
         ]);
     
-        $product->update($validatedData);
+        $product->update([
+            'product_name' => $request->product_name,
+            'product_price' => $request->product_price,
+            'product_description' => $request->product_description,
+            'is_visible' => $request->has('is_visible') ? 1 : 0,
+        ]);
     
         return redirect()->route('products.index')
-            ->with('success', 'Product updated successfully');
+            ->with('success', 'Product updated successfully.');
+    }
+    
+    /**
+     * Update product visibility status
+     */
+    public function updateVisibility(Request $request, $id)
+    {
+        $product = Product::findOrFail($id);
+        $product->is_visible = $request->is_visible;
+        $product->save();
+        
+        return response()->json(['success' => true]);
     }
     
     public function updateVariant(Request $request, ProductVariant $variant)
@@ -220,11 +229,14 @@ class ProductController extends Controller
         }
     }
 
+    // Update the showToCustomer method to only show visible products
     public function showToCustomer()
     {
-        $products = Product::with(['variants' => function($query) {
-            $query->with(['tone', 'color'])->orderBy('product_stock', 'desc');
-        }])->get();
+        $products = Product::where('is_visible', true)
+            ->with(['variants' => function($query) {
+                $query->with(['tone', 'color'])->orderBy('product_stock', 'desc');
+            }])
+            ->get();
         
         if ($products->isEmpty()) {
             return view('customer.products.index', ['message' => 'No products found.']);
@@ -233,23 +245,15 @@ class ProductController extends Controller
         return view('customer.products.index', compact('products'));
     }
 
-    public function updateProductStatus(Request $request, $id)
-    {
-        $product = Product::findOrFail($id);
-        
-        $product->update([
-            'is_new_arrival' => $request->has('is_new_arrival'),
-            'is_best_seller' => $request->has('is_best_seller'),
-            'is_special_offer' => $request->has('is_special_offer'),
-            'is_visible' => $request->has('is_visible')
-        ]);
-    
-        return redirect()->back()->with('success', 'Product status updated successfully');
-    }
-    
-    // Add this method to your ProductController class
+    // Update the showProductDetails method to check visibility
     public function showProductDetails(Product $product)
     {
+        // Check if product is visible
+        if (!$product->is_visible) {
+            return redirect()->route('products.customer')
+                ->with('error', 'This product is currently unavailable.');
+        }
+
         $product->load(['variants' => function($query) {
             $query->with(['tone', 'color'])
                 ->orderBy('product_stock', 'desc');

@@ -45,6 +45,7 @@
                             <th>Name</th> 
                             <th>Price (RM)</th>
                             <th>Description</th>
+                            <th>Visibility</th>
                             <th>Variants</th>
                             <th>Actions</th>
                         </tr>
@@ -56,6 +57,14 @@
                                 <td>{{ $product->product_name }}</td>
                                 <td>{{ number_format($product->product_price, 2) }}</td>
                                 <td>{{ Str::limit($product->product_description, 100) }}</td>
+                                <td>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input toggle-visibility" type="checkbox" 
+                                               data-product-id="{{ $product->productID }}" 
+                                               {{ $product->is_visible ? 'checked' : '' }}>
+                                        <label class="form-check-label">{{ $product->is_visible ? 'Visible' : 'Hidden' }}</label>
+                                    </div>
+                                </td>
                                 <td>
                                     <span class="badge bg-info">{{ $product->variants->count() }}</span>
                                     <button type="button" class="btn btn-sm btn-outline-primary ms-2 toggle-variants" 
@@ -219,5 +228,79 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+</script>
+@endpush
+
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        // Toggle variant details
+        const toggleButtons = document.querySelectorAll('.toggle-variants');
+        toggleButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = this.getAttribute('data-product-id');
+                const variantRow = document.getElementById('variants-' + productId);
+                const icon = this.querySelector('i');
+                
+                if (variantRow.style.display === 'none') {
+                    variantRow.style.display = 'table-row';
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-up');
+                } else {
+                    variantRow.style.display = 'none';
+                    icon.classList.remove('fa-chevron-up');
+                    icon.classList.add('fa-chevron-down');
+                }
+            });
+        });
+    
+        // Handle visibility toggle
+        $('.toggle-visibility').on('change', function() {
+            const productId = $(this).data('product-id');
+            const isVisible = $(this).prop('checked') ? 1 : 0;
+            const label = $(this).next('label');
+            
+            $.ajax({
+                url: `/admin/products/${productId}/visibility`,
+                type: 'PATCH',
+                data: {
+                    is_visible: isVisible,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    label.text(isVisible ? 'Visible' : 'Hidden');
+                    
+                    // Show success message
+                    const alertHtml = `
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            Product visibility updated successfully.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `;
+                    $('.container-fluid').prepend(alertHtml);
+                    
+                    // Auto-dismiss after 3 seconds
+                    setTimeout(() => {
+                        $('.alert').alert('close');
+                    }, 3000);
+                },
+                error: function(xhr) {
+                    console.error('Error updating visibility:', xhr);
+                    
+                    // Revert the toggle if there was an error
+                    $(this).prop('checked', !isVisible);
+                    
+                    // Show error message
+                    const alertHtml = `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            Failed to update product visibility.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `;
+                    $('.container-fluid').prepend(alertHtml);
+                }
+            });
+        });
+    });
 </script>
 @endpush

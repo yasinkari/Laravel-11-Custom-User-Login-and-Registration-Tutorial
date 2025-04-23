@@ -6,6 +6,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AdminController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\PromotionController;
 // Public Routes
 Route::get('/', function () {
     return view('customer.dashboard');
@@ -66,6 +67,8 @@ Route::middleware([AdminMiddleware::class])->group(function () {
     Route::put('/admin/products/{product}', [ProductController::class, 'update'])->name('products.update');
     Route::delete('/admin/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
     Route::patch('/admin/products/{id}/status', [ProductController::class, 'updateProductStatus'])->name('products.updateStatus');
+    Route::patch('/admin/products/{id}/visibility', [ProductController::class, 'updateVisibility'])->name('products.updateVisibility');
+    // Make sure this route exists and is correctly defined
     Route::get('/admin/products/{product}/variants', [ProductController::class, 'getVariants'])->name('products.variants');
     
     // Variant routes - organized together
@@ -73,6 +76,15 @@ Route::middleware([AdminMiddleware::class])->group(function () {
     Route::put('/admin/products/variants/{variant}', [ProductController::class, 'updateVariant'])->name('products.variants.update');
     Route::post('/admin/products/{productID}/variants', [ProductController::class, 'storeVariant'])->name('products.variants.store');
     Route::delete('/admin/products/variants/{variant}', [ProductController::class, 'destroyVariant'])->name('products.variants.destroy');
+    
+    // Promotion routes - admin only
+    Route::get('/admin/promotions', [PromotionController::class, 'index'])->name('promotions.index');
+    Route::get('/admin/promotions/create', [PromotionController::class, 'create'])->name('promotions.create');
+    Route::post('/admin/promotions', [PromotionController::class, 'store'])->name('promotions.store');
+    Route::get('/admin/promotions/{promotion}', [PromotionController::class, 'show'])->name('promotions.show');
+    Route::get('/admin/promotions/{promotion}/edit', [PromotionController::class, 'edit'])->name('promotions.edit');
+    Route::put('/admin/promotions/{promotion}', [PromotionController::class, 'update'])->name('promotions.update');
+    Route::delete('/admin/promotions/{promotion}', [PromotionController::class, 'destroy'])->name('promotions.destroy');
 });
 
 // Cart routes
