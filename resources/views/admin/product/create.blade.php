@@ -50,8 +50,23 @@
                             <label for="product_price" class="form-label">Base Price (RM)</label>
                             <input type="number" class="form-control @error('product_price') is-invalid @enderror" 
                                    id="product_price" name="product_price" value="{{ old('product_price') }}" 
-                                   step="0.01" min="0" required>
+                                   step="0.01" min="0">
+                            <small class="form-text text-muted">Optional</small>
                             @error('product_price')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="actual_price" class="form-label">Actual Price (RM)</label>
+                            <input type="number" class="form-control @error('actual_price') is-invalid @enderror" 
+                                   id="actual_price" name="actual_price" value="{{ old('actual_price') }}" 
+                                   step="0.01" min="0" required>
+                            <div id="discount-indicator" class="mt-1 d-none">
+                                <span class="badge bg-danger">Discount: <span id="discount-percentage">0</span>% OFF</span>
+                            </div>
+                            @error('actual_price')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
@@ -302,6 +317,32 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Add at least one variant by default
     addVariant();
+    
+    // Calculate discount percentage
+    const basePrice = document.getElementById('product_price');
+    const actualPrice = document.getElementById('actual_price');
+    const discountIndicator = document.getElementById('discount-indicator');
+    const discountPercentage = document.getElementById('discount-percentage');
+    
+    function calculateDiscount() {
+        if (basePrice.value && actualPrice.value && parseFloat(basePrice.value) > 0 && parseFloat(actualPrice.value) > 0) {
+            if (parseFloat(actualPrice.value) < parseFloat(basePrice.value)) {
+                const discount = ((parseFloat(basePrice.value) - parseFloat(actualPrice.value)) / parseFloat(basePrice.value)) * 100;
+                discountPercentage.textContent = Math.round(discount);
+                discountIndicator.classList.remove('d-none');
+            } else {
+                discountIndicator.classList.add('d-none');
+            }
+        } else {
+            discountIndicator.classList.add('d-none');
+        }
+    }
+    
+    basePrice.addEventListener('input', calculateDiscount);
+    actualPrice.addEventListener('input', calculateDiscount);
+    
+    // Initial calculation
+    calculateDiscount();
 });
 </script>
 @endpush

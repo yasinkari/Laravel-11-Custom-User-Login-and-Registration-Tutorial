@@ -14,6 +14,7 @@ class Product extends Model
     protected $fillable = [
         'product_name',
         'product_price',
+        'actual_price',
         'product_description',
         'is_visible'
     ];
@@ -63,5 +64,18 @@ class Product extends Model
         }
         
         return max(0, $price);
+    }
+    
+    /**
+     * Calculate discount percentage based on actual price vs product price
+     */
+    public function getDiscountPercentageAttribute()
+    {
+        if (!$this->actual_price || !$this->product_price || $this->actual_price >= $this->product_price) {
+            return 0;
+        }
+        
+        $discountPercentage = (($this->product_price - $this->actual_price) / $this->product_price) * 100;
+        return round($discountPercentage);
     }
 }

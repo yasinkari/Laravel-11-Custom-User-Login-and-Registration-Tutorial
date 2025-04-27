@@ -56,8 +56,24 @@
                                         <input type="number" class="form-control @error('product_price') is-invalid @enderror" 
                                                id="product_price" name="product_price" 
                                                value="{{ old('product_price', $product->product_price) }}" 
-                                               step="0.01" min="0" required>
+                                               step="0.01" min="0">
+                                        <small class="form-text text-muted">Optional</small>
                                         @error('product_price')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="actual_price" class="form-label">Actual Price (RM)</label>
+                                        <input type="number" class="form-control @error('actual_price') is-invalid @enderror" 
+                                               id="actual_price" name="actual_price" 
+                                               value="{{ old('actual_price', $product->actual_price) }}" 
+                                               step="0.01" min="0" required>
+                                        <div id="discount-indicator" class="mt-1 {{ $product->discount_percentage > 0 ? '' : 'd-none' }}">
+                                            <span class="badge bg-danger">Discount: <span id="discount-percentage">{{ $product->discount_percentage }}</span>% OFF</span>
+                                        </div>
+                                        @error('actual_price')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
@@ -182,7 +198,7 @@
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Tone</label>
-                                            <select class="form-select tone-select" name="toneID" required>
+                                            <select class="form-select tone-select" name="toneID" id="editToneID" required>
                                                 <option value="">Select Tone</option>
                                                 @foreach($tones as $tone)
                                                     <option value="{{ $tone->toneID }}" data-tone-name="{{ $tone->tone_name }}" data-tone-code="{{ $tone->tone_code }}">{{ $tone->tone_name }}</option>
@@ -197,7 +213,7 @@
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Color</label>
-                                            <select class="form-select color-select" name="colorID" required>
+                                            <select class="form-select color-select" name="colorID" id="editColorID" required>
                                                 <option value="">Select Color</option>
                                                 @foreach($colors as $color)
                                                     <option value="{{ $color->colorID }}" data-color-name="{{ $color->color_name }}" data-color-code="{{ $color->color_code }}">{{ $color->color_name }}</option>
@@ -212,7 +228,7 @@
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Size</label>
-                                            <select class="form-select" name="product_size" required>
+                                            <select class="form-select" name="product_size" id="editProductSize" required>
                                                 <option value="">Select Size</option>
                                                 @foreach(['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'] as $size)
                                                     <option value="{{ $size }}">{{ $size }}</option>
@@ -221,115 +237,16 @@
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Stock</label>
-                                            <input type="number" class="form-control" name="product_stock" min="0" required>
+                                            <input type="number" class="form-control" name="product_stock" id="editProductStock" min="0" required>
                                         </div>
-                                        <div class="col-12">
-                                            <label class="form-label">Image</label>
-                                            <input type="file" class="form-control" name="product_image" accept="image/*" required>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                    <button type="submit" class="btn btn-primary">Add Variant</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Edit Variant Modal -->
-                <div class="modal fade" id="editVariantModal" tabindex="-1" aria-labelledby="editVariantModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="editVariantModalLabel">Edit Variant</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <form id="editVariantForm" method="POST" enctype="multipart/form-data">
-                                @csrf
-                                @method('PUT')
-                                <div class="modal-body">
-                                    <!-- Color Suggestion Panel -->
-                                    <div class="card mb-4 border-left-info">
-                                        <div class="card-body">
-                                            <h6 class="font-weight-bold text-info mb-3">Color Suggestions by Skin Tone</h6>
-                                            <div class="row">
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <label for="editToneSuggestion">Select Skin Tone</label>
-                                                        <select class="form-select" id="editToneSuggestion">
-                                                            <option value="">Select a tone for suggestions</option>
-                                                            @foreach($tones as $tone)
-                                                                <option value="{{ $tone->tone_name }}">{{ $tone->tone_name }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-9">
-                                                    <div id="editColorSuggestions" class="d-none">
-                                                        <label>Suggested Colors:</label>
-                                                        <div class="d-flex flex-wrap" id="editSuggestedColorsList">
-                                                            <!-- Suggested colors will appear here -->
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Form fields will be populated dynamically -->
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label">Tone</label>
-                                            <select class="form-select tone-select" name="toneID" id="edit_toneID" required>
-                                                <option value="">Select Tone</option>
-                                                @foreach($tones as $tone)
-                                                    <option value="{{ $tone->toneID }}" data-tone-name="{{ $tone->tone_name }}" data-tone-code="{{ $tone->tone_code }}">{{ $tone->tone_name }}</option>
-                                                @endforeach
-                                            </select>
-                                            <div class="tone-indicator d-none mt-2">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="tone-swatch"></div>
-                                                    <span class="tone-name ms-2"></span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label">Color</label>
-                                            <select class="form-select color-select" name="colorID" id="edit_colorID" required>
-                                                <option value="">Select Color</option>
-                                                @foreach($colors as $color)
-                                                    <option value="{{ $color->colorID }}" data-color-name="{{ $color->color_name }}" data-color-code="{{ $color->color_code }}">{{ $color->color_name }}</option>
-                                                @endforeach
-                                            </select>
-                                            <div class="color-indicator d-none mt-2">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="color-swatch"></div>
-                                                    <span class="color-name ms-2"></span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label">Size</label>
-                                            <select class="form-select" name="product_size" id="edit_product_size" required>
-                                                <option value="">Select Size</option>
-                                                @foreach(['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'] as $size)
-                                                    <option value="{{ $size }}">{{ $size }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label">Stock</label>
-                                            <input type="number" class="form-control" name="product_stock" id="edit_product_stock" min="0" required>
-                                        </div>
-                                        <!-- Inside the edit modal form -->
                                         <div class="col-12 mb-3">
                                             <label class="form-label">Current Image</label>
-                                            <img id="current_variant_image" src="" alt="Current Variant Image" 
-                                                 class="img-thumbnail mb-2" style="max-width: 200px;">
-                                            <label class="form-label">New Image (optional)</label>
+                                            <div class="current-image-container mb-2">
+                                                <img id="currentVariantImage" src="" alt="Current Variant" class="img-thumbnail" style="max-width: 150px; max-height: 150px;">
+                                            </div>
+                                            <label class="form-label">Update Image (Optional)</label>
                                             <input type="file" class="form-control" name="product_image" accept="image/*">
+                                            <small class="form-text text-muted">Leave empty to keep the current image</small>
                                         </div>
                                     </div>
                                 </div>
@@ -351,7 +268,7 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                Are you sure you want to delete this variant? This action cannot be undone.
+                                <p>Are you sure you want to delete this variant? This action cannot be undone.</p>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -364,245 +281,206 @@
                         </div>
                     </div>
                 </div>
-
-                @push('scripts')
-                <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    // Color suggestions data
-                    const colorSuggestions = {
-                        'Fair': {
-                            'Navy': '#000080',
-                            'Brown': '#8B4513',
-                            'Burgundy': '#800020',
-                            'Green': '#006400',
-                            'Olive': '#808000'
-                        },
-                        'Olive': {
-                            'Burgundy': '#800020',
-                            'Maroon': '#800000',
-                            'Purple': '#800080',
-                            'Green': '#006400',
-                            'Navy': '#000080'
-                        },
-                        'Light Brown': {
-                            'Navy': '#000080',
-                            'Royal Blue': '#4169E1',
-                            'Teal': '#008080',
-                            'Grey': '#808080',
-                            'Burgundy': '#800020'
-                        },
-                        'Brown': {
-                            'Navy': '#000080',
-                            'Mid Blue': '#0000CD',
-                            'Green': '#006400',
-                            'Bright Yellow': '#FFFF00',
-                            'Sky Blue': '#87CEEB'
-                        },
-                        'Black Brown': {
-                            'Black': '#000000',
-                            'Navy': '#000080',
-                            'Burgundy': '#800020',
-                            'Pink': '#FFC0CB',
-                            'Pastel Blue': '#ADD8E6'
-                        }
-                    };
-                    
-                    // Setup tone suggestion dropdown for edit modal
-                    const editToneSelect = document.getElementById('editToneSuggestion');
-                    const editSuggestionsContainer = document.getElementById('editColorSuggestions');
-                    const editSuggestedColorsList = document.getElementById('editSuggestedColorsList');
-                    
-                    if (editToneSelect) {
-                        editToneSelect.addEventListener('change', function() {
-                            const selectedTone = this.value;
-                            editSuggestedColorsList.innerHTML = '';
-                            
-                            if (selectedTone && colorSuggestions[selectedTone]) {
-                                editSuggestionsContainer.classList.remove('d-none');
-                                
-                                // Display the suggested colors
-                                Object.entries(colorSuggestions[selectedTone]).forEach(([colorName, colorCode]) => {
-                                    const colorItem = document.createElement('div');
-                                    colorItem.className = 'color-suggestion-item me-3 mb-2';
-                                    colorItem.innerHTML = `
-                                        <div class="d-flex align-items-center">
-                                            <div style="width: 25px; height: 25px; background-color: ${colorCode}; 
-                                                    border-radius: 50%; margin-right: 8px; border: 1px solid #ddd;"></div>
-                                            <span>${colorName}</span>
-                                        </div>
-                                    `;
-                                    
-                                    // Make the color suggestion clickable to auto-select in the edit form
-                                    colorItem.addEventListener('click', function() {
-                                        // Find the color in the dropdown options
-                                        const colorSelect = document.getElementById('edit_colorID');
-                                        Array.from(colorSelect.options).forEach(option => {
-                                            if (option.text.includes(colorName)) {
-                                                colorSelect.value = option.value;
-                                                // Manually trigger the change event
-                                                const event = new Event('change', { bubbles: true });
-                                                colorSelect.dispatchEvent(event);
-                                            }
-                                        });
-                                    });
-                                    
-                                    editSuggestedColorsList.appendChild(colorItem);
-                                });
-                            } else {
-                                editSuggestionsContainer.classList.add('d-none');
-                            }
-                        });
-                    }
-
-                    // Handle edit variant button clicks
-                    document.querySelectorAll('.edit-variant').forEach(button => {
-                        button.addEventListener('click', function() {
-                            const variantId = this.getAttribute('data-variant-id');
-                            fetchVariantDetails(variantId);
-                        });
-                    });
-                    
-                    // Handle delete variant button clicks
-                    document.querySelectorAll('.delete-variant').forEach(button => {
-                        button.addEventListener('click', function() {
-                            const variantId = this.getAttribute('data-variant-id');
-                            document.getElementById('deleteVariantForm').action = `/admin/products/variants/${variantId}`;
-                            const deleteModal = new bootstrap.Modal(document.getElementById('deleteVariantModal'));
-                            deleteModal.show();
-                        });
-                    });
-                    
-                    // Initialize tone and color selectors
-                    document.querySelectorAll('.tone-select').forEach(select => {
-                        select.addEventListener('change', function() {
-                            const selectedOption = this.options[this.selectedIndex];
-                            const container = this.closest('div').querySelector('.tone-indicator');
-                            const swatch = container.querySelector('.tone-swatch');
-                            const name = container.querySelector('.tone-name');
-                            
-                            if (this.value && selectedOption) {
-                                swatch.style.backgroundColor = selectedOption.dataset.toneCode;
-                                name.textContent = selectedOption.dataset.toneName;
-                                container.classList.remove('d-none');
-                                
-                                // Update the tone suggestion dropdown to match
-                                if (this.id === 'edit_toneID') {
-                                    document.getElementById('editToneSuggestion').value = selectedOption.dataset.toneName;
-                                    document.getElementById('editToneSuggestion').dispatchEvent(new Event('change'));
-                                }
-                            } else {
-                                container.classList.add('d-none');
-                            }
-                        });
-                    });
-                    
-                    document.querySelectorAll('.color-select').forEach(select => {
-                        select.addEventListener('change', function() {
-                            const selectedOption = this.options[this.selectedIndex];
-                            const container = this.closest('div').querySelector('.color-indicator');
-                            const swatch = container.querySelector('.color-swatch');
-                            const name = container.querySelector('.color-name');
-                            
-                            if (this.value && selectedOption) {
-                                // Set the background color of the swatch
-                                swatch.style.backgroundColor = selectedOption.dataset.colorCode;
-                                name.textContent = selectedOption.dataset.colorName;
-                                container.classList.remove('d-none');
-                            } else {
-                                container.classList.add('d-none');
-                            }
-                        });
-                    });
-                });
-
-                function fetchVariantDetails(variantId) {
-                    fetch(`/admin/products/variants/${variantId}/edit`, {
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.variant) {
-                            populateEditForm(data.variant);
-                            const editModal = new bootstrap.Modal(document.getElementById('editVariantModal'));
-                            editModal.show();
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Failed to load variant details. Please try again.');
-                    });
-                }
-
-                function populateEditForm(variant) {
-                    const form = document.getElementById('editVariantForm');
-                    form.action = `/admin/products/variants/${variant.product_variantID}`;
-                    
-                    // Set values in form fields
-                    document.getElementById('edit_toneID').value = variant.toneID;
-                    document.getElementById('edit_colorID').value = variant.colorID;
-                    document.getElementById('edit_product_size').value = variant.product_size;
-                    document.getElementById('edit_product_stock').value = variant.product_stock;
-                    
-                    // Update image preview
-                    const imageUrl = variant.product_image ? `/storage/${variant.product_image}` : '';
-                    document.getElementById('current_variant_image').src = imageUrl;
-                    
-                    // Trigger change events to update visual indicators
-                    setTimeout(() => {
-                        // Create and dispatch proper change events
-                        const toneEvent = new Event('change', { bubbles: true });
-                        const colorEvent = new Event('change', { bubbles: true });
-                        
-                        toneSelect.dispatchEvent(toneEvent);
-                        colorSelect.dispatchEvent(colorEvent);
-                        
-                        // Also update the tone suggestion dropdown
-                        const selectedToneOption = toneSelect.options[toneSelect.selectedIndex];
-                        if (selectedToneOption && selectedToneOption.dataset.toneName) {
-                            const suggestionSelect = document.getElementById('editToneSuggestion');
-                            suggestionSelect.value = selectedToneOption.dataset.toneName;
-                            suggestionSelect.dispatchEvent(new Event('change', { bubbles: true }));
-                        }
-                    }, 100); // Small delay to ensure the DOM is ready
-                }
-                </script>
-                @endpush
-
-                @push('styles')
-                <style>
-                .color-suggestion-item {
-                    cursor: pointer;
-                    padding: 5px 10px;
-                    border-radius: 4px;
-                    transition: background-color 0.2s;
-                }
-
-                .color-suggestion-item:hover {
-                    background-color: #f8f9fa;
-                }
-
-                .border-left-info {
-                    border-left: 4px solid #36b9cc !important;
-                }
-
-                .tone-swatch, .color-swatch {
-                    width: 25px;
-                    height: 25px;
-                    border-radius: 50%;
-                    border: 1px solid #ddd;
-                }
-                </style>
-                @endpush
             </div>
         </main>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Calculate discount percentage when base price or actual price changes
+        const productPriceInput = document.getElementById('product_price');
+        const actualPriceInput = document.getElementById('actual_price');
+        const discountIndicator = document.getElementById('discount-indicator');
+        const discountPercentage = document.getElementById('discount-percentage');
+
+        function calculateDiscount() {
+            const basePrice = parseFloat(productPriceInput.value) || 0;
+            const actualPrice = parseFloat(actualPriceInput.value) || 0;
+            
+            if (basePrice > 0 && actualPrice > 0 && basePrice > actualPrice) {
+                const discount = Math.round(((basePrice - actualPrice) / basePrice) * 100);
+                discountPercentage.textContent = discount;
+                discountIndicator.classList.remove('d-none');
+            } else {
+                discountIndicator.classList.add('d-none');
+            }
+        }
+
+        if (productPriceInput && actualPriceInput) {
+            productPriceInput.addEventListener('input', calculateDiscount);
+            actualPriceInput.addEventListener('input', calculateDiscount);
+        }
+
+        // Tone and Color selection visualization in Add Variant Modal
+        const toneSelects = document.querySelectorAll('.tone-select');
+        const colorSelects = document.querySelectorAll('.color-select');
+
+        toneSelects.forEach(select => {
+            select.addEventListener('change', function() {
+                const container = this.closest('.mb-3');
+                const indicator = container.querySelector('.tone-indicator');
+                const swatch = container.querySelector('.tone-swatch');
+                const nameSpan = container.querySelector('.tone-name');
+                
+                if (this.value) {
+                    const selectedOption = this.options[this.selectedIndex];
+                    const toneName = selectedOption.getAttribute('data-tone-name');
+                    const toneCode = selectedOption.getAttribute('data-tone-code');
+                    
+                    swatch.style.backgroundColor = toneCode;
+                    nameSpan.textContent = toneName;
+                    indicator.classList.remove('d-none');
+                } else {
+                    indicator.classList.add('d-none');
+                }
+            });
+        });
+
+        colorSelects.forEach(select => {
+            select.addEventListener('change', function() {
+                const container = this.closest('.mb-3');
+                const indicator = container.querySelector('.color-indicator');
+                const swatch = container.querySelector('.color-swatch');
+                const nameSpan = container.querySelector('.color-name');
+                
+                if (this.value) {
+                    const selectedOption = this.options[this.selectedIndex];
+                    const colorName = selectedOption.getAttribute('data-color-name');
+                    const colorCode = selectedOption.getAttribute('data-color-code');
+                    
+                    swatch.style.backgroundColor = colorCode;
+                    nameSpan.textContent = colorName;
+                    indicator.classList.remove('d-none');
+                } else {
+                    indicator.classList.add('d-none');
+                }
+            });
+        });
+
+        // Edit Variant functionality
+        const editButtons = document.querySelectorAll('.edit-variant');
+        editButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const variantId = this.getAttribute('data-variant-id');
+                
+                // Fetch variant data via AJAX
+                fetch(`/admin/products/variants/${variantId}/edit`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const variant = data.variant;
+                            
+                            // Set form action
+                            const form = document.getElementById('editVariantForm');
+                            form.action = `/admin/products/variants/${variantId}`;
+                            
+                            // Populate form fields
+                            document.getElementById('editToneID').value = variant.toneID;
+                            document.getElementById('editColorID').value = variant.colorID;
+                            document.getElementById('editProductSize').value = variant.product_size;
+                            document.getElementById('editProductStock').value = variant.product_stock;
+                            
+                            // Trigger change events to update visual indicators
+                            const toneEvent = new Event('change');
+                            const colorEvent = new Event('change');
+                            document.getElementById('editToneID').dispatchEvent(toneEvent);
+                            document.getElementById('editColorID').dispatchEvent(colorEvent);
+                            
+                            // Set current image
+                            document.getElementById('currentVariantImage').src = variant.image_url;
+                            
+                            // Open modal
+                            const modal = new bootstrap.Modal(document.getElementById('editVariantModal'));
+                            modal.show();
+                        } else {
+                            alert('Failed to load variant data');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while fetching variant data');
+                    });
+            });
+        });
+
+        // Delete Variant functionality
+        const deleteButtons = document.querySelectorAll('.delete-variant');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const variantId = this.getAttribute('data-variant-id');
+                const form = document.getElementById('deleteVariantForm');
+                form.action = `/admin/products/variants/${variantId}`;
+                
+                const modal = new bootstrap.Modal(document.getElementById('deleteVariantModal'));
+                modal.show();
+            });
+        });
+
+        // Color suggestion system
+        const toneSuggestionSelects = document.querySelectorAll('#addToneSuggestion, #editToneSuggestion');
+        const colorSuggestionMappings = {
+            'Fair': ['Pastel Pink', 'Soft Blue', 'Lavender', 'Mint Green', 'Peach'],
+            'Light': ['Coral', 'Teal', 'Dusty Rose', 'Sage Green', 'Periwinkle'],
+            'Medium': ['Burgundy', 'Olive Green', 'Navy Blue', 'Rust', 'Plum'],
+            'Tan': ['Terracotta', 'Forest Green', 'Mustard', 'Brick Red', 'Camel'],
+            'Deep': ['Royal Blue', 'Emerald Green', 'Ruby Red', 'Gold', 'Purple'],
+            'Dark': ['Bright Red', 'Bright Yellow', 'Turquoise', 'Fuchsia', 'Cobalt Blue']
+        };
+
+        toneSuggestionSelects.forEach(select => {
+            select.addEventListener('change', function() {
+                const toneName = this.value;
+                const modalId = this.id.includes('add') ? 'add' : 'edit';
+                const suggestionsContainer = document.getElementById(`${modalId}ColorSuggestions`);
+                const suggestedColorsList = document.getElementById(`${modalId}SuggestedColorsList`);
+                
+                if (toneName && colorSuggestionMappings[toneName]) {
+                    suggestedColorsList.innerHTML = '';
+                    
+                    colorSuggestionMappings[toneName].forEach(colorName => {
+                        // Find the color in the available colors
+                        const colorSelect = document.querySelector(`#${modalId === 'add' ? '' : 'edit'}ColorID`);
+                        let colorOption = null;
+                        
+                        for (let i = 0; i < colorSelect.options.length; i++) {
+                            if (colorSelect.options[i].text === colorName) {
+                                colorOption = colorSelect.options[i];
+                                break;
+                            }
+                        }
+                        
+                        if (colorOption) {
+                            const colorCode = colorOption.getAttribute('data-color-code');
+                            const colorId = colorOption.value;
+                            
+                            const colorBadge = document.createElement('div');
+                            colorBadge.className = 'color-suggestion-badge me-2 mb-2';
+                            colorBadge.innerHTML = `
+                                <div class="d-flex align-items-center p-2 border rounded" style="cursor: pointer;">
+                                    <div style="width: 20px; height: 20px; border-radius: 50%; background-color: ${colorCode}; border: 1px solid #ddd;"></div>
+                                    <span class="ms-2">${colorName}</span>
+                                </div>
+                            `;
+                            
+                            colorBadge.addEventListener('click', function() {
+                                colorSelect.value = colorId;
+                                const event = new Event('change');
+                                colorSelect.dispatchEvent(event);
+                            });
+                            
+                            suggestedColorsList.appendChild(colorBadge);
+                        }
+                    });
+                    
+                    suggestionsContainer.classList.remove('d-none');
+                } else {
+                    suggestionsContainer.classList.add('d-none');
+                }
+            });
+        });
+    });
+</script>
 @endsection

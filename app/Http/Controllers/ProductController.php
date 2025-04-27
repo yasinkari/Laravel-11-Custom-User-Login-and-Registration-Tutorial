@@ -77,7 +77,8 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'product_name' => 'required|string|max:255',
-            'product_price' => 'required|numeric|min:0',
+            'product_price' => 'nullable|numeric|min:0',
+            'actual_price' => 'required|numeric|min:0',
             'product_description' => 'required|string',
             'variants' => 'required|array|min:1',
             'variants.*.toneID' => 'required|exists:tones,toneID',
@@ -91,6 +92,7 @@ class ProductController extends Controller
         $product = Product::create([
             'product_name' => $request->product_name,
             'product_price' => $request->product_price,
+            'actual_price' => $request->actual_price,
             'product_description' => $request->product_description,
             'is_visible' => $request->has('is_visible') ? 1 : 0,
         ]);
@@ -149,19 +151,21 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'product_name' => 'required|string|max:255',
-            'product_price' => 'required|numeric|min:0',
+            'product_price' => 'nullable|numeric|min:0',
+            'actual_price' => 'required|numeric|min:0',
             'product_description' => 'required|string',
         ]);
     
         $product->update([
             'product_name' => $request->product_name,
             'product_price' => $request->product_price,
+            'actual_price' => $request->actual_price,
             'product_description' => $request->product_description,
             'is_visible' => $request->has('is_visible') ? 1 : 0,
         ]);
     
-        return redirect()->route('products.index')
-            ->with('success', 'Product updated successfully.');
+        return redirect()->route('products.edit', $product->productID)
+            ->with('success', 'Product information updated successfully');
     }
     
     /**

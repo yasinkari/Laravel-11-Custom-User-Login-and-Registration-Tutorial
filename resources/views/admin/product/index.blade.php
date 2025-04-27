@@ -43,7 +43,9 @@
                         <tr>
                             <th>ID</th>
                             <th>Name</th> 
-                            <th>Price (RM)</th>
+                            <th>Base Price (RM)</th>
+                            <th>Actual Price (RM)</th>
+                            <th>Discount</th>
                             <th>Description</th>
                             <th>Visibility</th>
                             <th>Variants</th>
@@ -55,7 +57,15 @@
                             <tr data-product-id="{{ $product->productID }}" class="product-row">
                                 <td>{{ $product->productID }}</td>
                                 <td>{{ $product->product_name }}</td>
-                                <td>{{ number_format($product->product_price, 2) }}</td>
+                                <td>{{ $product->product_price ? number_format($product->product_price, 2) : 'N/A' }}</td>
+                                <td>{{ number_format($product->actual_price, 2) }}</td>
+                                <td>
+                                    @if($product->discount_percentage > 0)
+                                        <span class="badge bg-danger">{{ $product->discount_percentage }}% OFF</span>
+                                    @else
+                                        <span class="badge bg-secondary">No Discount</span>
+                                    @endif
+                                </td>
                                 <td>{{ Str::limit($product->product_description, 100) }}</td>
                                 <td>
                                     <div class="form-check form-switch">
@@ -90,7 +100,7 @@
                             </tr>
                             <!-- Variants Row (Hidden by Default) -->
                             <tr class="variant-details" id="variants-{{ $product->productID }}" style="display: none;">
-                                <td colspan="6" class="p-0">
+                                <td colspan="9" class="p-0">
                                     <div class="card mb-0 border-0">
                                         <div class="card-body bg-light">
                                             <h6 class="mb-3">Variants for {{ $product->product_name }}</h6>
@@ -234,26 +244,6 @@ document.addEventListener('DOMContentLoaded', function() {
 @push('scripts')
 <script>
     $(document).ready(function() {
-        // Toggle variant details
-        const toggleButtons = document.querySelectorAll('.toggle-variants');
-        toggleButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const productId = this.getAttribute('data-product-id');
-                const variantRow = document.getElementById('variants-' + productId);
-                const icon = this.querySelector('i');
-                
-                if (variantRow.style.display === 'none') {
-                    variantRow.style.display = 'table-row';
-                    icon.classList.remove('fa-chevron-down');
-                    icon.classList.add('fa-chevron-up');
-                } else {
-                    variantRow.style.display = 'none';
-                    icon.classList.remove('fa-chevron-up');
-                    icon.classList.add('fa-chevron-down');
-                }
-            });
-        });
-    
         // Handle visibility toggle
         $('.toggle-visibility').on('change', function() {
             const productId = $(this).data('product-id');
