@@ -22,20 +22,37 @@ class Promotion extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'productID',
         'promotion_name',
         'promotion_type',
-        'discount_amount',
         'start_date',
         'end_date',
         'is_active'
     ];
 
     /**
-     * Get the product that owns the promotion.
+     * The attributes that should be cast.
+     *
+     * @var array
      */
-    public function product()
+    protected $casts = [
+        'start_date' => 'date',
+        'end_date' => 'date',
+        'is_active' => 'boolean',
+    ];
+
+    /**
+     * Get the products associated with the promotion through promotion records.
+     */
+    public function products()
     {
-        return $this->belongsTo(Product::class, 'productID', 'productID');
+        return $this->belongsToMany(Product::class, 'promotion_records', 'promotionID', 'productID');
+    }
+
+    /**
+     * Get the promotion records for this promotion.
+     */
+    public function promotionRecords()
+    {
+        return $this->hasMany(PromotionRecord::class, 'promotionID', 'promotionID');
     }
 }

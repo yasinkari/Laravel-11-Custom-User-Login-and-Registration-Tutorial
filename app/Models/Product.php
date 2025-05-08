@@ -24,9 +24,20 @@ class Product extends Model
         return $this->hasMany(ProductVariant::class, 'productID');
     }
     
+    /**
+     * Get the promotions associated with this product through promotion records.
+     */
     public function promotions()
     {
-        return $this->hasMany(Promotion::class, 'productID');
+        return $this->belongsToMany(Promotion::class, 'promotion_records', 'productID', 'promotionID', 'productID', 'promotionID');
+    }
+    
+    /**
+     * Get the promotion records for this product.
+     */
+    public function promotionRecords()
+    {
+        return $this->hasMany(PromotionRecord::class, 'productID', 'productID');
     }
     
     /**

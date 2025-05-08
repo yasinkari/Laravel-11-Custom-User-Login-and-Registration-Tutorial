@@ -240,7 +240,7 @@ class ProductController extends Controller
             ->with(['variants' => function($query) {
                 $query->with(['tone', 'color'])->orderBy('product_stock', 'desc');
             }])
-            ->get();
+            ->paginate(12); // Changed from get() to paginate()
         
         if ($products->isEmpty()) {
             return view('customer.products.index', ['message' => 'No products found.']);

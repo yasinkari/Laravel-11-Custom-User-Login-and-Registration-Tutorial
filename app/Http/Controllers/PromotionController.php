@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Promotion;
 use App\Models\Product;
+use App\Models\PromotionRecord;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PromotionController extends Controller
 {
@@ -14,7 +16,7 @@ class PromotionController extends Controller
      */
     public function index()
     {
-        $promotions = Promotion::with('product')
+        $promotions = Promotion::with('products')
             ->orderBy('created_at', 'desc')
             ->paginate(10)
             ->withQueryString();
@@ -31,7 +33,14 @@ class PromotionController extends Controller
             ->orderBy('product_name')
             ->get();
             
-        return view('admin.promotions.create', compact('products'));
+        $promotionTypes = [
+            'discount' => 'Discount (% off)',
+            'bundle' => 'Bundle (Buy multiple for discount)',
+            'clearance' => 'Clearance Sale',
+            'seasonal' => 'Seasonal Promotion'
+        ];
+            
+        return view('admin.promotions.create', compact('products', 'promotionTypes'));
     }
 
     /**
@@ -40,24 +49,65 @@ class PromotionController extends Controller
     public function store(Request $request)
     {
         try {
+            Log::info('Starting promotion creation process', ['request_data' => $request->except('_token')]);
+            
             $validatedData = $request->validate([
-                'productID' => 'required|exists:products,productID',
                 'promotion_name' => 'required|string|max:255',
-                'promotion_type' => 'required|string|max:50',
+                'promotion_type' => 'required|string|in:discount,bundle,clearance,seasonal',
+                'start_date' => 'nullable|date',
+                'end_date' => 'nullable|date|after_or_equal:start_date',
+                'products' => 'required|array',
+                'products.*' => 'exists:products,productID',
             ]);
+            
+            Log::info('Validation passed for promotion creation', ['validated_data' => $validatedData]);
     
             DB::beginTransaction();
+            Log::info('DB transaction started for promotion creation');
     
-            Promotion::create($validatedData);
+            // Create the promotion
+            $promotion = Promotion::create([
+                'promotion_name' => $validatedData['promotion_name'],
+                'promotion_type' => $validatedData['promotion_type'],
+                'start_date' => $validatedData['start_date'] ?? null,
+                'end_date' => $validatedData['end_date'] ?? null,
+                'is_active' => $request->has('is_active') ? 1 : 0,
+            ]);
+            
+            Log::info('Promotion created successfully', ['promotion_id' => $promotion->promotionID]);
+            
+            // Associate products with the promotion
+            if (isset($validatedData['products'])) {
+                Log::info('Adding products to promotion', ['product_count' => count($validatedData['products'])]);
+                
+                foreach ($validatedData['products'] as $productId) {
+                    PromotionRecord::create([
+                        'promotionID' => $promotion->promotionID,
+                        'productID' => $productId
+                    ]);
+                    
+                    Log::debug('Product added to promotion', [
+                        'promotion_id' => $promotion->promotionID,
+                        'product_id' => $productId
+                    ]);
+                }
+            }
     
             DB::commit();
+            Log::info('DB transaction committed for promotion creation', ['promotion_id' => $promotion->promotionID]);
+            
             return redirect()->route('promotions.index')
-                ->with('success', 'Promotion created successfully');
+                ->with('success', 'Promotion created successfully.');
+                
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()
-                ->with('error', 'Error creating promotion: ' . $e->getMessage())
-                ->withInput();
+            Log::error('Failed to create promotion', [
+                'error_message' => $e->getMessage(),
+                'error_trace' => $e->getTraceAsString(),
+                'request_data' => $request->except('_token')
+            ]);
+            
+            return back()->withInput()->withErrors(['error' => 'Failed to create promotion: ' . $e->getMessage()]);
         }
     }
 
@@ -66,8 +116,7 @@ class PromotionController extends Controller
      */
     public function show(Promotion $promotion)
     {
-        $promotion->load('product');
-        
+        $promotion->load('products');
         return view('admin.promotions.show', compact('promotion'));
     }
 
@@ -81,14 +130,16 @@ class PromotionController extends Controller
             ->get();
             
         $promotionTypes = [
-            'discount' => 'Discount',
-            'bundle' => 'Bundle Deal',
+            'discount' => 'Discount (% off)',
+            'bundle' => 'Bundle (Buy multiple for discount)',
             'clearance' => 'Clearance Sale',
-            'seasonal' => 'Seasonal Offer',
-            'limited' => 'Limited Edition'
+            'seasonal' => 'Seasonal Promotion'
         ];
         
-        return view('admin.promotions.edit', compact('promotion', 'products', 'promotionTypes'));
+        // Get IDs of products associated with this promotion
+        $selectedProducts = $promotion->products->pluck('productID')->toArray();
+        
+        return view('admin.promotions.edit', compact('promotion', 'products', 'promotionTypes', 'selectedProducts'));
     }
 
     /**
@@ -97,24 +148,90 @@ class PromotionController extends Controller
     public function update(Request $request, Promotion $promotion)
     {
         try {
+            Log::info('Starting promotion update process', [
+                'promotion_id' => $promotion->promotionID,
+                'request_data' => $request->except('_token', '_method')
+            ]);
+            
             $validatedData = $request->validate([
-                'productID' => 'required|exists:products,productID',
                 'promotion_name' => 'required|string|max:255',
-                'promotion_type' => 'required|string|max:50',
+                'promotion_type' => 'required|string|in:discount,bundle,clearance,seasonal',
+                'start_date' => 'nullable|date',
+                'end_date' => 'nullable|date|after_or_equal:start_date',
+                'products' => 'required|array',
+                'products.*' => 'exists:products,productID',
+            ]);
+            
+            Log::info('Validation passed for promotion update', [
+                'promotion_id' => $promotion->promotionID,
+                'validated_data' => $validatedData
             ]);
     
             DB::beginTransaction();
+            Log::info('DB transaction started for promotion update', ['promotion_id' => $promotion->promotionID]);
     
-            $promotion->update($validatedData);
+            // Update the promotion
+            $oldData = $promotion->toArray();
+            
+            $promotion->update([
+                'promotion_name' => $validatedData['promotion_name'],
+                'promotion_type' => $validatedData['promotion_type'],
+                'start_date' => $validatedData['start_date'] ?? null,
+                'end_date' => $validatedData['end_date'] ?? null,
+                'is_active' => $request->has('is_active') ? 1 : 0,
+            ]);
+            
+            Log::info('Promotion updated successfully', [
+                'promotion_id' => $promotion->promotionID,
+                'old_data' => $oldData,
+                'new_data' => $promotion->toArray()
+            ]);
+            
+            // Remove all existing product associations
+            $oldProductCount = PromotionRecord::where('promotionID', $promotion->promotionID)->count();
+            PromotionRecord::where('promotionID', $promotion->promotionID)->delete();
+            
+            Log::info('Removed existing product associations', [
+                'promotion_id' => $promotion->promotionID,
+                'removed_product_count' => $oldProductCount
+            ]);
+            
+            // Add new product associations
+            if (isset($validatedData['products'])) {
+                Log::info('Adding updated products to promotion', [
+                    'promotion_id' => $promotion->promotionID,
+                    'product_count' => count($validatedData['products'])
+                ]);
+                
+                foreach ($validatedData['products'] as $productId) {
+                    PromotionRecord::create([
+                        'promotionID' => $promotion->promotionID,
+                        'productID' => $productId
+                    ]);
+                    
+                    Log::debug('Product added to promotion during update', [
+                        'promotion_id' => $promotion->promotionID,
+                        'product_id' => $productId
+                    ]);
+                }
+            }
     
             DB::commit();
+            Log::info('DB transaction committed for promotion update', ['promotion_id' => $promotion->promotionID]);
+            
             return redirect()->route('promotions.index')
-                ->with('success', 'Promotion updated successfully');
+                ->with('success', 'Promotion updated successfully.');
+                
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()
-                ->with('error', 'Error updating promotion: ' . $e->getMessage())
-                ->withInput();
+            Log::error('Failed to update promotion', [
+                'promotion_id' => $promotion->promotionID,
+                'error_message' => $e->getMessage(),
+                'error_trace' => $e->getTraceAsString(),
+                'request_data' => $request->except('_token', '_method')
+            ]);
+            
+            return back()->withInput()->withErrors(['error' => 'Failed to update promotion: ' . $e->getMessage()]);
         }
     }
 
@@ -126,32 +243,21 @@ class PromotionController extends Controller
         try {
             DB::beginTransaction();
             
+            // Delete associated promotion records first
+            PromotionRecord::where('promotionID', $promotion->promotionID)->delete();
+            
+            // Then delete the promotion
             $promotion->delete();
             
             DB::commit();
+            
             return redirect()->route('promotions.index')
-                ->with('success', 'Promotion deleted successfully');
+                ->with('success', 'Promotion deleted successfully.');
+                
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->route('promotions.index')
-                ->with('error', 'Error deleting promotion: ' . $e->getMessage());
+            Log::error('Failed to delete promotion: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Failed to delete promotion: ' . $e->getMessage()]);
         }
-    }
-    
-    /**
-     * Display active promotions to customers.
-     */
-    public function showToCustomer()
-    {
-        $promotions = Promotion::with(['product' => function($query) {
-            $query->where('is_visible', true);
-        }])
-        ->whereHas('product', function($query) {
-            $query->where('is_visible', true);
-        })
-        ->orderBy('created_at', 'desc')
-        ->get();
-        
-        return view('customer.promotions.index', compact('promotions'));
     }
 }

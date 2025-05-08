@@ -117,8 +117,8 @@
     </div>
 
     <main>
-        <!-- Flash messages -->
-        @if(session('success'))
+        <!-- Flash messages - consolidated to one success indicator -->
+        {{-- @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -130,7 +130,7 @@
                 {{ session('error') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-        @endif
+        @endif --}}
         
         @yield('content')
     </main>

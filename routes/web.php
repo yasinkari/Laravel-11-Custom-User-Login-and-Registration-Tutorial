@@ -85,6 +85,7 @@ Route::middleware([AdminMiddleware::class])->group(function () {
     Route::get('/admin/promotions/{promotion}/edit', [PromotionController::class, 'edit'])->name('promotions.edit');
     Route::put('/admin/promotions/{promotion}', [PromotionController::class, 'update'])->name('promotions.update');
     Route::delete('/admin/promotions/{promotion}', [PromotionController::class, 'destroy'])->name('promotions.destroy');
+    Route::patch('/admin/promotions/{promotion}/toggle-status', [PromotionController::class, 'toggleStatus'])->name('promotions.toggle-status');
 });
 
 // Cart routes
@@ -95,4 +96,6 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/cart/remove/{record}', [CartController::class, 'remove'])->name('cart.remove');
     Route::get('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
 });
+
+
 
