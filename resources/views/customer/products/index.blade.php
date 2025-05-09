@@ -86,6 +86,8 @@
     }
     
     .product-image img {
+        object-fit: cover;
+        height: 300px;
         width: 100%;
         transition: transform 0.5s;
     }
@@ -259,8 +261,8 @@
                     <div class="product-info">
                         <h5 class="product-title">{{ $product->product_name }}</h5>
                         <div class="product-price-container">
-                            <span class="product-original-price">RM{{ number_format($product->actual_price, 2) }}</span>
-                            <span class="product-price">RM{{ number_format($product->product_price, 2) }}</span>
+                            <span class="product-original-price">RM{{ number_format($product->product_price, 2) }}</span>
+                            <span class="product-price">RM{{ number_format($product->actual_price, 2) }}</span>
                         </div>
                         <div class="d-grid gap-2">
                             <a href="{{ route('products.view', $product->productID) }}" class="btn btn-view-details">View Details</a>

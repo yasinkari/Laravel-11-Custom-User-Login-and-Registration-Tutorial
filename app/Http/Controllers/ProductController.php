@@ -68,10 +68,22 @@ class ProductController extends Controller
             ]
         ];
 
-        return view('admin.product.create', compact('tones', 'colors', 'colorSuggestions'));
-    }
+        // Define product types for dropdown
+        $productTypes = [
+            'Lipstick',
+            'Foundation',
+            'Eyeshadow',
+            'Mascara',
+            'Blush',
+            'Eyeliner',
+            'Concealer',
+            'Powder',
+            'Primer',
+            'Other'
+        ];
 
-    // Add these methods to your existing ProductController
+        return view('admin.product.create', compact('tones', 'colors', 'colorSuggestions', 'productTypes'));
+    }
     
     public function store(Request $request)
     {
@@ -80,6 +92,7 @@ class ProductController extends Controller
             'product_price' => 'nullable|numeric|min:0',
             'actual_price' => 'required|numeric|min:0',
             'product_description' => 'required|string',
+            'product_type' => 'required|string|max:50',
             'variants' => 'required|array|min:1',
             'variants.*.toneID' => 'required|exists:tones,toneID',
             'variants.*.colorID' => 'required|exists:product_colors,colorID',
@@ -94,6 +107,7 @@ class ProductController extends Controller
             'product_price' => $request->product_price,
             'actual_price' => $request->actual_price,
             'product_description' => $request->product_description,
+            'product_type' => $request->product_type,
             'is_visible' => $request->has('is_visible') ? 1 : 0,
         ]);
 
@@ -130,7 +144,21 @@ class ProductController extends Controller
         $tones = Tone::orderBy('tone_name')->get();
         $colors = ProductColor::orderBy('color_name')->get();
         
-        return view('admin.product.edit', compact('product', 'variants', 'tones', 'colors'));
+        // Define product types for dropdown
+        $productTypes = [
+            'Lipstick',
+            'Foundation',
+            'Eyeshadow',
+            'Mascara',
+            'Blush',
+            'Eyeliner',
+            'Concealer',
+            'Powder',
+            'Primer',
+            'Other'
+        ];
+        
+        return view('admin.product.edit', compact('product', 'variants', 'tones', 'colors', 'productTypes'));
     }
     
     // Add this new method for AJAX pagination
@@ -154,6 +182,7 @@ class ProductController extends Controller
             'product_price' => 'nullable|numeric|min:0',
             'actual_price' => 'required|numeric|min:0',
             'product_description' => 'required|string',
+            'product_type' => 'required|string|max:50',
         ]);
     
         $product->update([
@@ -161,6 +190,7 @@ class ProductController extends Controller
             'product_price' => $request->product_price,
             'actual_price' => $request->actual_price,
             'product_description' => $request->product_description,
+            'product_type' => $request->product_type,
             'is_visible' => $request->has('is_visible') ? 1 : 0,
         ]);
     
@@ -240,13 +270,19 @@ class ProductController extends Controller
             ->with(['variants' => function($query) {
                 $query->with(['tone', 'color'])->orderBy('product_stock', 'desc');
             }])
-            ->paginate(12); // Changed from get() to paginate()
+            ->paginate(12);
+        
+        // Get unique product types for filtering
+        $productTypes = Product::where('is_visible', true)
+            ->distinct()
+            ->whereNotNull('product_type')
+            ->pluck('product_type');
         
         if ($products->isEmpty()) {
             return view('customer.products.index', ['message' => 'No products found.']);
         }
         
-        return view('customer.products.index', compact('products'));
+        return view('customer.products.index', compact('products', 'productTypes'));
     }
 
     // Update the showProductDetails method to check visibility

@@ -16,7 +16,8 @@ class Product extends Model
         'product_price',
         'actual_price',
         'product_description',
-        'is_visible'
+        'is_visible',
+        'product_type'
     ];
 
     public function variants()

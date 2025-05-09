@@ -47,6 +47,21 @@
                     </div>
                     <div class="col-md-6">
                         <div class="mb-3">
+                            <label for="product_type" class="form-label">Product Type</label>
+                            <select class="form-select @error('product_type') is-invalid @enderror" 
+                                   id="product_type" name="product_type" required>
+                                <option value="">Select Product Type</option>
+                                @foreach($productTypes as $type)
+                                    <option value="{{ $type }}" {{ old('product_type') == $type ? 'selected' : '' }}>{{ $type }}</option>
+                                @endforeach
+                            </select>
+                            @error('product_type')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
                             <label for="product_price" class="form-label">Base Price (RM)</label>
                             <input type="number" class="form-control @error('product_price') is-invalid @enderror" 
                                    id="product_price" name="product_price" value="{{ old('product_price') }}" 

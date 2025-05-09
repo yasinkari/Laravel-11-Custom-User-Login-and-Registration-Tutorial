@@ -70,8 +70,14 @@
                                                id="actual_price" name="actual_price" 
                                                value="{{ old('actual_price', $product->actual_price) }}" 
                                                step="0.01" min="0" required>
-                                        <div id="discount-indicator" class="mt-1 {{ $product->discount_percentage > 0 ? '' : 'd-none' }}">
-                                            <span class="badge bg-danger">Discount: <span id="discount-percentage">{{ $product->discount_percentage }}</span>% OFF</span>
+                                        @php
+                                            $discount = 0;
+                                            if ($product->actual_price > 0 && $product->product_price > 0 && $product->actual_price > $product->product_price) {
+                                                $discount = round((($product->actual_price - $product->product_price) / $product->actual_price) * 100);
+                                            }
+                                        @endphp
+                                        <div id="discount-indicator" class="mt-1 {{ $discount > 0 ? '' : 'd-none' }}">
+                                            <span class="badge bg-danger">Discount: <span id="discount-percentage">{{ $discount }}</span>% OFF</span>
                                         </div>
                                         @error('actual_price')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -153,14 +159,16 @@
                                         <td>{{ $variant->product_size }}</td>
                                         <td>{{ $variant->product_stock }}</td>
                                         <td>
-                                            <button type="button" class="btn btn-sm btn-primary edit-variant me-2" 
-                                                    data-variant-id="{{ $variant->product_variantID }}">
+                                            <a href="#" class="btn btn-sm btn-primary me-2" 
+                                               data-bs-toggle="modal" 
+                                               data-bs-target="#editVariantModal{{ $variant->product_variantID }}">
                                                 <i class="fas fa-edit"></i> Edit
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-danger delete-variant" 
-                                                    data-variant-id="{{ $variant->product_variantID }}">
+                                            </a>
+                                            <a href="#" class="btn btn-sm btn-danger"
+                                               data-bs-toggle="modal" 
+                                               data-bs-target="#deleteVariantModal{{ $variant->product_variantID }}">
                                                 <i class="fas fa-trash"></i> Delete
-                                            </button>
+                                            </a>
                                         </td>
                                     </tr>
                                     @empty
@@ -191,44 +199,47 @@
                                 <h5 class="modal-title" id="addVariantModalLabel">Add New Variant</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <!-- In the Add Variant Modal form -->
                             <form action="{{ route('products.variants.store', $product->productID) }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 <div class="modal-body">
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Tone</label>
-                                            <select class="form-select tone-select" name="toneID" id="editToneID" required>
+                                            <select class="form-select" name="toneID" required>
                                                 <option value="">Select Tone</option>
                                                 @foreach($tones as $tone)
-                                                    <option value="{{ $tone->toneID }}" data-tone-name="{{ $tone->tone_name }}" data-tone-code="{{ $tone->tone_code }}">{{ $tone->tone_name }}</option>
+                                                    <option value="{{ $tone->toneID }}">{{ $tone->tone_name }}</option>
                                                 @endforeach
                                             </select>
-                                            <div class="tone-indicator d-none mt-2">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="tone-swatch"></div>
-                                                    <span class="tone-name ms-2"></span>
+                                            @if(count($tones) > 0)
+                                                <div class="mt-2">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="tone-swatch" style="width: 20px; height: 20px; border-radius: 50%; background-color: {{ $tones[0]->tone_code }}; border: 1px solid #ddd;"></div>
+                                                        <span class="ms-2">{{ $tones[0]->tone_name }}</span>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            @endif
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Color</label>
-                                            <select class="form-select color-select" name="colorID" id="editColorID" required>
+                                            <select class="form-select" name="colorID" required>
                                                 <option value="">Select Color</option>
                                                 @foreach($colors as $color)
-                                                    <option value="{{ $color->colorID }}" data-color-name="{{ $color->color_name }}" data-color-code="{{ $color->color_code }}">{{ $color->color_name }}</option>
+                                                    <option value="{{ $color->colorID }}">{{ $color->color_name }}</option>
                                                 @endforeach
                                             </select>
-                                            <div class="color-indicator d-none mt-2">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="color-swatch"></div>
-                                                    <span class="color-name ms-2"></span>
+                                            @if(count($colors) > 0)
+                                                <div class="mt-2">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="color-swatch" style="width: 20px; height: 20px; border-radius: 50%; background-color: {{ $colors[0]->color_code }}; border: 1px solid #ddd;"></div>
+                                                        <span class="ms-2">{{ $colors[0]->color_name }}</span>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            @endif
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Size</label>
-                                            <select class="form-select" name="product_size" id="editProductSize" required>
+                                            <select class="form-select" name="product_size" required>
                                                 <option value="">Select Size</option>
                                                 @foreach(['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'] as $size)
                                                     <option value="{{ $size }}">{{ $size }}</option>
@@ -237,12 +248,90 @@
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Stock</label>
-                                            <input type="number" class="form-control" name="product_stock" id="editProductStock" min="0" required>
+                                            <input type="number" class="form-control" name="product_stock" min="0" required>
+                                        </div>
+                                        <div class="col-12 mb-3">
+                                            <label class="form-label">Product Image</label>
+                                            <input type="file" class="form-control" name="product_image" accept="image/*" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Add Variant</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Edit Variant Modals - Generated with PHP -->
+                @foreach($variants as $variant)
+                <div class="modal fade" id="editVariantModal{{ $variant->product_variantID }}" tabindex="-1" aria-labelledby="editVariantModalLabel{{ $variant->product_variantID }}" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editVariantModalLabel{{ $variant->product_variantID }}">Edit Variant</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form action="{{ route('products.variants.update', ['product' => $product->productID, 'variant' => $variant->product_variantID]) }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                @method('PUT')
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Tone</label>
+                                            <select class="form-select" name="toneID" required>
+                                                <option value="">Select Tone</option>
+                                                @foreach($tones as $tone)
+                                                    <option value="{{ $tone->toneID }}" {{ $variant->toneID == $tone->toneID ? 'selected' : '' }}>
+                                                        {{ $tone->tone_name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <div class="mt-2">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="tone-swatch" style="width: 20px; height: 20px; border-radius: 50%; background-color: {{ $variant->tone->tone_code }}; border: 1px solid #ddd;"></div>
+                                                    <span class="ms-2">{{ $variant->tone->tone_name }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Color</label>
+                                            <select class="form-select" name="colorID" required>
+                                                <option value="">Select Color</option>
+                                                @foreach($colors as $color)
+                                                    <option value="{{ $color->colorID }}" {{ $variant->colorID == $color->colorID ? 'selected' : '' }}>
+                                                        {{ $color->color_name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <div class="mt-2">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="color-swatch" style="width: 20px; height: 20px; border-radius: 50%; background-color: {{ $variant->color->color_code }}; border: 1px solid #ddd;"></div>
+                                                    <span class="ms-2">{{ $variant->color->color_name }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Size</label>
+                                            <select class="form-select" name="product_size" required>
+                                                <option value="">Select Size</option>
+                                                @foreach(['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'] as $size)
+                                                    <option value="{{ $size }}" {{ $variant->product_size == $size ? 'selected' : '' }}>
+                                                        {{ $size }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Stock</label>
+                                            <input type="number" class="form-control" name="product_stock" min="0" value="{{ $variant->product_stock }}" required>
                                         </div>
                                         <div class="col-12 mb-3">
                                             <label class="form-label">Current Image</label>
                                             <div class="current-image-container mb-2">
-                                                <img id="currentVariantImage" src="" alt="Current Variant" class="img-thumbnail" style="max-width: 150px; max-height: 150px;">
+                                                <img src="{{ Storage::url($variant->product_image) }}" alt="Current Variant" class="img-thumbnail" style="max-width: 150px; max-height: 150px;">
                                             </div>
                                             <label class="form-label">Update Image (Optional)</label>
                                             <input type="file" class="form-control" name="product_image" accept="image/*">
@@ -258,21 +347,30 @@
                         </div>
                     </div>
                 </div>
+                @endforeach
 
-                <!-- Delete Variant Confirmation Modal -->
-                <div class="modal fade" id="deleteVariantModal" tabindex="-1" aria-labelledby="deleteVariantModalLabel" aria-hidden="true">
+                <!-- Delete Variant Confirmation Modals - Generated with PHP -->
+                @foreach($variants as $variant)
+                <div class="modal fade" id="deleteVariantModal{{ $variant->product_variantID }}" tabindex="-1" aria-labelledby="deleteVariantModalLabel{{ $variant->product_variantID }}" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="deleteVariantModalLabel">Confirm Delete</h5>
+                                <h5 class="modal-title" id="deleteVariantModalLabel{{ $variant->product_variantID }}">Confirm Delete</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 <p>Are you sure you want to delete this variant? This action cannot be undone.</p>
+                                <div class="d-flex align-items-center mt-3">
+                                    <img src="{{ Storage::url($variant->product_image) }}" alt="Variant" class="img-thumbnail me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                    <div>
+                                        <strong>{{ $variant->tone->tone_name }} / {{ $variant->color->color_name }} / {{ $variant->product_size }}</strong>
+                                        <div class="text-muted">Stock: {{ $variant->product_stock }}</div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                <form id="deleteVariantForm" method="POST">
+                                <form action="{{ route('products.variants.destroy', ['product' => $product->productID, 'variant' => $variant->product_variantID]) }}" method="POST">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger">Delete</button>
@@ -281,6 +379,7 @@
                         </div>
                     </div>
                 </div>
+                @endforeach
             </div>
         </main>
     </div>
@@ -309,178 +408,8 @@
             }
         }
 
-        if (productPriceInput && actualPriceInput) {
-            productPriceInput.addEventListener('input', calculateDiscount);
-            actualPriceInput.addEventListener('input', calculateDiscount);
-        }
-
-        // Tone and Color selection visualization in Add Variant Modal
-        const toneSelects = document.querySelectorAll('.tone-select');
-        const colorSelects = document.querySelectorAll('.color-select');
-
-        toneSelects.forEach(select => {
-            select.addEventListener('change', function() {
-                const container = this.closest('.mb-3');
-                const indicator = container.querySelector('.tone-indicator');
-                const swatch = container.querySelector('.tone-swatch');
-                const nameSpan = container.querySelector('.tone-name');
-                
-                if (this.value) {
-                    const selectedOption = this.options[this.selectedIndex];
-                    const toneName = selectedOption.getAttribute('data-tone-name');
-                    const toneCode = selectedOption.getAttribute('data-tone-code');
-                    
-                    swatch.style.backgroundColor = toneCode;
-                    nameSpan.textContent = toneName;
-                    indicator.classList.remove('d-none');
-                } else {
-                    indicator.classList.add('d-none');
-                }
-            });
-        });
-
-        colorSelects.forEach(select => {
-            select.addEventListener('change', function() {
-                const container = this.closest('.mb-3');
-                const indicator = container.querySelector('.color-indicator');
-                const swatch = container.querySelector('.color-swatch');
-                const nameSpan = container.querySelector('.color-name');
-                
-                if (this.value) {
-                    const selectedOption = this.options[this.selectedIndex];
-                    const colorName = selectedOption.getAttribute('data-color-name');
-                    const colorCode = selectedOption.getAttribute('data-color-code');
-                    
-                    swatch.style.backgroundColor = colorCode;
-                    nameSpan.textContent = colorName;
-                    indicator.classList.remove('d-none');
-                } else {
-                    indicator.classList.add('d-none');
-                }
-            });
-        });
-
-        // Edit Variant functionality
-        const editButtons = document.querySelectorAll('.edit-variant');
-        editButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const variantId = this.getAttribute('data-variant-id');
-                
-                // Fetch variant data via AJAX
-                fetch(`/admin/products/variants/${variantId}/edit`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            const variant = data.variant;
-                            
-                            // Set form action
-                            const form = document.getElementById('editVariantForm');
-                            form.action = `/admin/products/variants/${variantId}`;
-                            
-                            // Populate form fields
-                            document.getElementById('editToneID').value = variant.toneID;
-                            document.getElementById('editColorID').value = variant.colorID;
-                            document.getElementById('editProductSize').value = variant.product_size;
-                            document.getElementById('editProductStock').value = variant.product_stock;
-                            
-                            // Trigger change events to update visual indicators
-                            const toneEvent = new Event('change');
-                            const colorEvent = new Event('change');
-                            document.getElementById('editToneID').dispatchEvent(toneEvent);
-                            document.getElementById('editColorID').dispatchEvent(colorEvent);
-                            
-                            // Set current image
-                            document.getElementById('currentVariantImage').src = variant.image_url;
-                            
-                            // Open modal
-                            const modal = new bootstrap.Modal(document.getElementById('editVariantModal'));
-                            modal.show();
-                        } else {
-                            alert('Failed to load variant data');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('An error occurred while fetching variant data');
-                    });
-            });
-        });
-
-        // Delete Variant functionality
-        const deleteButtons = document.querySelectorAll('.delete-variant');
-        deleteButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const variantId = this.getAttribute('data-variant-id');
-                const form = document.getElementById('deleteVariantForm');
-                form.action = `/admin/products/variants/${variantId}`;
-                
-                const modal = new bootstrap.Modal(document.getElementById('deleteVariantModal'));
-                modal.show();
-            });
-        });
-
-        // Color suggestion system
-        const toneSuggestionSelects = document.querySelectorAll('#addToneSuggestion, #editToneSuggestion');
-        const colorSuggestionMappings = {
-            'Fair': ['Pastel Pink', 'Soft Blue', 'Lavender', 'Mint Green', 'Peach'],
-            'Light': ['Coral', 'Teal', 'Dusty Rose', 'Sage Green', 'Periwinkle'],
-            'Medium': ['Burgundy', 'Olive Green', 'Navy Blue', 'Rust', 'Plum'],
-            'Tan': ['Terracotta', 'Forest Green', 'Mustard', 'Brick Red', 'Camel'],
-            'Deep': ['Royal Blue', 'Emerald Green', 'Ruby Red', 'Gold', 'Purple'],
-            'Dark': ['Bright Red', 'Bright Yellow', 'Turquoise', 'Fuchsia', 'Cobalt Blue']
-        };
-
-        toneSuggestionSelects.forEach(select => {
-            select.addEventListener('change', function() {
-                const toneName = this.value;
-                const modalId = this.id.includes('add') ? 'add' : 'edit';
-                const suggestionsContainer = document.getElementById(`${modalId}ColorSuggestions`);
-                const suggestedColorsList = document.getElementById(`${modalId}SuggestedColorsList`);
-                
-                if (toneName && colorSuggestionMappings[toneName]) {
-                    suggestedColorsList.innerHTML = '';
-                    
-                    colorSuggestionMappings[toneName].forEach(colorName => {
-                        // Find the color in the available colors
-                        const colorSelect = document.querySelector(`#${modalId === 'add' ? '' : 'edit'}ColorID`);
-                        let colorOption = null;
-                        
-                        for (let i = 0; i < colorSelect.options.length; i++) {
-                            if (colorSelect.options[i].text === colorName) {
-                                colorOption = colorSelect.options[i];
-                                break;
-                            }
-                        }
-                        
-                        if (colorOption) {
-                            const colorCode = colorOption.getAttribute('data-color-code');
-                            const colorId = colorOption.value;
-                            
-                            const colorBadge = document.createElement('div');
-                            colorBadge.className = 'color-suggestion-badge me-2 mb-2';
-                            colorBadge.innerHTML = `
-                                <div class="d-flex align-items-center p-2 border rounded" style="cursor: pointer;">
-                                    <div style="width: 20px; height: 20px; border-radius: 50%; background-color: ${colorCode}; border: 1px solid #ddd;"></div>
-                                    <span class="ms-2">${colorName}</span>
-                                </div>
-                            `;
-                            
-                            colorBadge.addEventListener('click', function() {
-                                colorSelect.value = colorId;
-                                const event = new Event('change');
-                                colorSelect.dispatchEvent(event);
-                            });
-                            
-                            suggestedColorsList.appendChild(colorBadge);
-                        }
-                    });
-                    
-                    suggestionsContainer.classList.remove('d-none');
-                } else {
-                    suggestionsContainer.classList.add('d-none');
-                }
-            });
-        });
+        productPriceInput.addEventListener('input', calculateDiscount);
+        actualPriceInput.addEventListener('input', calculateDiscount);
     });
 </script>
 @endsection
