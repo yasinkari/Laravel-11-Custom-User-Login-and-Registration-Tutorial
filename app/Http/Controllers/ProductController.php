@@ -70,16 +70,11 @@ class ProductController extends Controller
 
         // Define product types for dropdown
         $productTypes = [
-            'Lipstick',
-            'Foundation',
-            'Eyeshadow',
-            'Mascara',
-            'Blush',
-            'Eyeliner',
-            'Concealer',
-            'Powder',
-            'Primer',
-            'Other'
+            'Baju Melayu',
+            'Kurta',
+            'Songkok',
+            'Sampin',
+            'Shirt'
         ];
 
         return view('admin.product.create', compact('tones', 'colors', 'colorSuggestions', 'productTypes'));
@@ -87,20 +82,31 @@ class ProductController extends Controller
     
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        // Base validation for all products
+        $baseValidation = [
             'product_name' => 'required|string|max:255',
             'product_price' => 'nullable|numeric|min:0',
             'actual_price' => 'required|numeric|min:0',
             'product_description' => 'required|string',
             'product_type' => 'required|string|max:50',
-            'variants' => 'required|array|min:1',
-            'variants.*.toneID' => 'required|exists:tones,toneID',
-            'variants.*.colorID' => 'required|exists:product_colors,colorID',
-            'variants.*.product_size' => 'required|string|max:10',
-            'variants.*.product_stock' => 'required|integer|min:0',
-            'variants.*.product_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
+        ];
+        
+        // Add variant validation only for Baju Melayu and Kurta
+        if ($request->product_type === 'Baju Melayu' || $request->product_type === 'Kurta') {
+            $variantValidation = [
+                'variants' => 'required|array|min:1',
+                'variants.*.toneID' => 'required|exists:tones,toneID',
+                'variants.*.colorID' => 'required|exists:product_colors,colorID',
+                'variants.*.product_size' => 'required|string|max:10',
+                'variants.*.product_stock' => 'required|integer|min:0',
+                'variants.*.product_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ];
+            
+            $validated = $request->validate(array_merge($baseValidation, $variantValidation));
+        } else {
+            $validated = $request->validate($baseValidation);
+        }
+    
         // Create the product
         $product = Product::create([
             'product_name' => $request->product_name,
@@ -110,19 +116,21 @@ class ProductController extends Controller
             'product_type' => $request->product_type,
             'is_visible' => $request->has('is_visible') ? 1 : 0,
         ]);
-
-        // Create variants
-        foreach ($validated['variants'] as $variantData) {
-            $imagePath = $variantData['product_image']->store('product_images', 'public');
-            
-            ProductVariant::create([
-                'productID' => $product->productID,
-                'toneID' => $variantData['toneID'],
-                'colorID' => $variantData['colorID'],
-                'product_size' => $variantData['product_size'],
-                'product_stock' => $variantData['product_stock'],
-                'product_image' => $imagePath,
-            ]);
+    
+        // Create variants only for Baju Melayu and Kurta
+        if (($request->product_type === 'Baju Melayu' || $request->product_type === 'Kurta') && isset($validated['variants'])) {
+            foreach ($validated['variants'] as $variantData) {
+                $imagePath = $variantData['product_image']->store('product_images', 'public');
+                
+                ProductVariant::create([
+                    'productID' => $product->productID,
+                    'toneID' => $variantData['toneID'],
+                    'colorID' => $variantData['colorID'],
+                    'product_size' => $variantData['product_size'],
+                    'product_stock' => $variantData['product_stock'],
+                    'product_image' => $imagePath,
+                ]);
+            }
         }
     
         DB::commit();
@@ -146,16 +154,11 @@ class ProductController extends Controller
         
         // Define product types for dropdown
         $productTypes = [
-            'Lipstick',
-            'Foundation',
-            'Eyeshadow',
-            'Mascara',
-            'Blush',
-            'Eyeliner',
-            'Concealer',
-            'Powder',
-            'Primer',
-            'Other'
+            'Baju Melayu',
+            'Kurta',
+            'Songkok',
+            'Sampin',
+            'Shirt'
         ];
         
         return view('admin.product.edit', compact('product', 'variants', 'tones', 'colors', 'productTypes'));

@@ -111,7 +111,7 @@
         </div>
 
         <!-- Product Variants Card -->
-        <div class="card shadow-sm mb-4">
+        <div class="card shadow-sm mb-4" id="variantsSection" style="display: none;">
             <div class="card-header py-3 d-flex justify-content-between align-items-center">
                 <h6 class="m-0 font-weight-bold text-primary">Product Variants</h6>
                 <button type="button" class="btn btn-sm btn-primary" id="addVariant">
@@ -158,6 +158,13 @@
                     </button>
                 </div>
             </div>
+        </div>
+        
+        <!-- Submit Button for Non-Variant Products -->
+        <div id="nonVariantSubmit" class="text-end mb-4">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save me-1"></i>Save Product
+            </button>
         </div>
     </form>
 </div>
@@ -358,7 +365,70 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initial calculation
     calculateDiscount();
+    
+    // *** Product Type and Variants Visibility Logic ***
+    // Get references to the elements
+    const productTypeSelect = document.getElementById('product_type');
+    const variantsSection = document.getElementById('variantsSection');
+    const nonVariantSubmit = document.getElementById('nonVariantSubmit');
+    
+    // Function to check if variants should be shown
+    function checkVariantsVisibility() {
+        const selectedType = productTypeSelect.value;
+        console.log('Selected product type:', selectedType); // Debug log
+        
+        // Only show variants for "Baju Melayu" and "Kurta"
+        if (selectedType === 'Baju Melayu' || selectedType === 'Kurta') {
+            variantsSection.style.display = 'block';
+            nonVariantSubmit.style.display = 'none';
+            console.log('Showing variants section'); // Debug log
+        } else {
+            variantsSection.style.display = 'none';
+            nonVariantSubmit.style.display = 'block';
+            console.log('Hiding variants section'); // Debug log
+        }
+    }
+    
+    // Check visibility on page load (for when form reloads with validation errors)
+    checkVariantsVisibility();
+    
+    // Add event listener for product type changes
+    productTypeSelect.addEventListener('change', function() {
+        console.log('Product type changed to:', this.value); // Debug log
+        checkVariantsVisibility();
+    });
 });
 </script>
 @endpush
+@endsection
+
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get references to the elements
+        const productTypeSelect = document.getElementById('product_type');
+        const variantsSection = document.getElementById('variantsSection');
+        const nonVariantSubmit = document.getElementById('nonVariantSubmit');
+        
+        // Function to check if variants should be shown
+        function checkVariantsVisibility() {
+            const selectedType = productTypeSelect.value;
+            
+            // Only show variants for "Baju Melayu"
+            if (selectedType === 'Baju Melayu') {
+                variantsSection.style.display = 'block';
+                nonVariantSubmit.style.display = 'none';
+            } else {
+                variantsSection.style.display = 'none';
+                nonVariantSubmit.style.display = 'block';
+            }
+        }
+        
+        // Check visibility on page load (for when form reloads with validation errors)
+        checkVariantsVisibility();
+        
+        // Add event listener for product type changes
+        productTypeSelect.addEventListener('change', checkVariantsVisibility);
+    });
+</script>
 @endsection
