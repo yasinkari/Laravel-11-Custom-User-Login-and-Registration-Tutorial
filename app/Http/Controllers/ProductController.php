@@ -120,6 +120,7 @@ class ProductController extends Controller
         // Create variants only for Baju Melayu and Kurta
         if (($request->product_type === 'Baju Melayu' || $request->product_type === 'Kurta') && isset($validated['variants'])) {
             foreach ($validated['variants'] as $variantData) {
+                // In store method
                 $imagePath = $variantData['product_image']->store('product_images', 'public');
                 
                 ProductVariant::create([
@@ -128,7 +129,7 @@ class ProductController extends Controller
                     'colorID' => $variantData['colorID'],
                     'product_size' => $variantData['product_size'],
                     'product_stock' => $variantData['product_stock'],
-                    'product_image' => $imagePath,
+                    'image' => $imagePath, // Changed from 'product_image' to 'image'
                 ]);
             }
         }
@@ -224,8 +225,8 @@ class ProductController extends Controller
         ]);
     
         if ($request->hasFile('product_image')) {
-            Storage::disk('public')->delete($variant->product_image);
-            $validatedData['product_image'] = $request->file('product_image')
+            Storage::disk('public')->delete($variant->image); // Changed from product_image to image
+            $validatedData['image'] = $request->file('product_image')
                 ->store('product_images', 'public');
         }
     
@@ -236,11 +237,14 @@ class ProductController extends Controller
     public function destroyVariant(ProductVariant $variant)
     {
         try {
-            Storage::disk('public')->delete($variant->product_image);
+            // Changed from product_image to image
+            if ($variant->image) {
+                Storage::disk('public')->delete($variant->image);
+            }
             $variant->delete();
             return redirect()->back()->with('success', 'Variant deleted successfully');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error deleting variant');
+            return redirect()->back()->with('error', 'Error deleting variant: ' . $e->getMessage());
         }
     }
     
@@ -250,7 +254,10 @@ class ProductController extends Controller
             DB::beginTransaction();
     
             foreach ($product->variants as $variant) {
-                Storage::disk('public')->delete($variant->product_image);
+                // Changed from product_image to image
+                if ($variant->image) {
+                    Storage::disk('public')->delete($variant->image);
+                }
                 $variant->delete();
             }
     
@@ -262,7 +269,7 @@ class ProductController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->route('products.index')
-                ->with('error', 'Error deleting product');
+                ->with('error', 'Error deleting product: ' . $e->getMessage());
         }
     }
 
@@ -405,7 +412,7 @@ class ProductController extends Controller
                 'colorID' => $validatedData['colorID'],
                 'product_size' => $validatedData['product_size'],
                 'product_stock' => $validatedData['product_stock'],
-                'product_image' => $imagePath,
+                'image' => $imagePath, // Changed from 'product_image' to 'image'
             ]);
             
             return redirect()->back()->with('success', 'Variant added successfully');

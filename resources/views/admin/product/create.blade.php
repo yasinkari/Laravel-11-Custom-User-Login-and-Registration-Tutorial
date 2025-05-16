@@ -160,6 +160,60 @@
             </div>
         </div>
         
+        <!-- Songkok Size Chart Section -->
+        <div class="card shadow-sm mb-4" id="songkokSection" style="display: none;">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Songkok Size Chart</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">Size Chart Image</label>
+                        <input type="file" class="form-control" name="size_chart_image" accept="image/*">
+                        <small class="form-text text-muted">Upload an image of the Songkok size chart (optional)</small>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">Available Sizes</label>
+                        <div class="row">
+                            @foreach(['20 3/4', '21', '21 1/4', '21 1/2', '21 3/4', '22', '22 1/4', '22 1/2', '22 3/4', '23', '23 1/4', '23 1/2', '23 3/4'] as $size)
+                                <div class="col-md-4 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="songkok_sizes[]" value="{{ $size }}" id="size_{{ str_replace(' ', '_', $size) }}">
+                                        <label class="form-check-label" for="size_{{ str_replace(' ', '_', $size) }}">'{{ $size }}"'</label>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">Stock Quantities</label>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Size</th>
+                                            <th>Stock</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="songkokStockTable">
+                                        <!-- Stock inputs will be added here dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i>Save Product
+                    </button>
+                </div>
+            </div>
+        </div>
+        
         <!-- Submit Button for Non-Variant Products -->
         <div id="nonVariantSubmit" class="text-end mb-4">
             <button type="submit" class="btn btn-primary">
@@ -248,6 +302,10 @@
 document.addEventListener('DOMContentLoaded', function() {
     const container = document.getElementById('variantsContainer');
     const template = document.getElementById('variantTemplate');
+    const productTypeSelect = document.getElementById('product_type');
+    const variantsSection = document.getElementById('variantsSection');
+    const songkokSection = document.getElementById('songkokSection');
+    const nonVariantSubmit = document.getElementById('nonVariantSubmit');
     let variantCount = 0;
 
     // Color suggestions data from backend
@@ -258,6 +316,90 @@ document.addEventListener('DOMContentLoaded', function() {
     const suggestionsContainer = document.getElementById('colorSuggestions');
     const suggestedColorsList = document.getElementById('suggestedColorsList');
     
+    // Handle product type change
+    productTypeSelect.addEventListener('change', function() {
+        const selectedType = this.value;
+        
+        // Hide all sections first
+        variantsSection.style.display = 'none';
+        songkokSection.style.display = 'none';
+        nonVariantSubmit.style.display = 'block';
+        
+        // Show appropriate section based on product type
+        if (selectedType === 'Baju Melayu' || selectedType === 'Kurta') {
+            variantsSection.style.display = 'block';
+            nonVariantSubmit.style.display = 'none';
+        } else if (selectedType === 'Songkok') {
+            songkokSection.style.display = 'block';
+            nonVariantSubmit.style.display = 'none';
+            updateSongkokSizesTable();
+        }
+    });
+    
+    // Initialize based on any pre-selected value (for form validation failures)
+    if (productTypeSelect.value) {
+        productTypeSelect.dispatchEvent(new Event('change'));
+    }
+    
+    // Handle Songkok size checkboxes
+    const songkokSizeCheckboxes = document.querySelectorAll('input[name="songkok_sizes[]"]');
+    songkokSizeCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateSongkokSizesTable);
+    });
+    
+    // Function to update the Songkok sizes stock table
+    function updateSongkokSizesTable() {
+        const stockTable = document.getElementById('songkokStockTable');
+        stockTable.innerHTML = '';
+        
+        document.querySelectorAll('input[name="songkok_sizes[]"]:checked').forEach(checkbox => {
+            const size = checkbox.value;
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>'${size}"'</td>
+                <td>
+                    <input type="number" class="form-control" name="songkok_stock[${size}]" min="0" value="0" required>
+                </td>
+            `;
+            stockTable.appendChild(row);
+        });
+    }
+    
+    // Add variant button functionality
+    const addVariantBtn = document.getElementById('addVariant');
+    addVariantBtn.addEventListener('click', function() {
+        addVariant();
+    });
+    
+    // Function to add a new variant
+    function addVariant() {
+        const variantNode = template.content.cloneNode(true);
+        const variantElement = variantNode.querySelector('.variant-item');
+        
+        // Update variant number and index
+        variantElement.querySelector('.variant-number').textContent = variantCount + 1;
+        
+        // Update all name attributes with the correct index
+        variantElement.querySelectorAll('[name*="__index__"]').forEach(el => {
+            el.name = el.name.replace('__index__', variantCount);
+        });
+        
+        // Add remove button functionality
+        variantElement.querySelector('.remove-variant').addEventListener('click', function() {
+            variantElement.remove();
+        });
+        
+        // Add the variant to the container
+        container.appendChild(variantElement);
+        variantCount++;
+    }
+    
+    // Add at least one variant if the variants section is visible
+    if (variantsSection.style.display !== 'none') {
+        addVariant();
+    }
+    
+    // Tone suggestion handling
     toneSelect.addEventListener('change', function() {
         const selectedTone = this.value;
         suggestedColorsList.innerHTML = '';
@@ -277,126 +419,37 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 `;
                 
-                // Make the color suggestion clickable to auto-select in new variants
-                colorItem.addEventListener('click', function() {
-                    // Find the color in the dropdown options
-                    const colorOptions = document.querySelectorAll('.variant-item select[name$="[colorID]"]');
-                    colorOptions.forEach(select => {
-                        Array.from(select.options).forEach(option => {
-                            if (option.text.includes(colorName)) {
-                                select.value = option.value;
-                            }
-                        });
-                    });
-                });
-                
                 suggestedColorsList.appendChild(colorItem);
             });
         } else {
             suggestionsContainer.classList.add('d-none');
         }
     });
-
-    function addVariant() {
-        const variantContent = template.content.cloneNode(true);
-        const variantDiv = variantContent.querySelector('.variant-item');
-        
-        // Update variant number and indices
-        variantCount++;
-        variantDiv.querySelector('.variant-number').textContent = variantCount;
-        variantDiv.innerHTML = variantDiv.innerHTML.replace(/__index__/g, variantCount - 1);
-
-        // Add remove functionality
-        variantDiv.querySelector('.remove-variant').addEventListener('click', function() {
-            variantDiv.remove();
-            updateVariantNumbers();
-        });
-        
-        // Add tone change listener to update color suggestions
-        const toneSelect = variantDiv.querySelector('select[name$="[toneID]"]');
-        const colorSelect = variantDiv.querySelector('select[name$="[colorID]"]');
-        
-        toneSelect.addEventListener('change', function() {
-            // Get the tone name from the selected option text
-            const selectedToneText = this.options[this.selectedIndex].text;
-            
-            // Update the suggestion dropdown to match
-            document.getElementById('toneSuggestion').value = selectedToneText;
-            document.getElementById('toneSuggestion').dispatchEvent(new Event('change'));
-        });
-
-        container.appendChild(variantDiv);
-    }
-
-    function updateVariantNumbers() {
-        const variants = container.querySelectorAll('.variant-item');
-        variants.forEach((variant, index) => {
-            variant.querySelector('.variant-number').textContent = index + 1;
-        });
-    }
-
-    document.getElementById('addVariant').addEventListener('click', addVariant);
     
-    // Add at least one variant by default
-    addVariant();
-    
-    // Calculate discount percentage
+    // Calculate discount percentage when prices change
     const basePrice = document.getElementById('product_price');
     const actualPrice = document.getElementById('actual_price');
     const discountIndicator = document.getElementById('discount-indicator');
     const discountPercentage = document.getElementById('discount-percentage');
     
-    function calculateDiscount() {
-        if (basePrice.value && actualPrice.value && parseFloat(basePrice.value) > 0 && parseFloat(actualPrice.value) > 0) {
-            if (parseFloat(actualPrice.value) < parseFloat(basePrice.value)) {
-                const discount = ((parseFloat(basePrice.value) - parseFloat(actualPrice.value)) / parseFloat(basePrice.value)) * 100;
-                discountPercentage.textContent = Math.round(discount);
-                discountIndicator.classList.remove('d-none');
-            } else {
-                discountIndicator.classList.add('d-none');
-            }
+    function updateDiscount() {
+        const basePriceValue = parseFloat(basePrice.value) || 0;
+        const actualPriceValue = parseFloat(actualPrice.value) || 0;
+        
+        if (basePriceValue > 0 && actualPriceValue > 0 && basePriceValue > actualPriceValue) {
+            const discount = Math.round(((basePriceValue - actualPriceValue) / basePriceValue) * 100);
+            discountPercentage.textContent = discount;
+            discountIndicator.classList.remove('d-none');
         } else {
             discountIndicator.classList.add('d-none');
         }
     }
     
-    basePrice.addEventListener('input', calculateDiscount);
-    actualPrice.addEventListener('input', calculateDiscount);
+    basePrice.addEventListener('input', updateDiscount);
+    actualPrice.addEventListener('input', updateDiscount);
     
-    // Initial calculation
-    calculateDiscount();
-    
-    // *** Product Type and Variants Visibility Logic ***
-    // Get references to the elements
-    const productTypeSelect = document.getElementById('product_type');
-    const variantsSection = document.getElementById('variantsSection');
-    const nonVariantSubmit = document.getElementById('nonVariantSubmit');
-    
-    // Function to check if variants should be shown
-    function checkVariantsVisibility() {
-        const selectedType = productTypeSelect.value;
-        console.log('Selected product type:', selectedType); // Debug log
-        
-        // Only show variants for "Baju Melayu" and "Kurta"
-        if (selectedType === 'Baju Melayu' || selectedType === 'Kurta') {
-            variantsSection.style.display = 'block';
-            nonVariantSubmit.style.display = 'none';
-            console.log('Showing variants section'); // Debug log
-        } else {
-            variantsSection.style.display = 'none';
-            nonVariantSubmit.style.display = 'block';
-            console.log('Hiding variants section'); // Debug log
-        }
-    }
-    
-    // Check visibility on page load (for when form reloads with validation errors)
-    checkVariantsVisibility();
-    
-    // Add event listener for product type changes
-    productTypeSelect.addEventListener('change', function() {
-        console.log('Product type changed to:', this.value); // Debug log
-        checkVariantsVisibility();
-    });
+    // Initial update
+    updateDiscount();
 });
 </script>
 @endpush
