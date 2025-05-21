@@ -90,7 +90,6 @@
         <div>
             <a href="{{ url('/') }}">Home</a>
             <a href="{{ route('products.customer') }}">Products</a>
-            <a href="{{ url('/payment') }}">Shopping cart</a>
             <a href="{{ url('/about') }}">About us</a>
             <a href="{{ url('/contact') }}">Contact Us</a>
         </div>
@@ -99,7 +98,7 @@
                 <input type="text" placeholder="Search" />
             </div>
             <a href="#"><img src="https://img.icons8.com/ios-glyphs/30/000000/like--v1.png" alt="Like"></a>
-            <a href="#"><img src="https://img.icons8.com/ios-glyphs/30/000000/shopping-cart--v1.png" alt="Cart"></a>
+            <a href="{{ route('cart.view') }}"><img src="https://img.icons8.com/ios-glyphs/30/000000/shopping-cart--v1.png" alt="Cart"></a>
             <div class="auth-links ms-3">
                 @if(Auth::check())
                     <a href="">Profile</a>

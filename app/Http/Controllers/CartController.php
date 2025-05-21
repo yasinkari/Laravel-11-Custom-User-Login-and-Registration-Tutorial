@@ -214,25 +214,36 @@ class CartController extends Controller
      */
     private function getCurrentCart()
     {
-        // First, check if user has an order with pending payment
-        $pendingOrder = Order::whereHas('payment', function($query) {
-            $query->where('payment_status', '!=', 'completed');
-        })->where('userID', Auth::id())->latest()->first();
+        // First, check if user has a cart with status not equal to complete
+        $existingCart = Cart::where('userID', Auth::id())
+            ->where('status', '!=', 'complete')
+            ->latest()
+            ->first();
         
-        if ($pendingOrder) {
-            return $pendingOrder->cart;
+        if ($existingCart) {
+            // Check if this cart is associated with an order
+            $order = Order::where('cartID', $existingCart->cartID)->first();
+            
+            if (!$order) {
+                // No order exists for this cart, so we can use it
+                return $existingCart;
+            } else {
+                // Order exists, check tracking status
+                $tracking = Tracking::where('orderID', $order->orderID)->latest()->first();
+                
+                if ($tracking && $tracking->order_status != 'complete') {
+                    // Order status is not complete, so we can use this cart
+                    return $existingCart;
+                }
+            }
         }
         
-        // If no pending order, get or create active cart
-        return Cart::firstOrCreate(
-            [
-                'userID' => Auth::id(),
-                'status' => 'active'
-            ],
-            [
-                'total_amount' => 0
-            ]
-        );
+        // If we reach here, we need to create a new cart
+        return Cart::create([
+            'userID' => Auth::id(),
+            'total_amount' => 0,
+            'status' => 'active'
+        ]);
     }
     
     /**
