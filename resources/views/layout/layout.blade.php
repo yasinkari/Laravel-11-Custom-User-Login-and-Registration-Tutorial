@@ -80,6 +80,61 @@
         .auth-links a:hover {
           text-decoration: underline;
         }
+        /* Footer Styling */
+  .footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    padding: 50px 0 20px;
+    margin-top: 50px;
+  }
+  
+  .footer h5 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #2c3e50;
+  }
+  
+  .footer ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  
+  .footer ul li {
+    margin-bottom: 10px;
+  }
+  
+  .footer ul li a {
+    color: #7f8c8d;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  .footer ul li a:hover {
+    color: #e74c3c;
+  }
+  .social-icons {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+  }
+  
+  .social-icons a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    color: #2c3e50;
+    transition: all 0.3s ease;
+  }
+  
+  .social-icons a:hover {
+    background-color: #e74c3c;
+    color: white;
+  }
     </style>
     @yield('css')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -118,6 +173,72 @@
     </nav>
 
     @yield('content')
+    <footer class="footer">
+      <div class="container">
+        <div class="row">
+          <!-- Quick Links -->
+          <div class="col-md-3 col-sm-6 mb-4">
+            <h5>QUICKLINKS</h5>
+            <ul>
+              <li><a href="#">Contact Us</a></li>
+              <li><a href="#">Track Order</a></li>
+              <li><a href="#">FAQ</a></li>
+              <li><a href="#">Shipping Information</a></li>
+              <li><a href="#">Exchange & Refund Policy</a></li>
+            </ul>
+            <div class="social-icons">
+              <a href="#"><i class="fab fa-facebook-f"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+            </div>
+          </div>
+          
+          <!-- Shop With Us -->
+          <div class="col-md-3 col-sm-6 mb-4">
+            <h5>SHOP WITH US</h5>
+            <ul>
+              <li><a href="#">Sedondon Collection</a></li>
+              <li><a href="#">Men's Collection</a></li>
+              <li><a href="#">Women's Collection</a></li>
+              <li><a href="#">Boys' Collection</a></li>
+              <li><a href="#">Girls' Collection</a></li>
+              <li><a href="#">Accessories Collection</a></li>
+            </ul>
+          </div>
+          
+          <!-- We Accept -->
+          <div class="col-md-3 col-sm-6 mb-4">
+            <h5>WE ACCEPT</h5>
+            <div class="payment-icons">
+              <img src="{{asset('image/payment/maybank.png')}}" alt="Maybank">
+              <img src="{{asset('image/payment/rhb.png')}}" alt="RHB Bank">
+              <img src="{{asset('image/payment/fpx.png')}}" alt="FPX">
+              <img src="{{asset('image/payment/visa.png')}}" alt="Visa">
+            </div>
+            
+            <h5 class="mt-4">WE DELIVER BY</h5>
+            <div class="delivery-icons">
+              <img src="{{asset('image/delivery/dhl.png')}}" alt="DHL">
+              <img src="{{asset('image/delivery/poslaju.png')}}" alt="PosLaju">
+            </div>
+          </div>
+          
+          <!-- Copyright Info -->
+          <div class="col-md-3 col-sm-6 mb-4">
+            <h5>ABOUT US</h5>
+            <p>Nill Concept Store offers premium traditional and modern clothing for the whole family.</p>
+            <p class="mt-3">© 2020–2025 Nill Concept Store Sdn Bhd.<br>All rights reserved.</p>
+            <p class="privacy-text">
+              When you visit our sites, services, applications, or messaging, our authorised service providers may use cookies, web beacons, and other similar technologies for storing information to help provide you with a better, faster and safer experience and for advertising purposes.
+            </p>
+          </div>
+        </div>
+        
+        <div class="copyright">
+          <p>© 2020–2025 Nill Concept Store Sdn Bhd. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 @stack('scripts')  <!-- Add this line to render pushed scripts -->

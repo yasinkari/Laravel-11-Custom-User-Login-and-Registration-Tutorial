@@ -17,7 +17,8 @@ class Product extends Model
         'actual_price',
         'product_description',
         'is_visible',
-        'product_type'
+        'product_type',
+        'size_img'  // Added new column
     ];
 
     public function variants()

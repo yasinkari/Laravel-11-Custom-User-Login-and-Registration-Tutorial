@@ -89,6 +89,7 @@ class ProductController extends Controller
             'actual_price' => 'required|numeric|min:0',
             'product_description' => 'required|string',
             'product_type' => 'required|string|max:50',
+            'product_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
         
         // Add variant validation only for Baju Melayu and Kurta
@@ -108,19 +109,25 @@ class ProductController extends Controller
         }
     
         // Create the product
-        $product = Product::create([
+        $productData = [
             'product_name' => $request->product_name,
             'product_price' => $request->product_price,
             'actual_price' => $request->actual_price,
             'product_description' => $request->product_description,
             'product_type' => $request->product_type,
             'is_visible' => $request->has('is_visible') ? 1 : 0,
-        ]);
+        ];
+        
+        // Handle main product image if provided
+        if ($request->hasFile('product_image')) {
+            $productData['product_image'] = $request->file('product_image')->store('product_images', 'public');
+        }
+        
+        $product = Product::create($productData);
     
         // Create variants only for Baju Melayu and Kurta
         if (($request->product_type === 'Baju Melayu' || $request->product_type === 'Kurta') && isset($validated['variants'])) {
             foreach ($validated['variants'] as $variantData) {
-                // In store method
                 $imagePath = $variantData['product_image']->store('product_images', 'public');
                 
                 ProductVariant::create([
@@ -129,7 +136,7 @@ class ProductController extends Controller
                     'colorID' => $variantData['colorID'],
                     'product_size' => $variantData['product_size'],
                     'product_stock' => $variantData['product_stock'],
-                    'image' => $imagePath, // Changed from 'product_image' to 'image'
+                    'product_image' => $imagePath, // Changed from 'image' to 'product_image' for consistency
                 ]);
             }
         }
@@ -276,119 +283,60 @@ class ProductController extends Controller
     // Update the showToCustomer method to only show visible products
     public function showToCustomer()
     {
-        $products = Product::where('is_visible', true)
-            ->with(['variants' => function($query) {
-                $query->with(['tone', 'color'])->orderBy('product_stock', 'desc');
-            }])
+        $products = Product::with(['variants.tone', 'variants.color'])
+            ->where('is_visible', true)
+            ->orderBy('created_at', 'desc')
             ->paginate(12);
         
-        // Get unique product types for filtering
-        $productTypes = Product::where('is_visible', true)
-            ->distinct()
-            ->whereNotNull('product_type')
-            ->pluck('product_type');
-        
-        if ($products->isEmpty()) {
-            return view('customer.products.index', ['message' => 'No products found.']);
-        }
-        
-        return view('customer.products.index', compact('products', 'productTypes'));
+        return view('customer.products.index', compact('products'));
     }
 
     // Update the showProductDetails method to check visibility
     public function showProductDetails(Product $product)
     {
-        // Check if product is visible
         if (!$product->is_visible) {
-            return redirect()->route('products.customer')
-                ->with('error', 'This product is currently unavailable.');
+            abort(404);
         }
-
-        $product->load(['variants' => function($query) {
-            $query->with(['tone', 'color'])
-                ->orderBy('product_stock', 'desc');
-        }]);
         
-        // Create a structured data array with product info, tones, colors, and sizes
+        $product->load(['variants.tone', 'variants.color']);
+        
+        // Get related products (same type)
+        $relatedProducts = Product::where('product_type', $product->product_type)
+            ->where('is_visible', true)
+            ->where('productID', '!=', $product->productID)
+            ->limit(4)
+            ->get();
+        
+        // Structure the data array
         $data = [
-            'product' => [
-                'productID' => $product->productID,
-                'product_name' => $product->product_name,
-                'product_price' => $product->product_price,
-                'product_description' => $product->product_description,
-                'is_new_arrival' => $product->is_new_arrival ?? false,
-                'is_best_seller' => $product->is_best_seller ?? false,
-                'is_special_offer' => $product->is_special_offer ?? false,
-                'is_visible' => $product->is_visible ?? true,
-                'created_at' => $product->created_at,
-                'updated_at' => $product->updated_at,
-            ],
-            'tones' => []
+            'product' => $product,
+            'tones' => $product->variants->groupBy('tone.tone_id')->map(function ($variants) {
+                $firstVariant = $variants->first();
+                return [
+                    'tone_id' => $firstVariant->tone->toneID,
+                    'tone_name' => $firstVariant->tone->tone_name,
+                    'tone_code' => $firstVariant->tone->tone_code,
+                    'colors' => $variants->groupBy('color.colorID')->map(function ($colorVariants) {
+                        $firstColorVariant = $colorVariants->first();
+                        return [
+                            'color_id' => $firstColorVariant->color->colorID,
+                            'color_name' => $firstColorVariant->color->color_name,
+                            'color_code' => $firstColorVariant->color->color_code,
+                            'sizes' => $colorVariants->map(function ($variant) {
+                                return [
+                                    'variant_id' => $variant->product_variantID,
+                                    'size_name' => $variant->product_size,
+                                    'product_stock' => $variant->product_stock,
+                                    'product_image' => $variant->product_image
+                                ];
+                            })->values()
+                        ];
+                    })->values()
+                ];
+            })->values()
         ];
         
-        foreach ($product->variants as $variant) {
-            $toneID = $variant->toneID;
-            $colorID = $variant->colorID;
-            $size = $variant->product_size;
-            
-            // Initialize tone if it doesn't exist in data array
-            if (!isset($data['tones'][$toneID])) {
-                $data['tones'][$toneID] = [
-                    'tone_id' => $toneID,
-                    'tone_name' => $variant->tone->tone_name,
-                    'tone_code' => $variant->tone->tone_code,
-                    'colors' => []
-                ];
-            }
-            
-            // Initialize color if it doesn't exist in this tone's colors
-            if (!isset($data['tones'][$toneID]['colors'][$colorID])) {
-                $data['tones'][$toneID]['colors'][$colorID] = [
-                    'color_id' => $colorID,
-                    'color_name' => $variant->color->color_name,
-                    'color_code' => $variant->color->color_code,
-                    'sizes' => []
-                ];
-            }
-            
-            // Add size information
-            $data['tones'][$toneID]['colors'][$colorID]['sizes'][$size] = [
-                'product_size' => $size,
-                'product_image' => $variant->product_image,
-                'product_stock' => $variant->product_stock,
-                'product_variantID' => $variant->product_variantID
-            ];
-        }
-        
-        // Convert associative arrays to indexed arrays for easier iteration in the view
-        foreach ($data['tones'] as &$tone) {
-            $tone['colors'] = array_values($tone['colors']);
-            
-            foreach ($tone['colors'] as &$color) {
-                // Sort sizes in a standard order (XS, S, M, L, XL, XXL)
-                $sizeOrder = ['XS' => 0, 'S' => 1, 'M' => 2, 'L' => 3, 'XL' => 4, 'XXL' => 5];
-                
-                // Convert sizes to array and sort
-                $sizesArray = [];
-                foreach ($color['sizes'] as $sizeKey => $sizeData) {
-                    $sizeData['size_name'] = $sizeKey; // Add size name for easier access
-                    $sizesArray[] = $sizeData;
-                }
-                
-                // Sort by the predefined order
-                usort($sizesArray, function($a, $b) use ($sizeOrder) {
-                    return $sizeOrder[$a['size_name']] - $sizeOrder[$b['size_name']];
-                });
-                
-                $color['sizes'] = $sizesArray;
-            }
-        }
-        
-        // Convert tones to indexed array
-        $data['tones'] = array_values($data['tones']);
-        
-        // Pass only the structured data to the view
-        return view('customer.products.product_view', compact('data'));
+        return view('customer.products.product_view', compact('data', 'product', 'relatedProducts'));
     }
 
     public function storeVariant(Request $request, $productID)
@@ -412,7 +360,7 @@ class ProductController extends Controller
                 'colorID' => $validatedData['colorID'],
                 'product_size' => $validatedData['product_size'],
                 'product_stock' => $validatedData['product_stock'],
-                'image' => $imagePath, // Changed from 'product_image' to 'image'
+                'product_image' => $imagePath, // Changed from 'product_image' to 'image'
             ]);
             
             return redirect()->back()->with('success', 'Variant added successfully');

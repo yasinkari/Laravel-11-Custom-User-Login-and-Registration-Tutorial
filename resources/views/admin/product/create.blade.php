@@ -95,6 +95,17 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="size_img" class="form-label">Size Chart Image</label>
+                            <input type="file" class="form-control @error('size_img') is-invalid @enderror" 
+                                   id="size_img" name="size_img" accept="image/*">
+                            <small class="form-text text-muted">Upload a size chart image (optional)</small>
+                            @error('size_img')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
                     <div class="col-12">
                         <div class="mb-3">
                             <label for="product_description" class="form-label">Product Description</label>

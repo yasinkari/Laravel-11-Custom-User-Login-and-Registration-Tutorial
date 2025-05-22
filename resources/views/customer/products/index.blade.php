@@ -83,17 +83,35 @@
     .product-image {
         position: relative;
         overflow: hidden;
+        border-radius: 4px 4px 0 0;
+        height: 300px;
     }
     
     .product-image img {
         object-fit: cover;
-        height: 300px;
+        height: 100%;
         width: 100%;
-        transition: transform 0.5s;
+        transition: transform 0.5s ease;
     }
     
     .product-card:hover .product-image img {
         transform: scale(1.05);
+    }
+    
+    /* Optional: Add a subtle overlay on hover */
+    .product-image::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0);
+        transition: background 0.3s ease;
+    }
+    
+    .product-card:hover .product-image::after {
+        background: rgba(0,0,0,0.05);
     }
     
     .product-discount-badge {
@@ -146,36 +164,86 @@
     }
     
     .btn-add-to-cart {
-        background-color: #000;
+        background: linear-gradient(135deg, #2c3e50 0%, #1a2530 100%);
         color: #fff;
         border: none;
-        padding: 8px 15px;
-        font-size: 12px;
+        padding: 12px 20px;
+        font-size: 13px;
+        font-weight: 600;
         text-transform: uppercase;
-        transition: background-color 0.3s;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
         width: 100%;
         margin-bottom: 10px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    
+    .btn-add-to-cart:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: all 0.5s ease;
     }
     
     .btn-add-to-cart:hover {
-        background-color: #333;
-        color: #fff;
+        background: linear-gradient(135deg, #1a2530 0%, #2c3e50 100%);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    }
+    
+    .btn-add-to-cart:active {
+        transform: translateY(-1px);
+        box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    }
+    
+    .btn-add-to-cart:hover:before {
+        left: 100%;
+    }
+    
+    .btn-add-to-cart i {
+        font-size: 16px;
+        transition: transform 0.3s ease;
+    }
+    
+    .btn-add-to-cart:hover i {
+        transform: translateX(-3px);
     }
     
     .btn-view-details {
         background-color: transparent;
-        color: #000;
-        border: 1px solid #000;
-        padding: 8px 15px;
+        color: #2c3e50;
+        border: 2px solid #2c3e50;
+        padding: 10px 15px;
         font-size: 12px;
+        font-weight: 600;
         text-transform: uppercase;
         transition: all 0.3s;
         width: 100%;
+        border-radius: 8px;
+        letter-spacing: 0.5px;
     }
     
     .btn-view-details:hover {
-        background-color: #000;
+        background-color: #2c3e50;
         color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    
+    .btn-view-details:active {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
     
     .pagination {
@@ -256,7 +324,6 @@
                         @else
                             <img src="{{ asset('image/placeholder.jpg') }}" alt="{{ $product->product_name }}">
                         @endif
-                        <div class="product-discount-badge">32% OFF</div>
                     </div>
                     <div class="product-info">
                         <h5 class="product-title">{{ $product->product_name }}</h5>
@@ -266,12 +333,10 @@
                         </div>
                         <div class="d-grid gap-2">
                             <a href="{{ route('products.view', $product->productID) }}" class="btn btn-view-details">View Details</a>
-                            <form action="{{ route('cart.add') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="product_id" value="{{ $product->productID }}">
-                                <input type="hidden" name="quantity" value="1">
-                                <button type="submit" class="btn btn-add-to-cart">Add to Cart</button>
-                            </form>
+                            <button class="btn-add-to-cart" onclick="addToCart({{ $product->id }})">
+                                <i class="fas fa-shopping-cart"></i>
+                                <span>Add to Cart</span>
+                            </button>
                         </div>
                     </div>
                 </div>

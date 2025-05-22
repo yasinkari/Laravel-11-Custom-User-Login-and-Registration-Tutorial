@@ -100,17 +100,18 @@
     /* Enhanced Tone Selector */
     .tone-selector {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
-        gap: 10px;
+        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+        gap: 15px;
         margin-bottom: 35px;
-        padding: 20px;
+        padding: 25px;
         background: white;
         border-radius: 15px;
         position: relative;
-        max-height: 180px;
+        max-height: 200px;
         overflow-y: auto;
         scrollbar-width: thin;
         scrollbar-color: #e74c3c #f0f0f0;
+        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.03);
     }
 
     .tone-selector::-webkit-scrollbar {
@@ -128,44 +129,122 @@
     }
 
     .tone-option {
-        width: 45px;
-        height: 45px;
-        border-radius: 8px;
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
         cursor: pointer;
         border: 2px solid transparent;
         transition: all 0.3s ease;
         position: relative;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
     .tone-option:hover {
         transform: scale(1.1);
         z-index: 1;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
     }
 
     .tone-option.active {
         border-color: #e74c3c;
         transform: scale(1.1);
+        box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.3);
     }
 
     .tone-option .tone-name {
         position: absolute;
-        bottom: -20px;
+        bottom: -25px;
         left: 50%;
         transform: translateX(-50%);
         white-space: nowrap;
-        font-size: 11px;
-        background: rgba(0, 0, 0, 0.8);
+        font-size: 12px;
+        background: rgba(44, 62, 80, 0.9);
         color: white;
-        padding: 2px 6px;
+        padding: 3px 8px;
         border-radius: 4px;
         opacity: 0;
         transition: opacity 0.2s ease;
         pointer-events: none;
         z-index: 2;
+        font-weight: 500;
     }
 
     .tone-option:hover .tone-name {
+        opacity: 1;
+    }
+
+    /* Enhanced Color Selector */
+    .color-selector {
+        display: none;
+        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+        gap: 15px;
+        padding: 25px;
+        background: white;
+        border-radius: 15px;
+        margin-top: 30px;
+        max-height: 200px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #e74c3c #f0f0f0;
+        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.03);
+    }
+
+    .color-selector::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .color-selector::-webkit-scrollbar-track {
+        background: #f0f0f0;
+        border-radius: 10px;
+    }
+
+    .color-selector::-webkit-scrollbar-thumb {
+        background: #e74c3c;
+        border-radius: 10px;
+    }
+
+    .color-option {
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+        position: relative;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .color-option:hover {
+        transform: scale(1.1);
+        z-index: 1;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+    }
+
+    .color-option.active {
+        border-color: #e74c3c;
+        transform: scale(1.1);
+        box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.3);
+    }
+
+    .color-option .color-name {
+        position: absolute;
+        bottom: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        white-space: nowrap;
+        font-size: 12px;
+        background: rgba(44, 62, 80, 0.9);
+        color: white;
+        padding: 3px 8px;
+        border-radius: 4px;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        pointer-events: none;
+        z-index: 2;
+        font-weight: 500;
+    }
+
+    .color-option:hover .color-name {
         opacity: 1;
     }
 

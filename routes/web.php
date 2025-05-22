@@ -34,7 +34,7 @@ Route::middleware(['auth'])->group(function () {
 
 // Public Customer Product Routes (no auth required)
 Route::get('/products', [ProductController::class, 'showToCustomer'])->name('products.customer');
-Route::get('/products/view/{product}', [ProductController::class, 'showProductDetails'])->name('products.view');
+Route::get('/products/{product}', [ProductController::class, 'showProductDetails'])->name('products.view');
 Route::get('/about', function () { return view('customer.about'); })->name('about');
 Route::get('/contact', function () { return view('customer.contact'); })->name('contact');
 
