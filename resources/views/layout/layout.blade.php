@@ -180,7 +180,7 @@
           <div class="col-md-3 col-sm-6 mb-4">
             <h5>QUICKLINKS</h5>
             <ul>
-              <li><a href="#">Contact Us</a></li>
+              <li><a href="{{ route('contact') }}">Contact Us</a></li>
               <li><a href="#">Track Order</a></li>
               <li><a href="#">FAQ</a></li>
               <li><a href="#">Shipping Information</a></li>
@@ -188,7 +188,7 @@
             </ul>
             <div class="social-icons">
               <a href="#"><i class="fab fa-facebook-f"></i></a>
-              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="https://www.instagram.com/nillforman/" target="_blank"><i class="fab fa-instagram"></i></a>
               <a href="#"><i class="fab fa-twitter"></i></a>
             </div>
           </div>
@@ -197,36 +197,33 @@
           <div class="col-md-3 col-sm-6 mb-4">
             <h5>SHOP WITH US</h5>
             <ul>
-              <li><a href="#">Sedondon Collection</a></li>
               <li><a href="#">Men's Collection</a></li>
-              <li><a href="#">Women's Collection</a></li>
-              <li><a href="#">Boys' Collection</a></li>
-              <li><a href="#">Girls' Collection</a></li>
-              <li><a href="#">Accessories Collection</a></li>
+              <li><a href="#">Men's Sampin</a></li>
+              <li><a href="#">Fragrance</a></li>
             </ul>
           </div>
           
           <!-- We Accept -->
           <div class="col-md-3 col-sm-6 mb-4">
-            <h5>WE ACCEPT</h5>
-            <div class="payment-icons">
-              <img src="{{asset('image/payment/maybank.png')}}" alt="Maybank">
-              <img src="{{asset('image/payment/rhb.png')}}" alt="RHB Bank">
-              <img src="{{asset('image/payment/fpx.png')}}" alt="FPX">
-              <img src="{{asset('image/payment/visa.png')}}" alt="Visa">
+            <h5 class="fw-bold mb-3">WE ACCEPT</h5>
+            <div class="d-flex gap-3">
+              <img src="{{asset('image/imageHomePageIcon/maybank.png')}}" alt="Maybank" width="48" height="48" style="object-fit: contain">
+              <img src="{{asset('image/imageHomePageIcon/rhb.png')}}" alt="RHB Bank" width="48" height="48" style="object-fit: contain">
+              <img src="{{asset('image/imageHomePageIcon/fpx.png')}}" alt="FPX" width="48" height="48" style="object-fit: contain">
+              <img src="{{asset('image/imageHomePageIcon/visa.png')}}" alt="Visa" width="48" height="48" style="object-fit: contain">
             </div>
             
-            <h5 class="mt-4">WE DELIVER BY</h5>
-            <div class="delivery-icons">
-              <img src="{{asset('image/delivery/dhl.png')}}" alt="DHL">
-              <img src="{{asset('image/delivery/poslaju.png')}}" alt="PosLaju">
+            <h5 class="fw-bold mb-3 mt-4">WE DELIVER BY</h5>
+            <div class="d-flex gap-3">
+              <img src="{{asset('image/imageHomePageIcon/dhl.png')}}" alt="DHL" width="48" height="48" style="object-fit: contain">
+              <img src="{{asset('image/imageHomePageIcon/poslaju.png')}}" alt="PosLaju" width="48" height="48" style="object-fit: contain">
             </div>
           </div>
           
           <!-- Copyright Info -->
           <div class="col-md-3 col-sm-6 mb-4">
             <h5>ABOUT US</h5>
-            <p>Nill Concept Store offers premium traditional and modern clothing for the whole family.</p>
+            <p>Nill Concept Store offers premium traditional and modern clothing for men.</p>
             <p class="mt-3">© 2020–2025 Nill Concept Store Sdn Bhd.<br>All rights reserved.</p>
             <p class="privacy-text">
               When you visit our sites, services, applications, or messaging, our authorised service providers may use cookies, web beacons, and other similar technologies for storing information to help provide you with a better, faster and safer experience and for advertising purposes.

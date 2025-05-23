@@ -156,7 +156,7 @@
     <div class="row">
       <div class="col-md-6">
         <div class="collection-card">
-          <img src="{{asset('image/collections/baju-melayu-traditional.jpg')}}" alt="Baju Melayu Traditional Fit">
+          <img src="{{asset('image/imageHomeBaju/HabeebEmeraldGreen2.jpg')}}" alt="Baju Melayu Traditional Fit" style="width: 100%; height: 100%; object-fit: cover;">
           <div class="collection-content">
             <h3>Baju Melayu<br>Traditional Fit</h3>
             <a href="{{ route('products.customer') }}" class="btn shop-now-btn">Shop Now</a>
@@ -165,9 +165,9 @@
       </div>
       <div class="col-md-6">
         <div class="collection-card">
-          <img src="{{asset('image/collections/sisters-collection.jpg')}}" alt="Sisters Collection">
+          <img src="{{asset('image/imageHomeBaju/JauharLilacPurple1.jpg')}}" alt="Sisters Collection" style="width: 100%; height: 100%; object-fit: cover;">
           <div class="collection-content">
-            <h3>Sisters</h3>
+            <h3>Teluk Belanga Collection</h3>
             <a href="{{ route('products.customer') }}" class="btn shop-now-btn">Shop Now</a>
           </div>
         </div>

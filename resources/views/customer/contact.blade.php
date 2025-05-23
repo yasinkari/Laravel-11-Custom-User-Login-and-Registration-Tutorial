@@ -386,40 +386,7 @@
     </div>
 
     <!-- Footer Section -->
-    <footer class="bg-dark text-light py-5 mt-5">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <h5 class="fw-bold mb-3">Quick Links</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="{{ url('/') }}" class="text-light text-decoration-none">Home</a></li>
-                        <li><a href="{{ url('/products') }}" class="text-light text-decoration-none">Products</a></li>
-                        <li><a href="{{ url('/about') }}" class="text-light text-decoration-none">About Us</a></li>
-                        <li><a href="{{ url('/contact') }}" class="text-light text-decoration-none">Contact</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h5 class="fw-bold mb-3">We Accept</h5>
-                    <div class="d-flex gap-3">
-                        <img src="https://img.icons8.com/color/48/000000/visa.png" alt="Visa" height="30">
-                        <img src="https://img.icons8.com/color/48/000000/mastercard.png" alt="Mastercard" height="30">
-                        <img src="https://img.icons8.com/color/48/000000/paypal.png" alt="PayPal" height="30">
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <h5 class="fw-bold mb-3">We Deliver By</h5>
-                    <div class="d-flex gap-3">
-                        <img src="https://img.icons8.com/color/48/000000/dhl.png" alt="DHL" height="30">
-                        <img src="https://img.icons8.com/color/48/000000/fedex.png" alt="FedEx" height="30">
-                    </div>
-                </div>
-            </div>
-            <hr class="my-4">
-            <div class="text-center">
-                <p class="mb-0">&copy; 2024 NILLCONCEPTSTORE. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
+    
 </div>
 
 <style>
