@@ -2,7 +2,7 @@
 
 @section('css')
 <style>
-    /* Professional styling based on the JAKEL reference */
+    /* Professional styling based on the reference image */
     body {
         font-family: 'Poppins', sans-serif;
         background-color: #fff;
@@ -21,6 +21,7 @@
         text-transform: uppercase;
         letter-spacing: 1px;
         position: relative;
+        color: #0f2c1f;
     }
     
     .page-title:after {
@@ -28,7 +29,7 @@
         display: block;
         width: 60px;
         height: 3px;
-        background-color: #000;
+        background: linear-gradient(90deg, #0f2c1f, #2a5a4a);
         margin: 15px auto 0;
     }
     
@@ -44,7 +45,7 @@
     }
     
     .breadcrumb-container a:hover {
-        color: #000;
+        color: #0f2c1f;
     }
     
     .breadcrumb-container span {
@@ -71,8 +72,10 @@
     
     .product-card {
         border: none;
-        transition: transform 0.3s;
+        transition: all 0.3s;
         margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
     }
     
     .product-card:hover {
@@ -83,7 +86,7 @@
     .product-image {
         position: relative;
         overflow: hidden;
-        border-radius: 4px 4px 0 0;
+        border-radius: 0;
         height: 300px;
     }
     
@@ -98,7 +101,7 @@
         transform: scale(1.05);
     }
     
-    /* Optional: Add a subtle overlay on hover */
+    /* Refined overlay on hover */
     .product-image::after {
         content: '';
         position: absolute;
@@ -106,24 +109,24 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0,0,0,0);
+        background: rgba(15, 44, 31, 0);
         transition: background 0.3s ease;
     }
     
     .product-card:hover .product-image::after {
-        background: rgba(0,0,0,0.05);
+        background: rgba(15, 44, 31, 0.05);
     }
     
     .product-discount-badge {
         position: absolute;
         top: 10px;
         right: 10px;
-        background-color: #d9534f;
+        background-color: #0f2c1f;
         color: white;
         padding: 5px 10px;
         font-size: 12px;
         font-weight: 500;
-        border-radius: 2px;
+        border-radius: 0;
     }
     
     .product-info {
@@ -138,6 +141,7 @@
         height: 40px;
         overflow: hidden;
         text-transform: uppercase;
+        color: #0f2c1f;
     }
     
     .product-brand {
@@ -152,7 +156,7 @@
     
     .product-price {
         font-weight: 600;
-        color: #000;
+        color: #0f2c1f;
         font-size: 16px;
     }
     
@@ -163,26 +167,27 @@
         margin-right: 8px;
     }
     
+    /* Enhanced Add to Cart Button */
     .btn-add-to-cart {
-        background: linear-gradient(135deg, #2c3e50 0%, #1a2530 100%);
+        background-color: #0f2c1f;
         color: #fff;
         border: none;
         padding: 12px 20px;
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.5px;
         transition: all 0.3s ease;
         width: 100%;
         margin-bottom: 10px;
-        border-radius: 8px;
+        border-radius: 0;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
         position: relative;
         overflow: hidden;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
     
     .btn-add-to-cart:before {
@@ -192,19 +197,19 @@
         left: -100%;
         width: 100%;
         height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
         transition: all 0.5s ease;
     }
     
     .btn-add-to-cart:hover {
-        background: linear-gradient(135deg, #1a2530 0%, #2c3e50 100%);
-        transform: translateY(-3px);
-        box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        background-color: #143c2a;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     }
     
     .btn-add-to-cart:active {
         transform: translateY(-1px);
-        box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+        box-shadow: 0 3px 8px rgba(0,0,0,0.1);
     }
     
     .btn-add-to-cart:hover:before {
@@ -222,20 +227,20 @@
     
     .btn-view-details {
         background-color: transparent;
-        color: #2c3e50;
-        border: 2px solid #2c3e50;
+        color: #0f2c1f;
+        border: 1px solid #0f2c1f;
         padding: 10px 15px;
         font-size: 12px;
         font-weight: 600;
         text-transform: uppercase;
         transition: all 0.3s;
         width: 100%;
-        border-radius: 8px;
+        border-radius: 0;
         letter-spacing: 0.5px;
     }
     
     .btn-view-details:hover {
-        background-color: #2c3e50;
+        background-color: #0f2c1f;
         color: #fff;
         transform: translateY(-2px);
         box-shadow: 0 4px 10px rgba(0,0,0,0.1);
@@ -252,19 +257,19 @@
     }
     
     .pagination .page-item .page-link {
-        color: #000;
+        color: #0f2c1f;
         border-color: #ddd;
         margin: 0 5px;
-        border-radius: 3px;
+        border-radius: 0;
     }
     
     .pagination .page-item.active .page-link {
-        background-color: #000;
-        border-color: #000;
+        background-color: #0f2c1f;
+        border-color: #0f2c1f;
     }
     
     .pagination .page-item .page-link:hover {
-        background-color: #f5f5f5;
+        background-color: rgba(15, 44, 31, 0.05);
     }
     
     .product-count {
@@ -333,10 +338,15 @@
                         </div>
                         <div class="d-grid gap-2">
                             <a href="{{ route('products.view', $product->productID) }}" class="btn btn-view-details">View Details</a>
-                            <button class="btn-add-to-cart" onclick="addToCart({{ $product->id }})">
-                                <i class="fas fa-shopping-cart"></i>
-                                <span>Add to Cart</span>
-                            </button>
+                            <form action="{{ route('cart.add') }}" method="POST" class="w-100">
+                                @csrf
+                                <input type="hidden" name="product_id" value="{{ $product->productID }}">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="btn-add-to-cart">
+                                    <i class="fas fa-shopping-cart"></i>
+                                    <span>Add to Cart</span>
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>

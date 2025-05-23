@@ -10,12 +10,13 @@
 
     /* Enhanced Product Image Section */
     .product-image {
-        border-radius: 20px;
+        border-radius: 0;
         overflow: hidden;
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
         background: white;
         padding: 20px;
         margin-bottom: 30px;
+        position: relative;
     }
 
     .product-image img {
@@ -28,38 +29,99 @@
     .product-image:hover img {
         transform: scale(1.02);
     }
+    
+    /* Zoom icon overlay */
+    .product-image:after {
+        content: '\f00e';
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        background: rgba(15, 44, 31, 0.7);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .product-image:hover:after {
+        opacity: 1;
+    }
 
     /* Enhanced Product Info Section */
     .product-info {
         padding: 40px;
         background: white;
-        border-radius: 20px;
+        border-radius: 0;
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
     }
 
     .product-title {
         font-size: 32px;
         font-weight: 700;
-        color: #2c3e50;
+        color: #0f2c1f;
         margin-bottom: 20px;
         line-height: 1.2;
+        position: relative;
+        padding-bottom: 15px;
+    }
+    
+    .product-title:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 80px;
+        height: 3px;
+        background: linear-gradient(90deg, #0f2c1f, #2a5a4a);
     }
 
+    .stock-status {
+        display: inline-block;
+        padding: 6px 12px;
+        font-size: 14px;
+        font-weight: 600;
+        border-radius: 0;
+        margin-bottom: 20px;
+    }
+    
+    .stock-status.in-stock {
+        background-color: rgba(15, 44, 31, 0.1);
+        color: #0f2c1f;
+        border: 1px solid rgba(15, 44, 31, 0.2);
+    }
+    
+    .stock-status.out-of-stock {
+        background-color: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+        border: 1px solid rgba(220, 53, 69, 0.2);
+    }
+    
     .product-price {
         font-size: 28px;
         font-weight: 700;
-        color: #2c3e50;
+        color: #0f2c1f;
         margin-bottom: 25px;
         display: flex;
         align-items: center;
         gap: 10px;
     }
-
-    .product-price::before {
-        content: "Price";
-        font-size: 14px;
-        color: #95a5a6;
-        font-weight: 500;
+    
+    .original-price {
+        text-decoration: line-through;
+        color: #999;
+        font-size: 20px;
+    }
+    
+    .new-price {
+        color: #0f2c1f !important;
+        font-weight: 700 !important;
     }
 
     .product-description {
@@ -75,63 +137,68 @@
     .variant-section {
         background: #f8f9fa;
         padding: 30px;
-        border-radius: 15px;
+        border-radius: 0;
         margin-top: 30px;
+        border: 1px solid rgba(15, 44, 31, 0.1);
     }
 
     .variant-title {
         font-size: 18px;
         font-weight: 600;
-        color: #2c3e50;
+        color: #0f2c1f;
         margin-bottom: 25px;
         display: flex;
         align-items: center;
         justify-content: space-between;
+        position: relative;
+        padding-bottom: 10px;
     }
-
-    .variant-title::after {
-        content: "Select options below";
-        font-size: 13px;
-        color: #e74c3c;
-        font-weight: 500;
-        animation: pulse 2s infinite;
+    
+    .variant-title:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 40px;
+        height: 2px;
+        background: #0f2c1f;
     }
 
     /* Enhanced Tone Selector */
     .tone-selector {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
         gap: 15px;
         margin-bottom: 35px;
         padding: 25px;
         background: white;
-        border-radius: 15px;
+        border-radius: 0;
         position: relative;
-        max-height: 200px;
-        overflow-y: auto;
+        max-height: 120px;
         scrollbar-width: thin;
-        scrollbar-color: #e74c3c #f0f0f0;
+        scrollbar-color: #0f2c1f #f0f0f0;
         box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.03);
     }
 
     .tone-selector::-webkit-scrollbar {
-        width: 6px;
+        height: 6px;
     }
 
     .tone-selector::-webkit-scrollbar-track {
         background: #f0f0f0;
-        border-radius: 10px;
+        border-radius: 0;
     }
 
     .tone-selector::-webkit-scrollbar-thumb {
-        background: #e74c3c;
-        border-radius: 10px;
+        background: #0f2c1f;
+        border-radius: 0;
     }
 
     .tone-option {
-        width: 50px;
+        min-width: 50px;
         height: 50px;
-        border-radius: 10px;
+        border-radius: 0;
         cursor: pointer;
         border: 2px solid transparent;
         transition: all 0.3s ease;
@@ -146,9 +213,9 @@
     }
 
     .tone-option.active {
-        border-color: #e74c3c;
+        border-color: #0f2c1f;
         transform: scale(1.1);
-        box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.3);
+        box-shadow: 0 0 0 3px rgba(15, 44, 31, 0.3);
     }
 
     .tone-option .tone-name {
@@ -158,10 +225,10 @@
         transform: translateX(-50%);
         white-space: nowrap;
         font-size: 12px;
-        background: rgba(44, 62, 80, 0.9);
+        background: rgba(15, 44, 31, 0.9);
         color: white;
         padding: 3px 8px;
-        border-radius: 4px;
+        border-radius: 0;
         opacity: 0;
         transition: opacity 0.2s ease;
         pointer-events: none;
@@ -176,37 +243,37 @@
     /* Enhanced Color Selector */
     .color-selector {
         display: none;
-        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+        flex-wrap: nowrap;
+        overflow-x: auto;
         gap: 15px;
         padding: 25px;
         background: white;
-        border-radius: 15px;
+        border-radius: 0;
         margin-top: 30px;
-        max-height: 200px;
-        overflow-y: auto;
+        max-height: 120px;
         scrollbar-width: thin;
-        scrollbar-color: #e74c3c #f0f0f0;
+        scrollbar-color: #0f2c1f #f0f0f0;
         box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.03);
     }
 
     .color-selector::-webkit-scrollbar {
-        width: 6px;
+        height: 6px;
     }
 
     .color-selector::-webkit-scrollbar-track {
         background: #f0f0f0;
-        border-radius: 10px;
+        border-radius: 0;
     }
 
     .color-selector::-webkit-scrollbar-thumb {
-        background: #e74c3c;
-        border-radius: 10px;
+        background: #0f2c1f;
+        border-radius: 0;
     }
 
     .color-option {
-        width: 50px;
+        min-width: 50px;
         height: 50px;
-        border-radius: 10px;
+        border-radius: 0;
         cursor: pointer;
         border: 2px solid transparent;
         transition: all 0.3s ease;
@@ -221,9 +288,9 @@
     }
 
     .color-option.active {
-        border-color: #e74c3c;
+        border-color: #0f2c1f;
         transform: scale(1.1);
-        box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.3);
+        box-shadow: 0 0 0 3px rgba(15, 44, 31, 0.3);
     }
 
     .color-option .color-name {
@@ -233,10 +300,10 @@
         transform: translateX(-50%);
         white-space: nowrap;
         font-size: 12px;
-        background: rgba(44, 62, 80, 0.9);
+        background: rgba(15, 44, 31, 0.9);
         color: white;
         padding: 3px 8px;
-        border-radius: 4px;
+        border-radius: 0;
         opacity: 0;
         transition: opacity 0.2s ease;
         pointer-events: none;
@@ -247,180 +314,104 @@
     .color-option:hover .color-name {
         opacity: 1;
     }
-
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .tone-selector, .color-selector {
-            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
-            gap: 8px;
-            padding: 15px;
-            max-height: 150px;
-        }
-
-        .tone-option, .color-option {
-            width: 40px;
-            height: 40px;
-        }
-
-        .tone-option .tone-name,
-        .color-option .color-name {
-            font-size: 10px;
-            padding: 1px 4px;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .tone-selector, .color-selector {
-            grid-template-columns: repeat(auto-fill, minmax(35px, 1fr));
-            gap: 6px;
-            padding: 12px;
-            max-height: 120px;
-        }
-
-        .tone-option, .color-option {
-            width: 35px;
-            height: 35px;
-        }
-    }
-
-    .color-selector {
-        display: none;
-        grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
-        gap: 10px;
-        padding: 20px;
-        background: white;
-        border-radius: 15px;
+    
+    /* Enhanced Variant Table */
+    .variants-table {
         margin-top: 30px;
-        max-height: 200px;
-        overflow-y: auto;
-        scrollbar-width: thin;
-        scrollbar-color: #ff3366 #f0f0f0;
     }
-
-    .color-selector::-webkit-scrollbar {
-        width: 6px;
+    
+    .table {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+        border-radius: 0;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
-
-    .color-selector::-webkit-scrollbar-track {
-        background: #f0f0f0;
-        border-radius: 10px;
+    
+    .table th {
+        background-color: rgba(15, 44, 31, 0.05);
+        color: #0f2c1f;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 14px;
+        padding: 15px;
     }
-
-    .color-selector::-webkit-scrollbar-thumb {
-        background: #ff3366;
-        border-radius: 10px;
+    
+    .table td {
+        padding: 15px;
+        vertical-align: middle;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
     }
-
-    .color-option {
-        width: 45px;
-        height: 45px;
-        border-radius: 8px;
-        cursor: pointer;
-        border: 2px solid transparent;
+    
+    .table tr:hover {
+        background-color: rgba(15, 44, 31, 0.02);
+    }
+    
+    /* Enhanced Quantity Input */
+    .quantity-input {
+        width: 70px;
+        height: 40px;
+        text-align: center;
+        border: 1px solid #ddd;
+        border-radius: 0;
+        font-size: 14px;
+    }
+    
+    /* Enhanced Checkbox */
+    input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: #0f2c1f;
+    }
+    
+    /* Enhanced Add to Cart Button */
+    .btn-add-to-cart {
+        background-color: #0f2c1f;
+        color: #fff;
+        border: none;
+        padding: 15px 30px;
+        font-size: 16px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
         transition: all 0.3s ease;
+        width: 100%;
+        margin-top: 30px;
+        border-radius: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
         position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
-
-    .color-option:hover {
-        transform: scale(1.1);
-        z-index: 1;
-    }
-
-    .color-option.active {
-        border-color: #ff3366;
-        transform: scale(1.1);
-    }
-
-    .color-option .color-name {
+    
+    .btn-add-to-cart:before {
+        content: '';
         position: absolute;
-        bottom: -20px;
-        left: 50%;
-        transform: translateX(-50%);
-        white-space: nowrap;
-        font-size: 11px;
-        background: rgba(0, 0, 0, 0.8);
-        color: white;
-        padding: 2px 6px;
-        border-radius: 4px;
-        opacity: 0;
-        transition: opacity 0.2s ease;
-        pointer-events: none;
-        z-index: 2;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transition: all 0.5s ease;
     }
-
-    .color-option:hover .color-name {
-        opacity: 1;
+    
+    .btn-add-to-cart:hover {
+        background-color: #143c2a;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
     }
-
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .product-image img {
-            height: 300px;
-        }
-
-        .product-info {
-            padding: 20px;
-        }
-
-        .variant-section {
-            padding: 15px;
-        }
-
-        .tone-selector {
-            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-            gap: 15px;
-            padding: 15px;
-        }
-
-        .color-selector {
-            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
-            gap: 8px;
-            padding: 15px;
-            max-height: 150px;
-        }
-
-        .color-option {
-            width: 40px;
-            height: 40px;
-        }
-
-        .table th, .table td {
-            padding: 10px;
-            font-size: 14px;
-        }
-
-        .quantity-input {
-            width: 60px;
-            padding: 5px;
-        }
+    
+    .btn-add-to-cart:active {
+        transform: translateY(-1px);
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
     }
-
-    @media (max-width: 480px) {
-        .product-image img {
-            height: 250px;
-        }
-
-        .product-title {
-            font-size: 24px;
-        }
-
-        .product-price {
-            font-size: 22px;
-        }
-
-        .variant-title {
-            font-size: 16px;
-        }
-
-        .color-selector {
-            grid-template-columns: repeat(auto-fill, minmax(35px, 1fr));
-            gap: 6px;
-        }
-
-        .color-option {
-            width: 35px;
-            height: 35px;
-        }
+    
+    .btn-add-to-cart:hover:before {
+        left: 100%;
     }
 </style>
 @endsection
@@ -457,6 +448,7 @@
                     
                     <!-- Inside the product info section, update the price display -->
                     <div class="stock-status {{ $hasStock ? 'in-stock' : 'out-of-stock' }}">
+                        <i class="fas {{ $hasStock ? 'fa-check-circle' : 'fa-times-circle' }}"></i>
                         {{ $hasStock ? 'In Stock' : 'Out of Stock' }}
                     </div>
                     
@@ -497,7 +489,7 @@
                             <span class="original-price text-muted text-decoration-line-through">
                                 RM {{ number_format($product['product_price'], 2) }}
                             </span>
-                            <span class="new-price text-danger fw-bold">
+                            <span class="new-price">
                                 RM {{ number_format($discountedPrice, 2) }}
                             </span>
                         </p>
@@ -529,21 +521,25 @@
                                 </div>
 
                                 <div class="variants-table">
-                                    <h3 class="variant-title">Select Size and Quantity</h3>
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>Size</th>
-                                                <th>Stock</th>
-                                                <th>Select</th>
-                                                <th>Quantity</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <!-- Variants will be populated dynamically -->
-                                        </tbody>
-                                    </table>
-                                    <button type="submit" class="btn-add-to-cart">Add to Cart</button>
+                                    <div class="size-quantity-section p-4 bg-white rounded-3 shadow-sm">
+                                        <h3 class="section-title mb-4 pb-2 border-bottom">Select Size and Quantity</h3>
+                                        <div class="table-responsive">
+                                            <table class="table table-hover align-middle">
+                                                <thead class="bg-light">
+                                                    <tr>
+                                                        <th class="py-3">Size</th>
+                                                        <th class="py-3">Stock Status</th>
+                                                        <th class="py-3">Select</th>
+                                                        <th class="py-3">Quantity</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="border-top-0">
+                                                    <!-- Variants will be populated dynamically -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <button type="submit" class="btn-add-to-cart w-100 mt-4 py-3 rounded-3 text-white fw-bold">Add to Cart</button>
+                                    </div>
                                 </div>
                             </div>
                         </form>
