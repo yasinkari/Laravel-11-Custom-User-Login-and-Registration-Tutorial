@@ -72,6 +72,13 @@ Route::middleware([AdminMiddleware::class])->group(function () {
     
     // Variant routes - organized together
     Route::get('/admin/products/variants/{variant}/edit', [ProductController::class, 'editVariant'])->name('products.variants.edit');
+    // Change this line
+    Route::get('/admin/products/{product}/variants/create', [ProductController::class, 'createVariant'])->name('products.variants.create');
+    
+    // To something like this if you want to handle variant creation in the edit view
+    Route::get('/admin/products/{product}/variants/create', function($product) {
+        return redirect()->route('products.edit', $product)->with('openVariantForm', true);
+    })->name('products.variants.create');
     Route::put('/admin/products/variants/{variant}', [ProductController::class, 'updateVariant'])->name('products.variants.update');
     Route::post('/admin/products/{productID}/variants', [ProductController::class, 'storeVariant'])->name('products.variants.store');
     Route::delete('/admin/products/variants/{variant}', [ProductController::class, 'destroyVariant'])->name('products.variants.destroy');

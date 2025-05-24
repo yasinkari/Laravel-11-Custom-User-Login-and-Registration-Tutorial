@@ -191,7 +191,7 @@ class ProductController extends Controller
     {
         // Load the product with paginated variants
         $variants = ProductVariant::where('productID', $product->productID)
-            ->with(['tone', 'color'])
+            ->with(['tones', 'color'])  // Changed from 'tone' to 'tones'
             ->orderBy('created_at', 'desc')
             ->paginate(5);
         
@@ -233,16 +233,31 @@ class ProductController extends Controller
             'actual_price' => 'required|numeric|min:0',
             'product_description' => 'required|string',
             'product_type' => 'required|string|max:50',
+            'size_img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
     
-        $product->update([
+        $updateData = [
             'product_name' => $request->product_name,
             'product_price' => $request->product_price,
             'actual_price' => $request->actual_price,
             'product_description' => $request->product_description,
             'product_type' => $request->product_type,
             'is_visible' => $request->has('is_visible') ? 1 : 0,
-        ]);
+        ];
+    
+        if ($request->hasFile('size_img')) {
+            // Delete old image if exists
+            if ($product->size_img) {
+                Storage::delete($product->size_img);
+            }
+            
+            // Store new image
+            $path = $request->file('size_img')->store('public/size_charts');
+            $updateData['size_img'] = str_replace('public/', '', $path);
+        }
+        
+    
+        $product->update($updateData);
     
         return redirect()->route('products.edit', $product->productID)
             ->with('success', 'Product information updated successfully');
@@ -267,16 +282,44 @@ class ProductController extends Controller
             'colorID' => 'required|exists:product_colors,colorID',
             'product_size' => 'required|in:XS,S,M,L,XL,XXL',
             'product_stock' => 'required|integer|min:0',
-            'product_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
     
-        if ($request->hasFile('product_image')) {
-            Storage::disk('public')->delete($variant->image); // Changed from product_image to image
-            $validatedData['image'] = $request->file('product_image')
-                ->store('product_images', 'public');
+        // Update variant basic info
+        $variant->update([
+            'toneID' => $validatedData['toneID'],
+            'colorID' => $validatedData['colorID'],
+            'product_size' => $validatedData['product_size'],
+            'product_stock' => $validatedData['product_stock']
+        ]);
+    
+        // Handle image uploads
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $index => $imageFile) {
+                // Check if there's an existing image ID
+                $existingImageId = $request->input("images.{$index}.id");
+                
+                // Store the new image
+                $path = $imageFile->store('variant_images', 'public');
+                
+                if ($existingImageId) {
+                    // Update existing image
+                    $existingImage = VariantImage::find($existingImageId);
+                    if ($existingImage) {
+                        // Delete old image file
+                        Storage::disk('public')->delete($existingImage->product_image);
+                        // Update with new image
+                        $existingImage->update(['product_image' => $path]);
+                    }
+                } else {
+                    // Create new image record
+                    $variant->variantImages()->create([
+                        'product_image' => $path
+                    ]);
+                }
+            }
         }
     
-        $variant->update($validatedData);
         return redirect()->back()->with('success', 'Variant updated successfully');
     }
     
@@ -320,14 +363,10 @@ class ProductController extends Controller
     }
 
     // Update the showToCustomer method to only show visible products
-    public function showToCustomer()
+    public function showToCustomer(Product $product)
     {
-        $products = Product::with(['variants.tone', 'variants.color'])
-            ->where('is_visible', true)
-            ->orderBy('created_at', 'desc')
-            ->paginate(12);
-        
-        return view('customer.products.index', compact('products'));
+        $product->load(['variants.tones', 'variants.color', 'variants.productSizings']);
+        return view('customer.products.product_view', compact('product'));
     }
 
     // Update the showProductDetails method to check visibility
@@ -337,7 +376,7 @@ class ProductController extends Controller
             abort(404);
         }
         
-        $product->load(['variants.tone', 'variants.color']);
+        $product->load(['variants.tones', 'variants.color']);
         
         // Get related products (same type)
         $relatedProducts = Product::where('product_type', $product->product_type)
@@ -428,5 +467,15 @@ class ProductController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to load variant details'], 500);
         }
+    }
+    
+    // Add this method to your ProductController class
+    public function createVariant(Product $product)
+    {
+        // Get all tones and colors for the variant form
+        $tones = Tone::orderBy('tone_name')->get();
+        $colors = ProductColor::orderBy('color_name')->get();
+        
+        return view('admin.product.create_variant', compact('product', 'tones', 'colors'));
     }
 }

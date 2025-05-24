@@ -602,7 +602,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Update product image if first size has an image
         if (selectedColorData.sizes.length > 0) {
-            document.getElementById('product-image').src = '/storage/' + selectedColorData.sizes[0].product_image;
+            document.getElementById('product-image').src = '/storage/' + selectedColorData.sizes[0].product_images;
         }
         
         // Populate variants table
