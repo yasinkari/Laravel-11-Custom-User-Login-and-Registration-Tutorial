@@ -79,7 +79,7 @@
                                     <span class="badge bg-info">{{ $product->variants->count() }}</span>
                                     <button type="button" class="btn btn-sm btn-outline-primary ms-2 toggle-variants" 
                                             data-product-id="{{ $product->productID }}">
-                                        <i class="fas fa-chevron-down"></i> View
+                                        <i class="fas fa-chevron-down"></i> Details
                                     </button>
                                 </td>
                                 <td>
@@ -98,65 +98,108 @@
                                     </form>
                                 </td>
                             </tr>
-                            <!-- Variants Row (Hidden by Default) -->
+                            <!-- Enhanced Variants Row -->
                             <tr class="variant-details" id="variants-{{ $product->productID }}" style="display: none;">
                                 <td colspan="9" class="p-0">
-                                    <div class="card mb-0 border-0">
-                                        <div class="card-body bg-light">
-                                            <h6 class="mb-3">Variants for {{ $product->product_name }}</h6>
+                                    <div class="card mb-0 border-0 bg-light-subtle">
+                                        <div class="card-body p-3">
+                                            <h6 class="mb-3 d-flex justify-content-between align-items-center">
+                                                <span>Variants for {{ $product->product_name }}</span>
+                                                <button class="btn btn-sm btn-outline-secondary toggle-variants" 
+                                                        data-product-id="{{ $product->productID }}">
+                                                    <i class="fas fa-times"></i> Close
+                                                </button>
+                                            </h6>
                                             <div class="table-responsive">
-                                                <table class="table table-sm table-bordered">
-                                                    <thead class="table-secondary">
+                                                <table class="table table-sm table-hover">
+                                                    <thead class="table-light">
                                                         <tr>
-                                                            <th>ID</th>
-                                                            <th>Tone</th>
+                                                            <th>Variant ID</th>
                                                             <th>Color</th>
-                                                            <th>Size</th>
-                                                            <th>Stock</th>
-                                                            <th>Image</th>
+                                                            <th>Tones</th>
+                                                            <th>Sizes & Stock</th>
+                                                            <th>Images</th>
+                                                            <th>Actions</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                         @forelse($product->variants as $variant)
                                                             <tr>
                                                                 <td>{{ $variant->product_variantID }}</td>
-                                                                <td>{{ $variant->tone->tone_name ?? 'N/A' }}</td>
                                                                 <td>
                                                                     @if($variant->color)
                                                                         <div class="d-flex align-items-center">
-                                                                            <div style="width: 20px; height: 20px; background-color: {{ $variant->color->color_code }}; 
-                                                                                        border-radius: 50%; margin-right: 5px;"></div>
+                                                                            <div class="color-swatch me-2" 
+                                                                                     style="background-color: {{ $variant->color->color_code }};"></div>
                                                                             {{ $variant->color->color_name }}
                                                                         </div>
                                                                     @else
-                                                                        N/A
+                                                                        <span class="text-muted">N/A</span>
                                                                     @endif
                                                                 </td>
-                                                                <td>{{ $variant->product_size }}</td>
-                                                                <td>{{ $variant->product_stock }}</td>
                                                                 <td>
-                                                                    @if($variant->product_image)
-                                                                        <img src="{{ asset('storage/' . $variant->product_image) }}" 
-                                                                             alt="Variant Image" class="img-thumbnail" 
-                                                                             style="max-width: 50px;">
-                                                                    @else
-                                                                        No Image
-                                                                    @endif
+                                                                    @forelse($variant->tones as $tone)
+                                                                        <span class="badge rounded-pill bg-primary me-1 mb-1">
+                                                                            {{ $tone->tone_name }}
+                                                                        </span>
+                                                                    @empty
+                                                                        <span class="text-muted">N/A</span>
+                                                                    @endforelse
+                                                                </td>
+                                                                <td>
+                                                                    @forelse($variant->productSizings as $sizing)
+                                                                        <div class="d-inline-block me-2 mb-2">
+                                                                            <span class="badge bg-dark rounded-pill">
+                                                                                {{ $sizing->product_size }}: {{ $sizing->product_stock }}
+                                                                            </span>
+                                                                        </div>
+                                                                    @empty
+                                                                        <span class="text-muted">No sizes</span>
+                                                                    @endforelse
+                                                                </td>
+                                                                <td>
+                                                                    <div class="d-flex flex-wrap gap-2">
+                                                                        @forelse($variant->variantImages as $image)
+                                                                            <img src="{{ asset('storage/' . $image->product_image) }}" 
+                                                                                 alt="Variant Image" class="img-thumbnail" 
+                                                                                 style="width: 60px; height: 60px; object-fit: cover;">
+                                                                        @empty
+                                                                            <span class="text-muted">No images</span>
+                                                                        @endforelse
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="d-flex gap-2">
+                                                                        <a href="{{ route('products.variants.edit', $variant->product_variantID) }}" 
+                                                                               class="btn btn-sm btn-primary" title="Edit">
+                                                                            <i class="fas fa-edit"></i>
+                                                                        </a>
+                                                                        <form action="{{ route('products.variants.destroy', $variant->product_variantID) }}" 
+                                                                                  method="POST" class="d-inline">
+                                                                            @csrf
+                                                                            @method('DELETE')
+                                                                            <button type="submit" class="btn btn-sm btn-danger" 
+                                                                                    title="Delete"
+                                                                                    onclick="return confirm('Delete this variant?')">
+                                                                                <i class="fas fa-trash"></i>
+                                                                            </button>
+                                                                        </form>
+                                                                    </div>
                                                                 </td>
                                                             </tr>
                                                         @empty
                                                             <tr>
-                                                                <td colspan="6" class="text-center">No variants found for this product.</td>
+                                                                <td colspan="6" class="text-center py-3">
+                                                                    <div class="text-muted">No variants found</div>
+                                                                    <a href="{{ route('products.variants.create', $product->productID) }}" 
+                                                                           class="btn btn-sm btn-primary mt-2">
+                                                                        <i class="fas fa-plus me-1"></i> Add Variant
+                                                                    </a>
+                                                                </td>
                                                             </tr>
                                                         @endforelse
                                                     </tbody>
                                                 </table>
-                                            </div>
-                                            <div class="mt-3 text-end">
-                                                <a href="{{ route('products.edit', $product->productID) }}" 
-                                                   class="btn btn-sm btn-primary">
-                                                    <i class="fas fa-edit me-1"></i>Edit Variants
-                                                </a>
                                             </div>
                                         </div>
                                     </div>
@@ -164,7 +207,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center">No products found</td>
+                                <td colspan="9" class="text-center">No products found</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -189,63 +232,51 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Toggle variant details
-    const toggleButtons = document.querySelectorAll('.toggle-variants');
-    toggleButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const productId = this.getAttribute('data-product-id');
-            const variantRow = document.getElementById('variants-' + productId);
-            const icon = this.querySelector('i');
-            
-            if (variantRow.style.display === 'none') {
-                variantRow.style.display = 'table-row';
-                icon.classList.remove('fa-chevron-down');
-                icon.classList.add('fa-chevron-up');
-            } else {
-                variantRow.style.display = 'none';
-                icon.classList.remove('fa-chevron-up');
-                icon.classList.add('fa-chevron-down');
-            }
-        });
+    // Consolidated toggle functionality
+    $(document).on('click', '.toggle-variants', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const productId = $(this).data('product-id');
+        const variantRow = $('#variants-' + productId);
+        const icon = $(this).find('i');
+        
+        if (variantRow.is(':visible')) {
+            variantRow.slideUp(300);
+            icon.removeClass('fa-chevron-up fa-times').addClass('fa-chevron-down');
+            $(this).html('<i class="fas fa-chevron-down"></i> Details');
+        } else {
+            variantRow.slideDown(300);
+            icon.removeClass('fa-chevron-down').addClass('fa-chevron-up');
+            $(this).html('<i class="fas fa-chevron-up"></i> Hide');
+        }
     });
 
     // Product search functionality
-    const searchInput = document.getElementById('productSearch');
-    searchInput.addEventListener('keyup', function() {
-        const searchTerm = this.value.toLowerCase();
-        const productRows = document.querySelectorAll('.product-row');
+    $('#productSearch').on('keyup', function() {
+        const searchTerm = $(this).val().toLowerCase();
         
-        productRows.forEach(row => {
-            const productName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
-            const productDesc = row.querySelector('td:nth-child(4)').textContent.toLowerCase();
-            const productId = row.getAttribute('data-product-id');
-            const variantRow = document.getElementById('variants-' + productId);
+        $('.product-row').each(function() {
+            const productName = $(this).find('td:nth-child(2)').text().toLowerCase();
+            const productDesc = $(this).find('td:nth-child(6)').text().toLowerCase();
+            const productId = $(this).data('product-id');
+            const variantRow = $('#variants-' + productId);
             
             if (productName.includes(searchTerm) || productDesc.includes(searchTerm)) {
-                row.style.display = '';
-                if (variantRow) {
-                    // Keep variant row hidden unless it was explicitly shown
-                    if (variantRow.style.display !== 'table-row') {
-                        variantRow.style.display = 'none';
-                    }
+                $(this).show();
+                if (variantRow && variantRow.css('display') !== 'table-row') {
+                    variantRow.hide();
                 }
             } else {
-                row.style.display = 'none';
+                $(this).hide();
                 if (variantRow) {
-                    variantRow.style.display = 'none';
+                    variantRow.hide();
                 }
             }
         });
     });
-});
-</script>
-@endpush
-
-@push('scripts')
-<script>
-    $(document).ready(function() {
-        // Handle visibility toggle
-        $('.toggle-visibility').on('change', function() {
+// Handle visibility toggle
+$('.toggle-visibility').on('change', function() {
             const productId = $(this).data('product-id');
             const isVisible = $(this).prop('checked') ? 1 : 0;
             const label = $(this).next('label');
@@ -291,6 +322,37 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         });
+    
+    // Product search functionality
+    const searchInput = document.getElementById('productSearch');
+    searchInput.addEventListener('keyup', function() {
+        const searchTerm = this.value.toLowerCase();
+        const productRows = document.querySelectorAll('.product-row');
+        
+        productRows.forEach(row => {
+            const productName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+            const productDesc = row.querySelector('td:nth-child(4)').textContent.toLowerCase();
+            const productId = row.getAttribute('data-product-id');
+            const variantRow = document.getElementById('variants-' + productId);
+            
+            if (productName.includes(searchTerm) || productDesc.includes(searchTerm)) {
+                row.style.display = '';
+                if (variantRow) {
+                    // Keep variant row hidden unless it was explicitly shown
+                    if (variantRow.style.display !== 'table-row') {
+                        variantRow.style.display = 'none';
+                    }
+                }
+            } else {
+                row.style.display = 'none';
+                if (variantRow) {
+                    variantRow.style.display = 'none';
+                }
+            }
+        });
     });
+
+});
 </script>
 @endpush
+

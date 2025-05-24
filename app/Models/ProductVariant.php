@@ -13,40 +13,37 @@ class ProductVariant extends Model
     protected $primaryKey = 'product_variantID';
     
     protected $fillable = [
-        'toneID',
         'colorID',
-        'productID',
-        'product_size',
-        'product_stock',
-        'product_image'
+        'productID'
     ];
 
-    public function cartRecords()
+    public function product()
     {
-        return $this->hasMany(CartRecord::class, 'product_variantID');
+        return $this->belongsTo(Product::class, 'productID', 'productID');
     }
 
-    /**
-     * Get the tone associated with the product variant.
-     */
-    public function tone()
-    {
-        return $this->belongsTo(Tone::class, 'toneID', 'toneID');
-    }
-
-    /**
-     * Get the color associated with the product variant.
-     */
     public function color()
     {
         return $this->belongsTo(ProductColor::class, 'colorID', 'colorID');
     }
 
-    /**
-     * Get the product associated with the product variant.
-     */
-    public function product()
+    public function variantImages()
     {
-        return $this->belongsTo(Product::class, 'productID', 'productID');
+        return $this->hasMany(VariantImage::class, 'product_variantID');
+    }
+
+    public function productSizings()
+    {
+        return $this->hasMany(ProductSizing::class, 'product_variantID');
+    }
+
+    public function toneCollections()
+    {
+        return $this->hasMany(ToneCollection::class, 'product_variantID');
+    }
+
+    public function tones()
+    {
+        return $this->belongsToMany(Tone::class, 'tone_collection', 'product_variantID', 'toneID');
     }
 }

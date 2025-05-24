@@ -521,25 +521,21 @@
                                 </div>
 
                                 <div class="variants-table">
-                                    <div class="size-quantity-section p-4 bg-white rounded-3 shadow-sm">
-                                        <h3 class="section-title mb-4 pb-2 border-bottom">Select Size and Quantity</h3>
-                                        <div class="table-responsive">
-                                            <table class="table table-hover align-middle">
-                                                <thead class="bg-light">
-                                                    <tr>
-                                                        <th class="py-3">Size</th>
-                                                        <th class="py-3">Stock Status</th>
-                                                        <th class="py-3">Select</th>
-                                                        <th class="py-3">Quantity</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody class="border-top-0">
-                                                    <!-- Variants will be populated dynamically -->
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <button type="submit" class="btn-add-to-cart w-100 mt-4 py-3 rounded-3 text-white fw-bold">Add to Cart</button>
-                                    </div>
+                                    <h3 class="variant-title">Select Size and Quantity</h3>
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Size</th>
+                                                <th>Stock</th>
+                                                <th>Select</th>
+                                                <th>Quantity</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Variants will be populated dynamically -->
+                                        </tbody>
+                                    </table>
+                                    <button type="submit" class="btn-add-to-cart">Add to Cart</button>
                                 </div>
                             </div>
                         </form>

@@ -2,10 +2,10 @@
 @section('title', 'Add New Product')
 
 @section('content')
-<div class="container-fluid px-4">
+<div class="container-fluid px-1">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h3 mb-0 text-gray-800">Add New Product</h1>
+            <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-plus-circle me-2"></i>Add New Product</h1>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0">
                     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
@@ -26,473 +26,348 @@
         </div>
     @endif
 
-    <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data" id="productForm">
         @csrf
-        <!-- Basic Info Card -->
         <div class="card shadow-sm mb-4">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Basic Product Information</h6>
+                <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-info-circle me-2"></i>Basic Product Information</h6>
             </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="product_name" class="form-label">Product Name</label>
-                            <input type="text" class="form-control @error('product_name') is-invalid @enderror" 
-                                   id="product_name" name="product_name" value="{{ old('product_name') }}" required>
-                            @error('product_name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <label for="product_name" class="form-label"><i class="fas fa-tag me-2"></i>Product Name</label>
+                            <input type="text" class="form-control" id="product_name" name="product_name" required>
                         </div>
-                    </div>
-                    <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="product_type" class="form-label">Product Type</label>
-                            <select class="form-select @error('product_type') is-invalid @enderror" 
-                                   id="product_type" name="product_type" required>
-                                <option value="">Select Product Type</option>
-                                @foreach($productTypes as $type)
-                                    <option value="{{ $type }}" {{ old('product_type') == $type ? 'selected' : '' }}>{{ $type }}</option>
-                                @endforeach
+                            <label for="product_type" class="form-label"><i class="fas fa-tshirt me-2"></i>Product Type</label>
+                            <select class="form-control" id="product_type" name="product_type" required>
+                                <option value="">Select Type</option>
+                                <option value="Baju Melayu">Baju Melayu</option>
+                                <option value="Sampin">Sampin</option>
                             </select>
-                            @error('product_type')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                        </div>
+                        <div class="mb-3">
+                            <label for="product_price" class="form-label"><i class="fas fa-dollar-sign me-2"></i>Base Price (RM)</label>
+                            <input type="number" step="0.01" class="form-control" id="product_price" name="product_price">
+                        </div>
+                        <div class="mb-3">
+                            <label for="actual_price" class="form-label"><i class="fas fa-money-bill-wave me-2"></i>Actual Price (RM)</label>
+                            <input type="number" step="0.01" class="form-control" id="actual_price" name="actual_price" required>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="product_price" class="form-label">Base Price (RM)</label>
-                            <input type="number" class="form-control @error('product_price') is-invalid @enderror" 
-                                   id="product_price" name="product_price" value="{{ old('product_price') }}" 
-                                   step="0.01" min="0">
-                            <small class="form-text text-muted">Optional</small>
-                            @error('product_price')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <label for="size_img" class="form-label"><i class="fas fa-ruler me-2"></i>Size Chart Image</label>
+                            <input type="file" class="form-control" id="size_img" name="size_img">
                         </div>
-                    </div>
-                    <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="actual_price" class="form-label">Actual Price (RM)</label>
-                            <input type="number" class="form-control @error('actual_price') is-invalid @enderror" 
-                                   id="actual_price" name="actual_price" value="{{ old('actual_price') }}" 
-                                   step="0.01" min="0" required>
-                            <div id="discount-indicator" class="mt-1 d-none">
-                                <span class="badge bg-danger">Discount: <span id="discount-percentage">0</span>% OFF</span>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="is_visible" name="is_visible" checked>
+                                <label class="form-check-label" for="is_visible"><i class="fas fa-eye me-2"></i>Visible to Customers</label>
                             </div>
-                            @error('actual_price')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label d-block">Visibility</label>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="is_visible" name="is_visible" value="1" checked>
-                                <label class="form-check-label" for="is_visible">Product is visible to customers</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="size_img" class="form-label">Size Chart Image</label>
-                            <input type="file" class="form-control @error('size_img') is-invalid @enderror" 
-                                   id="size_img" name="size_img" accept="image/*">
-                            <small class="form-text text-muted">Upload a size chart image (optional)</small>
-                            @error('size_img')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
                         </div>
                     </div>
                     <div class="col-12">
                         <div class="mb-3">
-                            <label for="product_description" class="form-label">Product Description</label>
-                            <textarea class="form-control @error('product_description') is-invalid @enderror" 
-                                      id="product_description" name="product_description" 
-                                      rows="4" required>{{ old('product_description') }}</textarea>
-                            @error('product_description')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <label for="product_description" class="form-label"><i class="fas fa-align-left me-2"></i>Product Description</label>
+                            <textarea class="form-control" id="product_description" name="product_description" rows="4" required></textarea>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Product Variants Card -->
-        <div class="card shadow-sm mb-4" id="variantsSection" style="display: none;">
-            <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                <h6 class="m-0 font-weight-bold text-primary">Product Variants</h6>
-                <button type="button" class="btn btn-sm btn-primary" id="addVariant">
-                    <i class="fas fa-plus-circle me-1"></i>Add Variant
-                </button>
+        <div id="variantSection" class="d-none">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-cubes me-2"></i>Product Variants</h6>
+                    <button type="button" class="btn btn-primary btn-sm" id="addVariant"><i class="fas fa-plus me-1"></i>Add Variant</button>
+                </div>
+                <div class="card-body" id="variantsContainer">
+                    <!-- Variant template will be cloned here -->
+                </div>
             </div>
-            <div class="card-body">
-                <!-- Color Suggestion Panel -->
-                <div class="card mb-4 border-left-info">
-                    <div class="card-body">
-                        <h6 class="font-weight-bold text-info mb-3">Color Suggestions by Skin Tone</h6>
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="toneSuggestion">Select Skin Tone</label>
-                                    <select class="form-select" id="toneSuggestion">
-                                        <option value="">Select a tone for suggestions</option>
-                                        @foreach($tones as $tone)
-                                            <option value="{{ $tone->tone_name }}">{{ $tone->tone_name }}</option>
-                                        @endforeach
-                                    </select>
+
+            <!-- Variant Template -->
+            <template id="variantTemplate">
+                <div class="variant-item border rounded p-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0"><i class="fas fa-cube me-2"></i>Variant #<span class="variant-number">1</span></h6>
+                        <button type="button" class="btn btn-danger btn-sm remove-variant"><i class="fas fa-trash me-1"></i>Remove</button>
+                    </div>
+
+                    <!-- Color Selection -->
+                    <div class="mb-4">
+                        <label class="form-label">Color</label>
+                        <div class="color-radio-grid">
+                            @foreach($colors as $color)
+                                <div class="color-radio-item">
+                                    <input type="radio" 
+                                           class="btn-check visually-hidden" 
+                                           id="variant_color_0_{{ $color->colorID }}" 
+                                           name="variants[0][colorID]" 
+                                           value="{{ $color->colorID }}" 
+                                           required>
+                                    <label class="color-btn" 
+                                           for="variant_color_0_{{ $color->colorID }}" 
+                                           style="background-color: {{ $color->color_code }};">
+                                    </label>
+                                    <span class="color-label">{{ $color->color_name }}</span>
                                 </div>
-                            </div>
-                            <div class="col-md-9">
-                                <div id="colorSuggestions" class="d-none">
-                                    <label>Suggested Colors:</label>
-                                    <div class="d-flex flex-wrap" id="suggestedColorsList">
-                                        <!-- Suggested colors will appear here -->
-                                    </div>
-                                </div>
-                            </div>
+                            @endforeach
                         </div>
                     </div>
-                </div>
-                
-                <div id="variantsContainer" class="variants-grid">
-                    <!-- Variants will be added here dynamically -->
-                </div>
-            </div>
-            <div class="card-footer">
-                <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save me-1"></i>Save Product
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Songkok Size Chart Section -->
-        <div class="card shadow-sm mb-4" id="songkokSection" style="display: none;">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Songkok Size Chart</h6>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6 mb-4">
-                        <label class="form-label">Size Chart Image</label>
-                        <input type="file" class="form-control" name="size_chart_image" accept="image/*">
-                        <small class="form-text text-muted">Upload an image of the Songkok size chart (optional)</small>
-                    </div>
-                    <div class="col-md-6 mb-4">
-                        <label class="form-label">Available Sizes</label>
-                        <div class="row">
-                            @foreach(['20 3/4', '21', '21 1/4', '21 1/2', '21 3/4', '22', '22 1/4', '22 1/2', '22 3/4', '23', '23 1/4', '23 1/2', '23 3/4'] as $size)
-                                <div class="col-md-4 mb-2">
+
+                    <!-- Tones Collection Section -->
+                    <div class="tones-section mb-4">
+                        <label class="form-label">Tones Collection</label>
+                        <div class="tone-grid">
+                            @foreach($tones as $tone)
+                                <div class="tone-item">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="songkok_sizes[]" value="{{ $size }}" id="size_{{ str_replace(' ', '_', $size) }}">
-                                        <label class="form-check-label" for="size_{{ str_replace(' ', '_', $size) }}">'{{ $size }}"'</label>
+                                        <input type="checkbox" 
+                                               class="form-check-input visually-hidden" 
+                                               id="variant_tone_0_{{ $tone->toneID }}" 
+                                               name="variants[0][tones][]" 
+                                               value="{{ $tone->toneID }}">
+                                        <label class="tone-btn" 
+                                               for="variant_tone_0_{{ $tone->toneID }}" 
+                                               style="background-color: {{ $tone->tone_code }};">
+                                        </label>
+                                        <span class="tone-label">{{ $tone->tone_name }}</span>
                                     </div>
                                 </div>
                             @endforeach
                         </div>
                     </div>
-                    <div class="col-md-12">
-                        <div class="mb-3">
-                            <label class="form-label">Stock Quantities</label>
-                            <div class="table-responsive">
-                                <table class="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th>Size</th>
-                                            <th>Stock</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="songkokStockTable">
-                                        <!-- Stock inputs will be added here dynamically -->
-                                    </tbody>
-                                </table>
+
+                    <!-- Sizes & Stock Section -->
+                    <div class="sizes-section mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <label class="form-label">Sizes & Stock</label>
+                            <button type="button" class="btn btn-info btn-sm add-size"><i class="fas fa-plus me-1"></i>Add Size</button>
+                        </div>
+                        <div class="sizes-container">
+                            <div class="size-item row align-items-end mb-3">
+                                <div class="col-md-5">
+                                    <label class="form-label">Size</label>
+                                    <select class="form-select" name="variants[0][sizes][0][size]" required>
+                                        <option value="">Select Size</option>
+                                        <option value="XS">XS</option>
+                                        <option value="S">S</option>
+                                        <option value="M">M</option>
+                                        <option value="L">L</option>
+                                        <option value="XL">XL</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="form-label">Stock</label>
+                                    <input type="number" class="form-control" name="variants[0][sizes][0][stock]" placeholder="Stock" required min="0">
+                                </div>
+                                <div class="col-md-2 text-end">
+                                    <button type="button" class="btn btn-danger btn-sm remove-size"><i class="fas fa-trash me-1"></i>Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Images Section -->
+                    <div class="images-section">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <label class="form-label">Variant Images</label>
+                            <button type="button" class="btn btn-info btn-sm add-image"><i class="fas fa-plus me-1"></i>Add Image</button>
+                        </div>
+                        <div class="images-container">
+                            <div class="image-item row align-items-end mb-3">
+                                <div class="col-md-10">
+                                    <label class="form-label" for="variant_image_0_0">Image</label>
+                                    <input type="file" class="form-control" id="variant_image_0_0" name="variants[0][images][]" required accept="image/*">
+                                </div>
+                                <div class="col-md-2 text-end">
+                                    <button type="button" class="btn btn-danger btn-sm remove-image" aria-label="Remove Image"><i class="fas fa-trash me-1"></i>Remove</button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="card-footer">
-                <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save me-1"></i>Save Product
-                    </button>
-                </div>
-            </div>
+            </template>
         </div>
-        
-        <!-- Submit Button for Non-Variant Products -->
-        <div id="nonVariantSubmit" class="text-end mb-4">
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save me-1"></i>Save Product
-            </button>
+
+        <div class="text-end mb-4">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Create Product</button>
         </div>
     </form>
 </div>
 
-<!-- Variant Template -->
-<template id="variantTemplate">
-    <div class="variant-item border rounded p-3 mb-3">
-        <div class="d-flex justify-content-between mb-3">
-            <h6 class="mb-0">Variant #<span class="variant-number"></span></h6>
-            <button type="button" class="btn btn-sm btn-danger remove-variant">Remove</button>
-        </div>
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Tone</label>
-                <select class="form-select" name="variants[__index__][toneID]" required>
-                    <option value="">Select Tone</option>
-                    @foreach($tones as $tone)
-                        <option value="{{ $tone->toneID }}">{{ $tone->tone_name }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Color</label>
-                <select class="form-select" name="variants[__index__][colorID]" required>
-                    <option value="">Select Color</option>
-                    @foreach($colors as $color)
-                        <option value="{{ $color->colorID }}">{{ $color->color_name }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Size</label>
-                <select class="form-select" name="variants[__index__][product_size]" required>
-                    <option value="">Select Size</option>
-                    @foreach(['XS', 'S', 'M', 'L', 'XL', 'XXL'] as $size)
-                        <option value="{{ $size }}">{{ $size }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Stock</label>
-                <input type="number" class="form-control" name="variants[__index__][product_stock]" 
-                       min="0" required>
-            </div>
-            <div class="col-12">
-                <label class="form-label">Image</label>
-                <input type="file" class="form-control" name="variants[__index__][product_image]" 
-                       accept="image/*" required>
-            </div>
-        </div>
-    </div>
-</template>
-
-@push('styles')
-<style>
-.variants-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1rem;
-}
-
-.color-suggestion-item {
-    cursor: pointer;
-    padding: 5px 10px;
-    border-radius: 4px;
-    transition: background-color 0.2s;
-}
-
-.color-suggestion-item:hover {
-    background-color: #f8f9fa;
-}
-
-.border-left-info {
-    border-left: 4px solid #36b9cc !important;
-}
-</style>
-@endpush
-
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const container = document.getElementById('variantsContainer');
-    const template = document.getElementById('variantTemplate');
-    const productTypeSelect = document.getElementById('product_type');
-    const variantsSection = document.getElementById('variantsSection');
-    const songkokSection = document.getElementById('songkokSection');
-    const nonVariantSubmit = document.getElementById('nonVariantSubmit');
-    let variantCount = 0;
+    $(document).ready(function() {
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
 
-    // Color suggestions data from backend
-    const colorSuggestions = @json($colorSuggestions);
-    
-    // Setup tone suggestion dropdown
-    const toneSelect = document.getElementById('toneSuggestion');
-    const suggestionsContainer = document.getElementById('colorSuggestions');
-    const suggestedColorsList = document.getElementById('suggestedColorsList');
-    
-    // Handle product type change
-    productTypeSelect.addEventListener('change', function() {
-        const selectedType = this.value;
-        
-        // Hide all sections first
-        variantsSection.style.display = 'none';
-        songkokSection.style.display = 'none';
-        nonVariantSubmit.style.display = 'block';
-        
-        // Show appropriate section based on product type
-        if (selectedType === 'Baju Melayu' || selectedType === 'Kurta') {
-            variantsSection.style.display = 'block';
-            nonVariantSubmit.style.display = 'none';
-        } else if (selectedType === 'Songkok') {
-            songkokSection.style.display = 'block';
-            nonVariantSubmit.style.display = 'none';
-            updateSongkokSizesTable();
-        }
-    });
-    
-    // Initialize based on any pre-selected value (for form validation failures)
-    if (productTypeSelect.value) {
-        productTypeSelect.dispatchEvent(new Event('change'));
-    }
-    
-    // Handle Songkok size checkboxes
-    const songkokSizeCheckboxes = document.querySelectorAll('input[name="songkok_sizes[]"]');
-    songkokSizeCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', updateSongkokSizesTable);
-    });
-    
-    // Function to update the Songkok sizes stock table
-    function updateSongkokSizesTable() {
-        const stockTable = document.getElementById('songkokStockTable');
-        stockTable.innerHTML = '';
-        
-        document.querySelectorAll('input[name="songkok_sizes[]"]:checked').forEach(checkbox => {
-            const size = checkbox.value;
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>'${size}"'</td>
-                <td>
-                    <input type="number" class="form-control" name="songkok_stock[${size}]" min="0" value="0" required>
-                </td>
-            `;
-            stockTable.appendChild(row);
+        // Show/hide variant section based on product type
+        $('#product_type').change(function() {
+            const type = $(this).val();
+            if (type === 'Baju Melayu' || type === 'Sampin') {
+                $('#variantSection').removeClass('d-none');
+            } else {
+                $('#variantSection').addClass('d-none');
+            }
         });
-    }
-    
-    // Add variant button functionality
-    const addVariantBtn = document.getElementById('addVariant');
-    addVariantBtn.addEventListener('click', function() {
-        addVariant();
-    });
-    
-    // Function to add a new variant
-    function addVariant() {
-        const variantNode = template.content.cloneNode(true);
-        const variantElement = variantNode.querySelector('.variant-item');
-        
-        // Update variant number and index
-        variantElement.querySelector('.variant-number').textContent = variantCount + 1;
-        
-        // Update all name attributes with the correct index
-        variantElement.querySelectorAll('[name*="__index__"]').forEach(el => {
-            el.name = el.name.replace('__index__', variantCount);
-        });
-        
-        // Add remove button functionality
-        variantElement.querySelector('.remove-variant').addEventListener('click', function() {
-            variantElement.remove();
-        });
-        
-        // Add the variant to the container
-        container.appendChild(variantElement);
-        variantCount++;
-    }
-    
-    // Add at least one variant if the variants section is visible
-    if (variantsSection.style.display !== 'none') {
-        addVariant();
-    }
-    
-    // Tone suggestion handling
-    toneSelect.addEventListener('change', function() {
-        const selectedTone = this.value;
-        suggestedColorsList.innerHTML = '';
-        
-        if (selectedTone && colorSuggestions[selectedTone]) {
-            suggestionsContainer.classList.remove('d-none');
+
+        // Add new variant
+        $('#addVariant').click(function() {
+            const template = document.querySelector('#variantTemplate');
+            const clone = template.content.cloneNode(true);
+            const variantCount = $('#variantsContainer .variant-item').length;
             
-            // Display the suggested colors
-            Object.entries(colorSuggestions[selectedTone]).forEach(([colorName, colorCode]) => {
-                const colorItem = document.createElement('div');
-                colorItem.className = 'color-suggestion-item me-3 mb-2';
-                colorItem.innerHTML = `
-                    <div class="d-flex align-items-center">
-                        <div class="color-swatch" style="width: 25px; height: 25px; background-color: ${colorCode}; 
-                                border-radius: 50%; margin-right: 8px; border: 1px solid #ddd;"></div>
-                        <span>${colorName}</span>
-                    </div>
-                `;
+            // Update variant number, IDs and names
+            $(clone).find('.variant-number').text(variantCount + 1);
+            $(clone).find('[name^="variants[0]"]').each(function() {
+                const newName = $(this).attr('name').replace('variants[0]', `variants[${variantCount}]`);
+                $(this).attr('name', newName);
                 
-                suggestedColorsList.appendChild(colorItem);
+                // Update IDs for labels
+                if ($(this).attr('id')) {
+                    // Handle size radio button IDs specifically
+                    if ($(this).attr('id').startsWith('variant_size_0_0_')) {
+                         const sizeValue = $(this).val();
+                         const newId = `variant_size_${variantCount}_0_${sizeValue}`;
+                         $(this).attr('id', newId);
+                         $(this).next('label').attr('for', newId);
+                    } else if ($(this).attr('id').startsWith('variant_color_')) {
+                        const colorId = $(this).attr('id').split('_').pop();
+                        const newColorId = `variant_color_${variantCount}_${colorId}`;
+                        $(this).attr('id', newColorId);
+                        $(this).next('label').attr('for', newColorId);
+                    } else {
+                        const newId = $(this).attr('id').replace('_0', `_${variantCount}`);
+                        $(this).attr('id', newId);
+                        // Update tone checkbox IDs specifically
+                        if (newId.startsWith('variant_tone_')) {
+                            $(this).next('label').attr('for', newId);
+                        } else {
+                            $(this).prev('label').attr('for', newId);
+                        }
+                    }
+                }
             });
-        } else {
-            suggestionsContainer.classList.add('d-none');
-        }
+    
+            // Remove Select2 initialization as it's no longer needed for tones
+            $('#variantsContainer').append(clone);
+        });
+
+        // Add size with proper IDs
+        $(document).on('change', 'select[name*="[size]"]', function() {
+            const sizeSelect = $(this);
+            const selectedSize = sizeSelect.val();
+            const variantContainer = sizeSelect.closest('.variant-item');
+            
+            if (selectedSize) {
+                // Check for duplicate sizes in this variant
+                const existingSizes = variantContainer.find('select[name*="[size]"]').not(sizeSelect).map(function() {
+                    return $(this).val();
+                }).get();
+                
+                if (existingSizes.includes(selectedSize)) {
+                    alert('This size has already been added to this variant');
+                    sizeSelect.val('');
+                }
+            }
+        });
+
+        // Updated add-size handler with validation
+        $(document).on('click', '.add-size', function() {
+            const variantIndex = $(this).closest('.variant-item').index();
+            const sizeCount = $(this).closest('.sizes-section').find('.size-item').length;
+            
+            // Check if all existing sizes are selected
+            const hasEmptySizes = $(this).closest('.sizes-section').find('select[name*="[size]"]').filter(function() {
+                return $(this).val() === '';
+            }).length > 0;
+            
+            if (hasEmptySizes) {
+                alert('Please select sizes for all existing size fields before adding new ones');
+                return;
+            }
+            
+            // Rest of the add-size implementation
+            const sizeHtml = `
+                <div class="size-item row align-items-end mb-3">
+                    <div class="col-md-5">
+                        <label class="form-label">Size</label>
+                        <select class="form-select" name="variants[${variantIndex}][sizes][${sizeCount}][size]" required>
+                            <option value="">Select Size</option>
+                            <option value="XS">XS</option>
+                            <option value="S">S</option>
+                            <option value="M">M</option>
+                            <option value="L">L</option>
+                            <option value="XL">XL</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label">Stock</label>
+                        <input type="number" class="form-control" name="variants[${variantIndex}][sizes][${sizeCount}][stock]" placeholder="Stock" required min="0">
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <button type="button" class="btn btn-danger btn-sm remove-size"><i class="fas fa-trash me-1"></i>Remove</button>
+                    </div>
+                </div>
+            `;
+            $(this).closest('.sizes-section').find('.sizes-container').append(sizeHtml);
+        });
+
+        // Add image with proper IDs
+        $(document).on('click', '.add-image', function() {
+            const variantIndex = $(this).closest('.variant-item').index();
+            const imageCount = $(this).closest('.images-section').find('.image-item').length;
+            const imageHtml = `
+                <div class="image-item row align-items-end mb-3">
+                    <div class="col-md-10">
+                        <label class="form-label" for="variant_image_${variantIndex}_${imageCount}">Image</label>
+                        <input type="file" class="form-control" id="variant_image_${variantIndex}_${imageCount}" name="variants[${variantIndex}][images][]" required accept="image/*">
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <button type="button" class="btn btn-danger btn-sm remove-image" aria-label="Remove Image">Remove</button>
+                    </div>
+                </div>
+            `;
+            $(this).closest('.images-section').find('.images-container').append(imageHtml);
+        });
+
+        // Remove variant handler
+        $(document).on('click', '.remove-variant', function() {
+            $(this).closest('.variant-item').remove();
+            // Update variant numbers after removal
+            $('.variant-item').each(function(index) {
+                $(this).find('.variant-number').text(index + 1);
+            });
+        });
+
+        // Remove size handler
+        $(document).on('click', '.remove-size', function() {
+            const sizesContainer = $(this).closest('.sizes-container');
+            if (sizesContainer.find('.size-item').length > 1) {
+                $(this).closest('.size-item').remove();
+            } else {
+                alert('At least one size must be maintained.');
+            }
+        });
+
+        // Remove image handler
+        $(document).on('click', '.remove-image', function() {
+            const imagesContainer = $(this).closest('.images-container');
+            if (imagesContainer.find('.image-item').length > 1) {
+                $(this).closest('.image-item').remove();
+            } else {
+                alert('At least one image is required.');
+            }
+        });
     });
-    
-    // Calculate discount percentage when prices change
-    const basePrice = document.getElementById('product_price');
-    const actualPrice = document.getElementById('actual_price');
-    const discountIndicator = document.getElementById('discount-indicator');
-    const discountPercentage = document.getElementById('discount-percentage');
-    
-    function updateDiscount() {
-        const basePriceValue = parseFloat(basePrice.value) || 0;
-        const actualPriceValue = parseFloat(actualPrice.value) || 0;
-        
-        if (basePriceValue > 0 && actualPriceValue > 0 && basePriceValue > actualPriceValue) {
-            const discount = Math.round(((basePriceValue - actualPriceValue) / basePriceValue) * 100);
-            discountPercentage.textContent = discount;
-            discountIndicator.classList.remove('d-none');
-        } else {
-            discountIndicator.classList.add('d-none');
-        }
-    }
-    
-    basePrice.addEventListener('input', updateDiscount);
-    actualPrice.addEventListener('input', updateDiscount);
-    
-    // Initial update
-    updateDiscount();
-});
 </script>
 @endpush
-@endsection
-
-@section('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Get references to the elements
-        const productTypeSelect = document.getElementById('product_type');
-        const variantsSection = document.getElementById('variantsSection');
-        const nonVariantSubmit = document.getElementById('nonVariantSubmit');
-        
-        // Function to check if variants should be shown
-        function checkVariantsVisibility() {
-            const selectedType = productTypeSelect.value;
-            
-            // Only show variants for "Baju Melayu"
-            if (selectedType === 'Baju Melayu') {
-                variantsSection.style.display = 'block';
-                nonVariantSubmit.style.display = 'none';
-            } else {
-                variantsSection.style.display = 'none';
-                nonVariantSubmit.style.display = 'block';
-            }
-        }
-        
-        // Check visibility on page load (for when form reloads with validation errors)
-        checkVariantsVisibility();
-        
-        // Add event listener for product type changes
-        productTypeSelect.addEventListener('change', checkVariantsVisibility);
-    });
-</script>
 @endsection

@@ -9,6 +9,9 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Tone;
 use App\Models\ProductColor;
+use App\Models\ToneCollection;
+use App\Models\VariantImage;
+use App\Models\ProductSizing;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 
@@ -16,10 +19,23 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::with('variants')
+        $products = Product::with([
+            'variants.color',
+            'variants.tones',
+            'variants.productSizings',
+            'variants.variantImages',
+            'promotions' => function($query) {
+                $query->where('is_active', true)
+                      ->where('start_date', '<=', now())
+                      ->where(function($q) {
+                          $q->where('end_date', '>=', now())
+                            ->orWhereNull('end_date');
+                      });
+            }
+        ])
             ->orderBy('created_at', 'desc')
             ->paginate(10)
-            ->withQueryString(); // Preserves other query parameters
+            ->withQueryString();
     
         return view('admin.product.index', compact('products'));
     }
@@ -89,61 +105,84 @@ class ProductController extends Controller
             'actual_price' => 'required|numeric|min:0',
             'product_description' => 'required|string',
             'product_type' => 'required|string|max:50',
-            'product_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'size_img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
         
-        // Add variant validation only for Baju Melayu and Kurta
-        if ($request->product_type === 'Baju Melayu' || $request->product_type === 'Kurta') {
+        // Add variant validation only for Baju Melayu and Sampin
+        if ($request->product_type === 'Baju Melayu' || $request->product_type === 'Sampin') {
             $variantValidation = [
                 'variants' => 'required|array|min:1',
-                'variants.*.toneID' => 'required|exists:tones,toneID',
                 'variants.*.colorID' => 'required|exists:product_colors,colorID',
-                'variants.*.product_size' => 'required|string|max:10',
-                'variants.*.product_stock' => 'required|integer|min:0',
-                'variants.*.product_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'variants.*.tones' => 'required|array|min:1',
+                'variants.*.tones.*' => 'required|exists:tones,toneID',
+                'variants.*.sizes' => 'required|array|min:1',
+                'variants.*.sizes.*.size' => 'required|string|max:10',
+                'variants.*.sizes.*.stock' => 'required|integer|min:0',
+                'variants.*.images' => 'required|array|min:1',
+                'variants.*.images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             ];
             
             $validated = $request->validate(array_merge($baseValidation, $variantValidation));
         } else {
             $validated = $request->validate($baseValidation);
         }
+
+        DB::beginTransaction();
+        try {
+            // Create the product
+            $product = Product::create([
+                'product_name' => $request->product_name,
+                'product_price' => $request->product_price,
+                'actual_price' => $request->actual_price,
+                'product_description' => $request->product_description,
+                'product_type' => $request->product_type,
+                'is_visible' => $request->has('is_visible'),
+                'size_img' => $request->file('size_img') ? $request->file('size_img')->store('size_charts', 'public') : null,
+            ]);
     
-        // Create the product
-        $productData = [
-            'product_name' => $request->product_name,
-            'product_price' => $request->product_price,
-            'actual_price' => $request->actual_price,
-            'product_description' => $request->product_description,
-            'product_type' => $request->product_type,
-            'is_visible' => $request->has('is_visible') ? 1 : 0,
-        ];
-        
-        // Handle main product image if provided
-        if ($request->hasFile('product_image')) {
-            $productData['product_image'] = $request->file('product_image')->store('product_images', 'public');
-        }
-        
-        $product = Product::create($productData);
+            // Process variants if product type requires them
+            if ($request->product_type === 'Baju Melayu' || $request->product_type === 'Sampin') {
+                foreach ($request->variants as $variantData) {
+                    // Create product variant
+                    $variant = ProductVariant::create([
+                        'productID' => $product->productID,
+                        'colorID' => $variantData['colorID'],
+                    ]);
     
-        // Create variants only for Baju Melayu and Kurta
-        if (($request->product_type === 'Baju Melayu' || $request->product_type === 'Kurta') && isset($validated['variants'])) {
-            foreach ($validated['variants'] as $variantData) {
-                $imagePath = $variantData['product_image']->store('product_images', 'public');
-                
-                ProductVariant::create([
-                    'productID' => $product->productID,
-                    'toneID' => $variantData['toneID'],
-                    'colorID' => $variantData['colorID'],
-                    'product_size' => $variantData['product_size'],
-                    'product_stock' => $variantData['product_stock'],
-                    'product_image' => $imagePath, // Changed from 'image' to 'product_image' for consistency
-                ]);
+                    // Create tone collections
+                    foreach ($variantData['tones'] as $toneID) {
+                        ToneCollection::create([
+                            'toneID' => $toneID,
+                            'product_variantID' => $variant->product_variantID,
+                        ]);
+                    }
+    
+                    // Create product sizes
+                    foreach ($variantData['sizes'] as $sizeData) {
+                        ProductSizing::create([
+                            'product_variantID' => $variant->product_variantID,
+                            'product_size' => $sizeData['size'],
+                            'product_stock' => $sizeData['stock'],
+                        ]);
+                    }
+    
+                    // Store variant images
+                    foreach ($variantData['images'] as $image) {
+                        $imagePath = $image->store('variant_images', 'public');                        
+                        VariantImage::create([
+                            'product_variantID' => $variant->product_variantID,
+                            'product_image' => $imagePath,
+                        ]);
+                    }
+                }
             }
-        }
     
-        DB::commit();
-        return redirect()->route('products.index')
-            ->with('success', 'Product created successfully');
+            DB::commit();
+            return redirect()->route('products.index')->with('success', 'Product created successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withInput()->with('error', 'Failed to create product: ' . $e->getMessage());
+        }
     }
     
     // Add these methods to your ProductController class

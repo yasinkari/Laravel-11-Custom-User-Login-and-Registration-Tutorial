@@ -18,7 +18,8 @@ class Product extends Model
         'product_description',
         'is_visible',
         'product_type',
-        'size_img'  // Added new column
+        'size_img',
+        'variant_imageID'  // Added new column
     ];
 
     public function variants()

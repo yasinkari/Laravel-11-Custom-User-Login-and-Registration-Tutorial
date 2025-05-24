@@ -12,14 +12,13 @@ class CartRecord extends Model
     protected $primaryKey = 'cart_recordID';
     protected $fillable = [
         'cartID',
-        'product_variantID',
-        'quantity'  // Added missing quantity field
+        'product_sizingID',
+        'quantity'
     ];
     
-    // Remove product() relationship as it's not needed (accessed through productVariant)
-    public function productVariant()
+    public function productSizing()
     {
-        return $this->belongsTo(ProductVariant::class, 'product_variantID');
+        return $this->belongsTo(ProductSizing::class, 'product_sizingID');
     }
 
     public function cart()
