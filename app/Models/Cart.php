@@ -13,7 +13,9 @@ class Cart extends Model
     protected $fillable = [
         'userID',
         'total_amount',
-        'status'  // Added status field
+        'status',  // Existing status field
+        'orderID', // Added orderID foreign key
+        'cart_status' // Added cart_status column
     ];
 
     // Remove product() relationship as it's not in the migration
@@ -29,6 +31,7 @@ class Cart extends Model
     
     public function order()
     {
-        return $this->hasOne(Order::class, 'cartID');
+        // Changed to belongsTo as orderID is now on the carts table
+        return $this->belongsTo(Order::class, 'orderID');
     }
 }

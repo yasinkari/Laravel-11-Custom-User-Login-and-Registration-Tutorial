@@ -12,8 +12,9 @@ class Tracking extends Model
     protected $primaryKey = 'trackingID';
     protected $fillable = [
         'orderID',
-        'order_status',
-        'timestamp'
+        // Removed 'order_status'
+        'timestamp',
+        'tracking_status' // Added tracking_status column
     ];
 
     public function order()

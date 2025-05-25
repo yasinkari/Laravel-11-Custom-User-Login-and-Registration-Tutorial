@@ -413,8 +413,21 @@ class ProductController extends Controller
             abort(404);
         }
         
-        $product->load(['variants.tones', 'variants.color','variants.productSizings', 'variants.variantImages']);
-        
+        $product->load(['variants.tones', 'variants.color', 'variants.productSizings', 'variants.variantImages']);
+
+        // Restructure the data array to match requested format
+        $product_variant = [
+            "product"=> [
+                'variants' => $product->variants->mapWithKeys(function($variant) {
+                    return [
+                        $variant->product_variantID => [
+                            'color_code' => $variant->color ? $variant->color->color_code : null,
+                            // Include other variant properties if needed
+                        ]
+                    ];
+                })
+            ]
+        ];
         // Get related products (same type)
         $relatedProducts = Product::where('product_type', $product->product_type)
             ->where('is_visible', true)
@@ -423,49 +436,34 @@ class ProductController extends Controller
             ->get();
         
         // Restructure the data array
-        $data = [
-            'productID' => [],
-            'variant_image' => [],
-            'size' => [],
-            'tone' => []
-        ];
+        $data = [];
 
         foreach ($product->variants as $variant) {
-            // Product color data
-            $data['productID'][$variant->product_variantID] = [
-                'color_code' => $variant->color ? $variant->color->color_code : null
-            ];
-
-            // Variant image data
-            $variantImage = $variant->variantImages->first();
-            $data['variant_image'][$variant->product_variantID] = [
-                'variant_imageID' => [
-                    'product_image' => $variantImage ? $variantImage->image_path : null
-                ]
-            ];
-
-            // Size data
-            $sizing = $variant->productSizings->first();
-            $data['size'][$variant->product_variantID] = [
-                'product_sizingID' => [
-                    'product_stock' => $sizing ? $sizing->product_stock : null,
-                    'product_size' => $sizing ? $sizing->product_size : null
-                ]
-            ];
-
-            // Tone data
-            if ($variant->tones->isNotEmpty()) {
-                $tone = $variant->tones->first();
-                $data['tone'][$variant->product_variantID] = [
-                    'tone_collectionID' => [
+            $data[$variant->product_variantID] = [
+                'color' => $variant->color ? $variant->color->color_code : null,
+                'variant_images' => $variant->variantImages->map(function($image) {
+                    return [
+                        'variant_imageID' => $image->variant_imageID,
+                        'product_image' => "/storage/".$image->product_image
+                    ];
+                })->toArray(),
+                'sizings' => $variant->productSizings->map(function($sizing) {
+                    return [
+                        'product_sizingID' => $sizing->product_sizingID,
+                        'product_stock' => $sizing->product_stock,
+                        'product_size' => $sizing->product_size
+                    ];
+                })->toArray(),
+                'tones' => $variant->tones->map(function($tone) {
+                    return [
                         'tone_code' => $tone->tone_code,
                         'tone_name' => $tone->tone_name
-                    ]
-                ];
-            }
+                    ];
+                })->toArray()
+            ];
         }
         
-        return view('customer.products.product_view', compact('data', 'product', 'relatedProducts'));
+        return view('customer.products.product_view', compact('data', 'product_variant', 'relatedProducts', 'product'));
     }
 
     public function storeVariant(Request $request, $productID)

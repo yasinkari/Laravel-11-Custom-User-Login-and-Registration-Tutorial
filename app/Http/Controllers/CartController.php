@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Models\ProductVariant;
 use App\Models\Tracking;
+use App\Models\ProductSizing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -20,55 +21,58 @@ class CartController extends Controller
     public function add(Request $request)
     {
         // Validate the request
-        $request->validate([
-            'product_id' => 'required|exists:products,productID',
-            'variants' => 'required|array',
-            'variants.*' => 'exists:product_variant,product_variantID',
-            'quantities' => 'required|array',
-            'quantities.*' => 'required|integer|min:1'
+        $validated = $request->validate([
+            'variant_id' => 'required|exists:product_variant,product_variantID',
+            'size_id' => 'required|exists:product_sizing,product_sizingID',
+            'quantity' => 'required|integer|min:1'
         ]);
-
+    
         try {
             DB::beginTransaction();
             
-            // Get current active cart or create a new one
-            $cart = $this->getCurrentCart();
+            // Get current active cart (with null cart_status) or create new
+            $userID = Auth::id();
+            $cart = Cart::firstOrCreate(
+                ['userID' => $userID, 'cart_status' => null],
+                ['total_amount' => 0]
+            );
             
-            // Process each selected variant
-            foreach ($request->variants as $variantId) {
-                $quantity = $request->quantities[$variantId];
-                
-                // Skip if quantity is 0 or not set
-                if (!$quantity) continue;
-                
-                $variant = ProductVariant::findOrFail($variantId);
-                
-                // Check stock availability
-                if ($variant->product_stock < $quantity) {
-                    return redirect()->back()->with('error', 'Not enough stock available for ' . $variant->product->product_name . ' (' . $variant->product_size . ')');
-                }
-                
-                // Create or update cart record
-                $cartRecord = CartRecord::updateOrCreate(
-                    [
-                        'cartID' => $cart->cartID,
-                        'product_variantID' => $variantId
-                    ],
-                    [
-                        'quantity' => DB::raw('quantity + ' . $quantity)
-                    ]
-                );
+            // Check stock availability
+            $productSizing = ProductSizing::findOrFail($request->size_id);
+            if ($productSizing->product_stock < $request->quantity) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Not enough stock available for selected size'
+                ], 400);
             }
+            
+            // Create or update cart record
+            CartRecord::updateOrCreate(
+                [
+                    'cartID' => $cart->cartID,
+                    'product_sizingID' => $request->size_id
+                ],
+                [
+                    'quantity' => DB::raw('quantity + ' . $request->quantity)
+                ]
+            );
             
             // Update cart total
             $this->updateCartTotal($cart);
             
             DB::commit();
             
-            return redirect()->route('cart.view')->with('success', 'Items added to cart successfully.');
+            return response()->json([
+                'success' => true,
+                'message' => 'Item added to cart successfully',
+                'cart_count' => $cart->cartRecords()->sum('quantity')
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Failed to add items to cart: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to add item to cart: ' . $e->getMessage()
+            ], 500);
         }
     }
     
@@ -77,11 +81,16 @@ class CartController extends Controller
      */
     public function view()
     {
-        $cart = $this->getCurrentCart();
-        
-        // Load cart records with related data
-        $cart->load(['cartRecords.productVariant.product', 'cartRecords.productVariant.tone', 'cartRecords.productVariant.color']);
-        
+        $cart = Cart::where('userID', auth()->id())
+                ->whereNull('cart_status')
+                ->first();
+    
+        if ($cart) {
+            $cart->load(['cartRecords.productSizing.productVariant.product', 
+                         'cartRecords.productSizing.productVariant.color', 
+                         'cartRecords.productSizing.productVariant.variantImages']);
+        }
+    
         return view('customer.cart.view', compact('cart'));
     }
     
@@ -91,41 +100,47 @@ class CartController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'quantities' => 'required|array',
-            'quantities.*' => 'required|integer|min:0'
+            'cart_id' => 'required|exists:carts,cartID',
+            'cart_records' => 'required|array',
+            'cart_records.*.id' => 'required|exists:cart_records,cart_recordID',
+            'cart_records.*.quantity' => 'required|integer|min:0|max:100'
         ]);
-        
+    
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
-            
-            $cart = $this->getCurrentCart();
-            
-            foreach ($request->quantities as $recordId => $quantity) {
-                $cartRecord = CartRecord::findOrFail($recordId);
-                
-                // Ensure the record belongs to the current cart
-                if ($cartRecord->cartID != $cart->cartID) {
-                    continue;
-                }
-                
+            $cartId = $request->input('cart_id');
+
+            foreach ($request->cart_records as $recordData) {
+                $cartRecord = CartRecord::findOrFail($recordData['id']);
+                $quantity = $recordData['quantity'];
+    
                 if ($quantity == 0) {
-                    // Remove item from cart
                     $cartRecord->delete();
                 } else {
-                    // Update quantity
+                    $availableStock = $cartRecord->productSizing->product_stock;
+                    if ($quantity > $availableStock) {
+                        throw new \Exception('Quantity exceeds available stock');
+                    }
                     $cartRecord->update(['quantity' => $quantity]);
                 }
             }
-            
-            // Update cart total
-            $this->updateCartTotal($cart);
-            
+
+            // Recalculate and update cart total amount
+            $cart = Cart::with('cartRecords.productSizing.productVariant.product')->findOrFail($cartId);
+            $newTotalAmount = 0;
+            foreach ($cart->cartRecords as $record) {
+                // Use actual_price from the related Product model
+                $newTotalAmount += $record->quantity * $record->productSizing->productVariant->product->actual_price;
+            }
+            $cart->update(['total_amount' => $newTotalAmount]);
+
             DB::commit();
-            
-            return redirect()->back()->with('success', 'Cart updated successfully.');
+            // Change the return statement to redirect back to the cart view
+            return redirect()->route('cart.view')->with('success', 'Cart updated successfully!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Failed to update cart: ' . $e->getMessage());
+            // You might want to redirect back with an error message as well
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
     
@@ -140,23 +155,19 @@ class CartController extends Controller
             $cartRecord = CartRecord::findOrFail($recordId);
             $cart = $cartRecord->cart;
             
-            // Ensure the cart belongs to the current user
             if ($cart->userID != Auth::id()) {
-                return redirect()->back()->with('error', 'Unauthorized action.');
+                return response()->json(['success' => false, 'message' => 'Unauthorized action.'], 403);
             }
             
-            // Delete record
             $cartRecord->delete();
-            
-            // Update cart total
             $this->updateCartTotal($cart);
             
             DB::commit();
             
-            return redirect()->back()->with('success', 'Item removed from cart successfully.');
+            return response()->json(['success' => true, 'message' => 'Item removed from cart successfully.']);
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Failed to remove item from cart: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to remove item from cart: ' . $e->getMessage()], 500);
         }
     }
     
@@ -254,7 +265,7 @@ class CartController extends Controller
         $total = 0;
         
         foreach ($cart->cartRecords as $record) {
-            $total += $record->productVariant->product->product_price * $record->quantity;
+            $total += $record->productVariant->product->actual_price * $record->quantity;
         }
         
         $cart->update(['total_amount' => $total]);

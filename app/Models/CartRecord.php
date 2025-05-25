@@ -21,6 +21,18 @@ class CartRecord extends Model
         return $this->belongsTo(ProductSizing::class, 'product_sizingID');
     }
 
+    public function productVariant()
+    {
+        return $this->hasOneThrough(
+            ProductVariant::class,
+            ProductSizing::class,
+            'product_sizingID', // Foreign key on ProductSizing table
+            'product_variantID', // Foreign key on ProductVariant table
+            'product_sizingID', // Local key on CartRecord table
+            'product_variantID' // Local key on ProductSizing table
+        );
+    }
+
     public function cart()
     {
         return $this->belongsTo(Cart::class, 'cartID');

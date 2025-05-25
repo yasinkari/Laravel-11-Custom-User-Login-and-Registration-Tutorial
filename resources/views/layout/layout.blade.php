@@ -9,6 +9,7 @@
     <meta name="theme-color" content="#ffffff">
     <title>Laravel - NILLforMan.com</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
     <style type="text/css">
         @import url(https://fonts.googleapis.com/css?family=Raleway:300,400,600);
     </style>
@@ -546,6 +547,139 @@
     .btn-add-to-cart:hover:before {
         left: 100%;
     }
+    .btn-primary-custom {
+      background-color: #ff6347; /* Use the specified color */
+      color: #fff; /* White text for contrast */
+      border: 1px solid #ff6347; /* Border matching the background */
+      padding: 10px 20px; /* Standard padding */
+      border-radius: 5px; /* Slightly rounded corners */
+      cursor: pointer;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  .btn-primary-custom:hover {
+      background-color: #e0513a; /* Slightly darker shade on hover */
+      border-color: #e0513a;
+  }
+
+  .btn-primary-custom:active {
+      background-color: #c74631; /* Even darker shade when active */
+      border-color: #c74631;
+  }
+
+  .btn-primary-custom:disabled {
+      background-color: #cccccc;
+      border-color: #cccccc;
+      cursor: not-allowed;
+  }
+
+  /* Responsive Navbar */
+  @media (max-width: 992px) { /* Medium devices (tablets, less than 992px) */
+    .navbar-custom {
+        padding: 1rem;
+    }
+    .navbar-custom .logo {
+        font-size: 1.3rem;
+    }
+    .navbar-custom a {
+        margin: 0 0.5rem;
+        font-size: 0.9rem;
+    }
+    .navbar-custom .search-bar input {
+        padding: 0.4rem 0.8rem;
+        width: 150px; /* Adjust search bar width */
+    }
+    .auth-links a {
+        font-size: 0.8rem;
+    }
+  }
+
+  @media (max-width: 768px) { /* Small devices (landscape phones, less than 768px) */
+    .navbar-custom {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .navbar-custom > div:nth-child(2) { /* Nav links container */
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        margin-top: 10px;
+    }
+    .navbar-custom > div:nth-child(2) a {
+        margin: 0.5rem 0;
+        padding: 0.5rem;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .navbar-custom > div:nth-child(2) a:last-child {
+        border-bottom: none;
+    }
+    .navbar-custom .d-flex.align-items-center { /* Search and auth links container */
+        width: 100%;
+        /* Keep these elements in a row on mobile */
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between; /* Distribute space */
+        margin-top: 10px;
+        padding: 0 1rem; /* Add some horizontal padding */
+    }
+    .navbar-custom .search-bar {
+        width: auto; /* Allow search bar to take necessary width */
+        margin-bottom: 0; /* Remove bottom margin */
+        flex-grow: 1; /* Allow search bar to grow */
+        margin-right: 1rem; /* Add margin to the right of search bar */
+    }
+    .navbar-custom .search-bar input {
+        width: 100%;
+    }
+    .auth-links {
+        margin-left: 0 !important;
+        margin-top: 0; /* Remove top margin */
+        display: flex; /* Ensure auth links are in a row */
+        align-items: center;
+        gap: 10px; /* Add space between auth links */
+    }
+    .auth-links a {
+        margin: 0; /* Remove default margin */
+    }
+  }
+
+  /* Responsive Footer */
+  @media (max-width: 768px) {
+    .footer .col-md-3, .footer .col-sm-6 {
+        margin-bottom: 30px;
+    }
+    .footer h5 {
+        font-size: 16px;
+    }
+    .social-icons a {
+        width: 35px;
+        height: 35px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .navbar-custom {
+        padding: 0.5rem;
+    }
+    .navbar-custom .logo {
+        font-size: 1.2rem;
+        align-self: center; /* Center logo on mobile */
+        margin-bottom: 10px;
+    }
+    .footer {
+        padding: 30px 0 10px;
+    }
+    .footer .row > div {
+        text-align: center; /* Center footer content on mobile */
+    }
+    .social-icons {
+        justify-content: center;
+    }
+    .footer .d-flex.gap-3 {
+        justify-content: center;
+    }
+  }
+
     </style>
     @yield('css')
     <!-- In the head section -->
@@ -556,39 +690,73 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 </head>
 <body>
-    <nav class="navbar navbar-custom d-flex justify-content-between align-items-center">
-        <img class="logo" src="{{ asset('image/IMG_7281-removebg-preview.png') }}" width="100px" alt="Logo">
-        <div>
-            <a href="{{ url('/') }}">Home</a>
-            <a href="{{ route('products.customer') }}">Products</a>
-            <a href="{{ url('/about') }}">About us</a>
-            <a href="{{ url('/contact') }}">Contact Us</a>
-        </div>
-        <div class="d-flex align-items-center">
-            <div class="search-bar me-3">
-                <input type="text" placeholder="Search" />
-            </div>
-            <a href="#"><img src="https://img.icons8.com/ios-glyphs/30/000000/like--v1.png" alt="Like"></a>
-            <a href="{{ route('cart.view') }}"><img src="https://img.icons8.com/ios-glyphs/30/000000/shopping-cart--v1.png" alt="Cart"></a>
-            <div class="auth-links ms-3">
-                @if(Auth::check())
-                    <a href="">Profile</a>
-                    <a href="{{ route('logout') }}" 
-                       onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                       Logout
-                    </a>
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                        @csrf
-                    </form>
-                @else
-                    <a href="{{ route('login') }}">Login</a>
-                    <a href="{{ route('register') }}">Register</a>
-                @endif
+    <nav class="navbar navbar-expand-lg navbar-light navbar-custom">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url('/') }}">
+                <img class="logo" src="{{ asset('image/IMG_7281-removebg-preview.png') }}" width="100px" alt="Logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url('/') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('products.customer') }}">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url('/about') }}">About us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url('/contact') }}">Contact Us</a>
+                    </li>
+                </ul>
+                <div class="search-bar me-3">
+                  <input type="text" placeholder="Search" class="form-control"/>
+              </div>
+                <div class="d-flex align-items-center">
+                    
+                    <a href="#" class="nav-link"><img src="https://img.icons8.com/ios-glyphs/30/000000/like--v1.png" alt="Like"></a>
+                    <a href="{{ route('cart.view') }}" class="nav-link"><img src="https://img.icons8.com/ios-glyphs/30/000000/shopping-cart--v1.png" alt="Cart"></a>
+                    <div class="auth-links ms-3">
+                        @if(Auth::check())
+                            <a href="" class="nav-link">Profile</a>
+                            <a href="{{ route('logout') }}" class="nav-link"
+                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                               Logout
+                            </a>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                @csrf
+                            </form>
+                        @else
+                            <a href="{{ route('login') }}" class="nav-link">Login</a>
+                            <a href="{{ route('register') }}" class="nav-link">Register</a>
+                        @endif
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
-
+    <div class="toast-container position-fixed top-50 start-50 translate-middle p-3" style="z-index: 1100; display: none;">
+        <div id="successToast" class="toast align-items-center" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body"></div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+        <div id="errorToast" class="toast align-items-center" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body"></div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+    
+</body>
     @yield('content')
+
     <footer class="footer">
       <div class="container">
         <div class="row">
@@ -654,6 +822,90 @@
     </footer>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script>
+    /**
+     * Show a customizable toast notification
+     * @param {string} type - 'success' or 'error'
+     * @param {string} message - The message to display
+     * @param {object} options - Optional settings:
+     *   - {number} duration - Auto-hide delay in ms (default: 5000)
+     *   - {string} position - 'top', 'bottom', or 'center' (default: 'center')
+     *   - {string} title - Custom title for the toast
+     *   - {string} bgColor - Custom background color
+     *   - {string} textColor - Custom text color
+     */
+    //  Modified showToast function
+    function showToast(type, message, options = {}) {
+        const defaults = {
+            duration: 5000,
+            position: 'center',
+            title: type.charAt(0).toUpperCase() + type.slice(1),
+            bgColor: type === 'success' ? '#28a745' : '#dc3545',
+            textColor: '#fff'
+        };
+
+        const settings = {...defaults, ...options};
+        const toastId = `toast-${Date.now()}`;
+        const positionClass = {
+            'top': 'top-0 start-50 translate-middle-x',
+            'bottom': 'bottom-0 start-50 translate-middle-x',
+            'center': 'top-50 start-50 translate-middle'
+        }[settings.position] || 'top-50 start-50 translate-middle';
+
+        const toastHtml = `
+            <div id="${toastId}" class="toast align-items-center position-fixed ${positionClass} p-3" 
+                role="alert" aria-live="assertive" aria-atomic="true"
+                style="z-index: 1100; background-color: ${settings.bgColor}; color: ${settings.textColor}; display: block;">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${settings.title ? `<strong>${settings.title}</strong><br>` : ''}
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto" 
+                            data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', toastHtml);
+        const toastEl = document.getElementById(toastId);
+        const toast = new bootstrap.Toast(toastEl, {
+            delay: settings.duration
+        });
+
+        toast.show();
+
+        toastEl.addEventListener('hidden.bs.toast', () => {
+            toastEl.style.display = 'none';
+            toastEl.remove();
+        });
+    }
+    
+    // Example usage:
+    // showToast('success', 'Item added to cart!');
+    // showToast('error', 'Failed to add item', {duration: 3000, position: 'top'});
+    @if(session('success'))
+    document.addEventListener('DOMContentLoaded', function() {
+        const successToast = document.getElementById('successToast');
+        const toastBody = successToast.querySelector('.toast-body');
+        toastBody.textContent = "{{ session('success') }}";
+        const toast = new bootstrap.Toast(successToast);
+        toast.show();
+    });
+    @endif
+
+    @if(session('error'))
+    document.addEventListener('DOMContentLoaded', function() {
+        const errorToast = document.getElementById('errorToast');
+        const toastBody = errorToast.querySelector('.toast-body');
+        toastBody.textContent = "{{ session('error') }}";
+        const toast = new bootstrap.Toast(errorToast);
+        toast.show();
+    });
+    @endif
+    </script>
 @stack('scripts')  <!-- Add this line to render pushed scripts -->
 </body>
 </html>
+
+

@@ -13,13 +13,15 @@ class Order extends Model
     
     protected $fillable = [
         'userID',
-        'cartID',
-        'order_date'
+        // Removed 'cartID'
+        'order_date',
+        'order_status' // Added order_status column
     ];
 
     public function cart()
     {
-        return $this->belongsTo(Cart::class, 'cartID');
+        // Changed to hasOne as cartID is removed from orders table and orderID is added to carts table
+        return $this->hasOne(Cart::class, 'orderID');
     }
 
     // Remove user() relationship as it's accessed through cart
