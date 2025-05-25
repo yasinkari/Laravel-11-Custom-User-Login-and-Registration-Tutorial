@@ -52,8 +52,9 @@ class AdminController extends Controller
         // Get total sales from completed orders through cart
         $totalSales = Order::whereHas('tracking', function($query) {
             $query->where('order_status', 'completed');
-        })->join('carts', 'orders.cartID', '=', 'carts.cartID')
-          ->sum('carts.total_amount');
+        })
+        ->join('carts', 'carts.orderID', '=', 'orders.orderID') // Corrected join condition
+        ->sum('carts.total_amount');
     
         // Get total orders
         $totalOrders = Order::count();
@@ -76,7 +77,7 @@ class AdminController extends Controller
         $monthlySales = Order::whereHas('tracking', function($query) {
             $query->where('order_status', 'completed');
         })
-        ->join('carts', 'orders.cartID', '=', 'carts.cartID')
+        ->join('carts', 'carts.orderID', '=', 'orders.orderID') // Corrected join condition
         ->selectRaw('MONTH(orders.order_date) as month, SUM(carts.total_amount) as total')
         ->whereYear('orders.order_date', now()->year)
         ->groupBy('month')
