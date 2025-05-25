@@ -293,7 +293,7 @@
         
         <div class="filter-row">
             <div class="product-count">
-                <span>{{ $products->total() }} items</span>
+                <span>1 item</span>
             </div>
             
             <div class="d-flex">
@@ -324,20 +324,26 @@
             <div class="col-md-3 mb-4">
                 <div class="card product-card">
                     <div class="product-image">
-                        @if($product->variants->isNotEmpty())
-                            <img src="{{ asset('storage/' . $product->variants->first()->product_image) }}" alt="{{ $product->product_name }}">
+                        @if($product->variants->isNotEmpty() && $product->variants->first()->variantImages->isNotEmpty())
+                            <img src="{{ Storage::url($product->variants->first()->variantImages->first()->product_image) }}" 
+                                 alt="{{ $product->product_name }}">
                         @else
-                            <img src="{{ asset('image/placeholder.jpg') }}" alt="{{ $product->product_name }}">
+                            <img src="{{ asset('image/placeholder.jpg') }}" 
+                                 alt="{{ $product->product_name }}">
                         @endif
                     </div>
                     <div class="product-info">
                         <h5 class="product-title">{{ $product->product_name }}</h5>
                         <div class="product-price-container">
-                            <span class="product-original-price">RM{{ number_format($product->product_price, 2) }}</span>
-                            <span class="product-price">RM{{ number_format($product->actual_price, 2) }}</span>
+                            @if($product->actual_price < $product->product_price)
+                                <span class="product-original-price">RM{{ number_format($product->product_price, 2) }}</span>
+                                <span class="product-price">RM{{ number_format($product->actual_price, 2) }}</span>
+                            @else
+                                <span class="product-price">RM{{ number_format($product->product_price, 2) }}</span>
+                            @endif
                         </div>
                         <div class="d-grid gap-2">
-                            <a href="{{ route('products.view', $product->productID) }}" class="btn btn-view-details">View Details</a>
+                            <a href="{{ route('products.view', $product) }}" class="btn btn-view-details">View Details</a>
                             <form action="{{ route('cart.add') }}" method="POST" class="w-100">
                                 @csrf
                                 <input type="hidden" name="product_id" value="{{ $product->productID }}">
@@ -352,10 +358,6 @@
                 </div>
             </div>
             @endforeach
-        </div>
-        
-        <div class="pagination-container">
-            {{ $products->links() }}
         </div>
     </div>
 </div>

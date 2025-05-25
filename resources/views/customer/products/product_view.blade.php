@@ -1,647 +1,408 @@
 @extends('layout.layout')
 
-@section('css')
-<style>
-    .product-details {
-        padding: 60px 0;
-        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-        min-height: 100vh;
-    }
-
-    /* Enhanced Product Image Section */
-    .product-image {
-        border-radius: 0;
-        overflow: hidden;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
-        background: white;
-        padding: 20px;
-        margin-bottom: 30px;
-        position: relative;
-    }
-
-    .product-image img {
-        width: 100%;
-        height: 500px;
-        object-fit: contain;
-        transition: transform 0.5s ease;
-    }
-
-    .product-image:hover img {
-        transform: scale(1.02);
-    }
-    
-    /* Zoom icon overlay */
-    .product-image:after {
-        content: '\f00e';
-        font-family: 'Font Awesome 5 Free';
-        font-weight: 900;
-        position: absolute;
-        bottom: 20px;
-        right: 20px;
-        width: 40px;
-        height: 40px;
-        background: rgba(15, 44, 31, 0.7);
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-    
-    .product-image:hover:after {
-        opacity: 1;
-    }
-
-    /* Enhanced Product Info Section */
-    .product-info {
-        padding: 40px;
-        background: white;
-        border-radius: 0;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
-    }
-
-    .product-title {
-        font-size: 32px;
-        font-weight: 700;
-        color: #0f2c1f;
-        margin-bottom: 20px;
-        line-height: 1.2;
-        position: relative;
-        padding-bottom: 15px;
-    }
-    
-    .product-title:after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 80px;
-        height: 3px;
-        background: linear-gradient(90deg, #0f2c1f, #2a5a4a);
-    }
-
-    .stock-status {
-        display: inline-block;
-        padding: 6px 12px;
-        font-size: 14px;
-        font-weight: 600;
-        border-radius: 0;
-        margin-bottom: 20px;
-    }
-    
-    .stock-status.in-stock {
-        background-color: rgba(15, 44, 31, 0.1);
-        color: #0f2c1f;
-        border: 1px solid rgba(15, 44, 31, 0.2);
-    }
-    
-    .stock-status.out-of-stock {
-        background-color: rgba(220, 53, 69, 0.1);
-        color: #dc3545;
-        border: 1px solid rgba(220, 53, 69, 0.2);
-    }
-    
-    .product-price {
-        font-size: 28px;
-        font-weight: 700;
-        color: #0f2c1f;
-        margin-bottom: 25px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    
-    .original-price {
-        text-decoration: line-through;
-        color: #999;
-        font-size: 20px;
-    }
-    
-    .new-price {
-        color: #0f2c1f !important;
-        font-weight: 700 !important;
-    }
-
-    .product-description {
-        font-size: 16px;
-        color: #7f8c8d;
-        line-height: 1.8;
-        margin-bottom: 30px;
-        padding-bottom: 30px;
-        border-bottom: 1px solid #ecf0f1;
-    }
-
-    /* Enhanced Variant Section */
-    .variant-section {
-        background: #f8f9fa;
-        padding: 30px;
-        border-radius: 0;
-        margin-top: 30px;
-        border: 1px solid rgba(15, 44, 31, 0.1);
-    }
-
-    .variant-title {
-        font-size: 18px;
-        font-weight: 600;
-        color: #0f2c1f;
-        margin-bottom: 25px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        position: relative;
-        padding-bottom: 10px;
-    }
-    
-    .variant-title:after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 40px;
-        height: 2px;
-        background: #0f2c1f;
-    }
-
-    /* Enhanced Tone Selector */
-    .tone-selector {
-        display: flex;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        gap: 15px;
-        margin-bottom: 35px;
-        padding: 25px;
-        background: white;
-        border-radius: 0;
-        position: relative;
-        max-height: 120px;
-        scrollbar-width: thin;
-        scrollbar-color: #0f2c1f #f0f0f0;
-        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.03);
-    }
-
-    .tone-selector::-webkit-scrollbar {
-        height: 6px;
-    }
-
-    .tone-selector::-webkit-scrollbar-track {
-        background: #f0f0f0;
-        border-radius: 0;
-    }
-
-    .tone-selector::-webkit-scrollbar-thumb {
-        background: #0f2c1f;
-        border-radius: 0;
-    }
-
-    .tone-option {
-        min-width: 50px;
-        height: 50px;
-        border-radius: 0;
-        cursor: pointer;
-        border: 2px solid transparent;
-        transition: all 0.3s ease;
-        position: relative;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    }
-
-    .tone-option:hover {
-        transform: scale(1.1);
-        z-index: 1;
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
-    }
-
-    .tone-option.active {
-        border-color: #0f2c1f;
-        transform: scale(1.1);
-        box-shadow: 0 0 0 3px rgba(15, 44, 31, 0.3);
-    }
-
-    .tone-option .tone-name {
-        position: absolute;
-        bottom: -25px;
-        left: 50%;
-        transform: translateX(-50%);
-        white-space: nowrap;
-        font-size: 12px;
-        background: rgba(15, 44, 31, 0.9);
-        color: white;
-        padding: 3px 8px;
-        border-radius: 0;
-        opacity: 0;
-        transition: opacity 0.2s ease;
-        pointer-events: none;
-        z-index: 2;
-        font-weight: 500;
-    }
-
-    .tone-option:hover .tone-name {
-        opacity: 1;
-    }
-
-    /* Enhanced Color Selector */
-    .color-selector {
-        display: none;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        gap: 15px;
-        padding: 25px;
-        background: white;
-        border-radius: 0;
-        margin-top: 30px;
-        max-height: 120px;
-        scrollbar-width: thin;
-        scrollbar-color: #0f2c1f #f0f0f0;
-        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.03);
-    }
-
-    .color-selector::-webkit-scrollbar {
-        height: 6px;
-    }
-
-    .color-selector::-webkit-scrollbar-track {
-        background: #f0f0f0;
-        border-radius: 0;
-    }
-
-    .color-selector::-webkit-scrollbar-thumb {
-        background: #0f2c1f;
-        border-radius: 0;
-    }
-
-    .color-option {
-        min-width: 50px;
-        height: 50px;
-        border-radius: 0;
-        cursor: pointer;
-        border: 2px solid transparent;
-        transition: all 0.3s ease;
-        position: relative;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    }
-
-    .color-option:hover {
-        transform: scale(1.1);
-        z-index: 1;
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
-    }
-
-    .color-option.active {
-        border-color: #0f2c1f;
-        transform: scale(1.1);
-        box-shadow: 0 0 0 3px rgba(15, 44, 31, 0.3);
-    }
-
-    .color-option .color-name {
-        position: absolute;
-        bottom: -25px;
-        left: 50%;
-        transform: translateX(-50%);
-        white-space: nowrap;
-        font-size: 12px;
-        background: rgba(15, 44, 31, 0.9);
-        color: white;
-        padding: 3px 8px;
-        border-radius: 0;
-        opacity: 0;
-        transition: opacity 0.2s ease;
-        pointer-events: none;
-        z-index: 2;
-        font-weight: 500;
-    }
-
-    .color-option:hover .color-name {
-        opacity: 1;
-    }
-    
-    /* Enhanced Variant Table */
-    .variants-table {
-        margin-top: 30px;
-    }
-    
-    .table {
-        border-collapse: separate;
-        border-spacing: 0;
-        width: 100%;
-        border-radius: 0;
-        overflow: hidden;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    }
-    
-    .table th {
-        background-color: rgba(15, 44, 31, 0.05);
-        color: #0f2c1f;
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 14px;
-        padding: 15px;
-    }
-    
-    .table td {
-        padding: 15px;
-        vertical-align: middle;
-        border-top: 1px solid rgba(0, 0, 0, 0.05);
-    }
-    
-    .table tr:hover {
-        background-color: rgba(15, 44, 31, 0.02);
-    }
-    
-    /* Enhanced Quantity Input */
-    .quantity-input {
-        width: 70px;
-        height: 40px;
-        text-align: center;
-        border: 1px solid #ddd;
-        border-radius: 0;
-        font-size: 14px;
-    }
-    
-    /* Enhanced Checkbox */
-    input[type="checkbox"] {
-        width: 18px;
-        height: 18px;
-        accent-color: #0f2c1f;
-    }
-    
-    /* Enhanced Add to Cart Button */
-    .btn-add-to-cart {
-        background-color: #0f2c1f;
-        color: #fff;
-        border: none;
-        padding: 15px 30px;
-        font-size: 16px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        transition: all 0.3s ease;
-        width: 100%;
-        margin-top: 30px;
-        border-radius: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-    
-    .btn-add-to-cart:before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-        transition: all 0.5s ease;
-    }
-    
-    .btn-add-to-cart:hover {
-        background-color: #143c2a;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-    }
-    
-    .btn-add-to-cart:active {
-        transform: translateY(-1px);
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-    }
-    
-    .btn-add-to-cart:hover:before {
-        left: 100%;
-    }
-</style>
-@endsection
-
 @section('content')
 <div class="product-details">
+    {{dd($data)}}
     <div class="container">
         <div class="row">
             <div class="col-md-6">
-                <div class="product-image">
-                    <img id="product-image" src="{{ !empty($data['tones']) && !empty($data['tones'][0]['colors']) && !empty($data['tones'][0]['colors'][0]['sizes']) 
-                        ? asset('storage/' . $data['tones'][0]['colors'][0]['sizes'][0]['product_image']) 
-                        : asset('image/IMG_7282.jpg') }}" 
-                        alt="{{ $data['product']['product_name'] }}">
+                <div class="product-image-gallery">
+                    <div class="main-image mb-4">
+                        <img src="" alt="{{ $product->product_name }}" class="img-fluid main-product-image" id="main-product-image">
+                    </div>
+                    <div class="thumbnail-gallery">
+                        <div class="row g-2" id="variant-thumbnails"></div>
+                    </div>
                 </div>
             </div>
+
             <div class="col-md-6">
                 <div class="product-info">
-                    <h1 class="product-title">{{ $data['product']['product_name'] }}</h1>
+                    <h1 class="product-title">{{ $product->product_name }}</h1>
                     
-                    @php
-                        $hasStock = false;
-                        foreach ($data['tones'] as $tone) {
-                            foreach ($tone['colors'] as $color) {
-                                foreach ($color['sizes'] as $size) {
-                                    if ($size['product_stock'] > 0) {
-                                        $hasStock = true;
-                                        break 3;
-                                    }
-                                }
-                            }
-                        }
-                    @endphp
-                    
-                    <!-- Inside the product info section, update the price display -->
-                    <div class="stock-status {{ $hasStock ? 'in-stock' : 'out-of-stock' }}">
-                        <i class="fas {{ $hasStock ? 'fa-check-circle' : 'fa-times-circle' }}"></i>
-                        {{ $hasStock ? 'In Stock' : 'Out of Stock' }}
+                    <div class="product-price-section mb-4">
+                        @if($product->actual_price < $product->product_price)
+                            <div class="price-display">
+                                <span class="current-price">RM{{ number_format($product->actual_price, 2) }}</span>
+                                <span class="original-price">RM{{ number_format($product->product_price, 2) }}</span>
+                            </div>
+                            <div class="sale-badge">SALE!</div>
+                        @else
+                            <div class="price-display">
+                                <span class="current-price">RM{{ number_format($product->product_price, 2) }}</span>
+                            </div>
+                        @endif
                     </div>
-                    
-                    @php
-                        $product = $data['product'];
-                        $hasPromotion = false;
-                        $discountedPrice = $product['product_price'];
-                        
-                        // Check if there's an active promotion
-                        if (isset($product['promotions']) && count($product['promotions']) > 0) {
-                            foreach ($product['promotions'] as $promo) {
-                                if ($promo['is_active'] && 
-                                    strtotime($promo['start_date']) <= time() && 
-                                    (is_null($promo['end_date']) || strtotime($promo['end_date']) >= time())) {
-                                    
-                                    $hasPromotion = true;
-                                    
-                                    if ($promo['promotion_type'] == 'percentage') {
-                                        $discountedPrice = $product['product_price'] * (1 - ($promo['discount_amount'] / 100));
-                                    } elseif ($promo['promotion_type'] == 'fixed') {
-                                        $discountedPrice = $product['product_price'] - $promo['discount_amount'];
-                                    }
-                                    
-                                    // Ensure price doesn't go below zero
-                                    $discountedPrice = max(0, $discountedPrice);
-                                    $promotionName = $promo['promotion_name'];
-                                    break;
-                                }
-                            }
-                        }
-                    @endphp
-                    
-                    @if($hasPromotion)
-                        <div class="promotion-badge mb-2">
-                            <span class="badge bg-danger">{{ $promotionName }}</span>
-                        </div>
-                        <p class="product-price">
-                            <span class="original-price text-muted text-decoration-line-through">
-                                RM {{ number_format($product['product_price'], 2) }}
-                            </span>
-                            <span class="new-price">
-                                RM {{ number_format($discountedPrice, 2) }}
-                            </span>
-                        </p>
-                    @else
-                        <p class="product-price">RM {{ number_format($product['product_price'], 2) }}</p>
-                    @endif
-                    <p class="product-description">{{ $data['product']['product_description'] }}</p>
 
-                    @if(count($data['tones']) > 0)
+                    <div class="variant-selection">
                         <form id="add-to-cart-form" action="{{ route('cart.add') }}" method="POST">
                             @csrf
-                            <input type="hidden" name="product_id" value="{{ $data['product']['productID'] }}">
+                            <input type="hidden" name="product_id" value="{{ $product->productID }}">
+                            <input type="hidden" name="variant_id" id="selected_variant_id">
                             
-                            <div class="variant-section">
-                                <h3 class="variant-title">Select Skin Tone</h3>
-                                <div class="tone-selector">
+                            <div class="color-selection mb-4">
+                                <label class="variant-label">Colors</label>
+                                <div class="color-options" id="color-options">
                                     @foreach($data['tones'] as $tone)
-                                        <div class="tone-option" 
-                                             data-tone-id="{{ $tone['tone_id'] }}"
-                                             style="background-color: {{ $tone['tone_code'] }}">
-                                            <span class="tone-name">{{ $tone['tone_name'] }}</span>
-                                        </div>
+                                        @foreach($tone['colors'] as $color)
+                                            <div class="color-box-option" 
+                                                 data-color-id="{{ $color['color_id'] }}"
+                                                 data-tone-id="{{ $tone['tone_id'] }}">
+                                                <div class="color-box" style="background-color: {{ $color['color_code'] }}">
+                                                    <div class="color-check">
+                                                        <i class="fas fa-check"></i>
+                                                    </div>
+                                                </div>
+                                                <span class="color-name">{{ $color['color_name'] }}</span>
+                                            </div>
+                                        @endforeach
                                     @endforeach
                                 </div>
+                            </div>
 
-                                <div class="color-selector">
-                                    <h3 class="variant-title">Select Color</h3>
-                                    <!-- Colors will be populated dynamically -->
-                                </div>
-
-                                <div class="variants-table">
-                                    <h3 class="variant-title">Select Size and Quantity</h3>
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>Size</th>
-                                                <th>Stock</th>
-                                                <th>Select</th>
-                                                <th>Quantity</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <!-- Variants will be populated dynamically -->
-                                        </tbody>
-                                    </table>
-                                    <button type="submit" class="btn-add-to-cart">Add to Cart</button>
+                            <div class="mb-4">
+                                <label class="variant-label">Size</label>
+                                <div class="size-options d-flex flex-wrap gap-2" id="size-buttons-container">
+                                    <button type="button" class="size-btn" data-size="XXS" disabled>XXS</button>
+                                    <button type="button" class="size-btn" data-size="XS" disabled>XS</button>
+                                    <button type="button" class="size-btn" data-size="S" disabled>S</button>
+                                    <button type="button" class="size-btn" data-size="M" disabled>M</button>
+                                    <button type="button" class="size-btn" data-size="L" disabled>L</button>
+                                    <button type="button" class="size-btn" data-size="XL" disabled>XL</button>
+                                    <button type="button" class="size-btn" data-size="XXL" disabled>XXL</button>
                                 </div>
                             </div>
+
+                            <div class="tone-selection mb-4" style="display: none;">
+                                <label class="variant-label">Tone</label>
+                                <div class="tone-options" id="tone-options"></div>
+                            </div>
+
+                            <div class="selected-variants mt-4">
+                                <div id="selected-colors-info"></div>
+                            </div>
+
+                            <div class="tone-selection mb-4" style="display: none;">
+                                <label class="variant-label">Tone</label>
+                                <div class="tone-options" id="tone-options"></div>
+                            </div>
+
+                            <div class="size-selection mb-4" style="display: none;">
+                                <label class="variant-label">Size</label>
+                                <div class="size-options" id="size-options"></div>
+                            </div>
+
+                            <div class="quantity-section mb-4" style="display: none;">
+                                <label class="variant-label">Quantity</label>
+                                <div class="quantity-input">
+                                    <button type="button" class="qty-btn minus">-</button>
+                                    <input type="number" name="quantity" value="1" min="1" class="qty-input">
+                                    <button type="button" class="qty-btn plus">+</button>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn-add-to-cart" disabled>
+                                Add To Cart »
+                            </button>
                         </form>
-                    @endif
+
+                        <div class="whatsapp-order mt-3">
+                            <button class="btn-whatsapp-order w-100">
+                                Order Melalui Whatsapp <i class="fab fa-whatsapp"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-@endsection
+
+@push('styles')
+<style>
+.product-image-gallery {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.main-image {
+    border: 1px solid #eee;
+    padding: 10px;
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.main-image img {
+    max-height: 100%;
+    width: auto;
+    object-fit: contain;
+}
+
+.thumbnail-gallery {
+    margin-top: 1rem;
+}
+
+.thumbnail-item {
+    cursor: pointer;
+    border: 2px solid transparent;
+    padding: 5px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.thumbnail-item.active {
+    border-color: #0f2c1f;
+}
+
+.thumbnail-item img {
+    width: 100%;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.product-title {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.price-display {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.current-price {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #ff6b6b;
+}
+
+.original-price {
+    font-size: 1.2rem;
+    text-decoration: line-through;
+    color: #868e96;
+}
+
+.sale-badge {
+    display: inline-block;
+    background-color: #ff6b6b;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.size-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.size-btn {
+    padding: 0.5rem 1rem;
+    border: 2px solid #dee2e6;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.size-btn:hover {
+    border-color: #0f2c1f;
+}
+
+.size-btn.selected {
+    background: #0f2c1f;
+    color: white;
+    border-color: #0f2c1f;
+}
+
+.color-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.color-box-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
+
+.color-box {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+    position: relative;
+    margin-bottom: 5px;
+    transition: all 0.3s ease;
+}
+
+.color-box:hover {
+    transform: scale(1.05);
+    border-color: #999;
+}
+
+.color-box.selected {
+    border-color: #333;
+}
+
+.color-check {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    text-shadow: 0 0 2px rgba(0,0,0,0.5);
+}
+
+.color-box.selected .color-check {
+    display: block;
+}
+
+.color-name {
+    font-size: 12px;
+    text-align: center;
+    color: #666;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+</style>
+@endpush
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+$(document).ready(function() {
     const productData = @json($data);
-    let selectedTone = null;
+    let selectedSize = null;
     let selectedColor = null;
-
-    // Handle tone selection
-    document.querySelectorAll('.tone-option').forEach(toneOption => {
-        toneOption.addEventListener('click', function() {
-            const toneId = parseInt(this.dataset.toneId);
-            
-            // Update UI
-            document.querySelectorAll('.tone-option').forEach(opt => opt.classList.remove('active'));
-            this.classList.add('active');
-            
-            // Reset color selection
-            selectedColor = null;
-            selectedTone = toneId;
-            
-            // Find the selected tone data
-            const selectedToneData = productData.tones.find(tone => tone.tone_id === toneId);
-            
-            // Display colors for selected tone
-            const colorSelector = document.querySelector('.color-selector');
-            colorSelector.innerHTML = '<h3 class="variant-title">Select Color</h3>';
-            colorSelector.style.display = 'flex';
-            
-            selectedToneData.colors.forEach(color => {
-                const colorOption = document.createElement('div');
-                colorOption.className = 'color-option';
-                colorOption.dataset.colorId = color.color_id;
-                colorOption.style.backgroundColor = color.color_code;
-                colorOption.innerHTML = `<span class="color-name">${color.color_name}</span>`;
-                colorOption.addEventListener('click', () => selectColor(color.color_id, selectedToneData));
-                colorSelector.appendChild(colorOption);
-            });
-            
-            // Hide variants table
-            document.querySelector('.variants-table').style.display = 'none';
-        });
-    });
-
-    function selectColor(colorId, toneData) {
+    let selectedTone = null;
+    
+    // Handle color selection
+    $('.color-box-option').click(function() {
+        const colorId = $(this).data('color-id');
+        const toneId = $(this).data('tone-id');
+        
+        $('.color-box-option').removeClass('selected');
+        $(this).addClass('selected');
+        
         selectedColor = colorId;
+        selectedTone = toneId;
+        selectedSize = null; // Reset size selection when color changes
         
-        // Update UI
-        document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('active'));
-        document.querySelector(`[data-color-id="${colorId}"]`).classList.add('active');
+        // Reset size button states
+        $('.size-btn').removeClass('selected').prop('disabled', true);
         
-        // Find the selected color data
-        const selectedColorData = toneData.colors.find(color => color.color_id === colorId);
+        // Find the tone and color data
+        const tone = productData.tones.find(t => t.tone_id === toneId);
+        const color = tone.colors.find(c => c.color_id === colorId);
         
-        // Update product image if first size has an image
-        if (selectedColorData.sizes.length > 0) {
-            document.getElementById('product-image').src = '/storage/' + selectedColorData.sizes[0].product_images;
+        // Enable only available sizes for this color
+        const availableSizes = color.sizes.map(s => s.size_name);
+        $('.size-btn').each(function() {
+            const sizeBtn = $(this);
+            const size = sizeBtn.data('size');
+            if (availableSizes.includes(size)) {
+                sizeBtn.prop('disabled', false);
+            }
+        });
+        
+        // Update variant images
+        updateVariantImages(color.sizes);
+        updateAddToCartButton();
+    });
+    
+    // Handle size selection
+    $('.size-btn').click(function() {
+        if (!$(this).prop('disabled')) {
+            $('.size-btn').removeClass('selected');
+            $(this).addClass('selected');
+            selectedSize = $(this).data('size');
+            updateAddToCartButton();
+        }
+    });
+    
+    // Handle quantity buttons
+    $('.qty-btn.minus').click(function() {
+        let qty = parseInt($('.qty-input').val());
+        if (qty > 1) {
+            $('.qty-input').val(qty - 1);
+        }
+    });
+    
+    $('.qty-btn.plus').click(function() {
+        let qty = parseInt($('.qty-input').val());
+        $('.qty-input').val(qty + 1);
+    });
+    
+    function updateVariantImages(sizes) {
+        // Get all unique images from the variants
+        const images = [...new Set(sizes.map(size => size.product_image))];
+        
+        // Update main image
+        if (images.length > 0) {
+            $('#main-product-image').attr('src', images[0]);
         }
         
-        // Populate variants table
-        const tableBody = document.querySelector('.variants-table tbody');
-        tableBody.innerHTML = '';
+        // Update thumbnails
+        const thumbnailsHtml = images.map((image, index) => `
+            <div class="col-3">
+                <div class="thumbnail-item ${index === 0 ? 'active' : ''}">
+                    <img src="${image}" alt="Product variant" 
+                         onclick="updateMainImage('${image}', this)">
+                </div>
+            </div>
+        `).join('');
         
-        selectedColorData.sizes.forEach(size => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${size.size_name}</td>
-                <td>${size.product_stock}</td>
-                <td>
-                    <input type="checkbox" name="variants[]" value="${size.product_variantID}"
-                           ${size.product_stock <= 0 ? 'disabled' : ''}>
-                </td>
-                <td>
-                    <input type="number" class="quantity-input" name="quantities[${size.product_variantID}]"
-                           min="1" max="${size.product_stock}" value="1" disabled>
-                </td>
-            `;
-            tableBody.appendChild(row);
-        });
+        $('#variant-thumbnails').html(thumbnailsHtml);
+    }
+    
+    function updateAddToCartButton() {
+        const isValid = selectedSize && selectedColor && selectedTone;
+        $('.btn-add-to-cart').prop('disabled', !isValid);
         
-        // Show variants table
-        document.querySelector('.variants-table').style.display = 'block';
-        
-        // Handle checkbox and quantity input interaction
-        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                const quantityInput = this.closest('tr').querySelector('.quantity-input');
-                quantityInput.disabled = !this.checked;
-                if (this.checked) {
-                    quantityInput.value = 1;
-                } else {
-                    quantityInput.value = 0;
-                }
-            });
-        });
+        if (isValid) {
+            const tone = productData.tones.find(t => t.tone_id === selectedTone);
+            const color = tone.colors.find(c => c.color_id === selectedColor);
+            const variant = color.sizes.find(s => s.size_name === selectedSize);
+            
+            if (variant) {
+                $('#selected_variant_id').val(variant.variant_id);
+            }
+        }
     }
 });
+
+function updateMainImage(imageSrc, thumbnail) {
+    $('#main-product-image').attr('src', imageSrc);
+    $('.thumbnail-item').removeClass('active');
+    $(thumbnail).closest('.thumbnail-item').addClass('active');
+}
 </script>
+@endpush
+@endsection
+
+@push('styles')
+<style>
+.size-btn:disabled {
+    background-color: #f5f5f5;
+    border-color: #ddd;
+    color: #999;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+</style>
 @endpush
