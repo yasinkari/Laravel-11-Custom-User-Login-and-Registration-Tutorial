@@ -33,7 +33,7 @@
         </div>
     @endif --}}
     
-    @if($cart->cartRecords->isEmpty())
+    @if(!$cart)
         <div class="empty-cart text-center py-5">
             <i class="bi bi-cart-x" style="font-size: 4rem;"></i>
             <h3 class="mt-3">Your cart is empty</h3>
@@ -119,12 +119,16 @@
                             <span>Shipping</span>
                             <span>Free</span>
                         </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Payment Gateway Fee</span>
+                            <span>RM 1.00</span>
+                        </div>
                         <hr>
                         <div class="d-flex justify-content-between mb-4">
                             <strong>Total</strong>
-                            <strong>RM {{ number_format($cart->total_amount, 2) }}</strong>
+                            <strong>RM {{ number_format($cart->total_amount + 1, 2) }}</strong>
                         </div>
-                        <a href="{{ route('cart.checkout') }}" class="btn btn-primary w-100">Proceed to Checkout</a>
+                        <button onclick="handleCheckout()" type="button" class="btn btn-primary w-100">Proceed to Checkout</button>
                     </div>
                 </div>
             </div>
@@ -155,7 +159,29 @@ function increaseQuantity(recordId, maxStock) {
         alert('Sorry, only ' + maxStock + ' items available in stock.');
     }
 }
+function handleCheckout() {
+    $.ajax({
+        url: '{{ route("cart.checkout") }}',
+        type: 'POST',
+        data: {
+            _token: '{{ csrf_token() }}',
+            cart_id: '{{ $cart ? $cart->cartID : "" }}',
+            payment_gateway_fee: 1.00
+        },
+        success: function(response) {
+            if (response.success) {
+                window.location.href = response.paymentUrl;
+            }
+        },
+        error: function(xhr) {
+            const response = xhr.responseJSON;
+            console.error(JSON.stringify(response));
+            alert(response.error || 'An error occurred during checkout.');
+        }
+    });
+}
 $(document).ready(function() {
+    
     // Remove item handler
     $('.remove-item').click(function() {
         var recordId = $(this).data('record-id');

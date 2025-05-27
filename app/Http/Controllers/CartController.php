@@ -12,7 +12,7 @@ use App\Models\ProductSizing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-
+use App\Http\Controllers\ToyyibpayController;
 class CartController extends Controller
 {
     /**
@@ -53,7 +53,7 @@ class CartController extends Controller
                     'product_sizingID' => $request->size_id
                 ],
                 [
-                    'quantity' => DB::raw('quantity + ' . $request->quantity)
+                    'quantity' => $request->quantity
                 ]
             );
             
@@ -174,49 +174,35 @@ class CartController extends Controller
     /**
      * Checkout process
      */
-    public function checkout()
+    public function checkout(Request $request)
     {
         try {
-            DB::beginTransaction();
+            // Validate the incoming cart_id
+            $request->validate([
+                'cart_id' => 'required|exists:carts,cartID',
+            ]);
+
+            // Get the cart using the validated cart_id
+            $cart = Cart::with('cartRecords')->find($request->cart_id);
             
-            // Get current cart
-            $cart = $this->getCurrentCart();
-            
+            // Check if cart exists and belongs to the authenticated user
+            if (!$cart || $cart->userID !== Auth::id()) {
+                return response()->json(['error' => 'Invalid cart or cart does not belong to you.'], 403);
+            }
+
             // Check if cart has items
             if ($cart->cartRecords->isEmpty()) {
-                return redirect()->back()->with('error', 'Your cart is empty.');
+                return response()->json(['error' => 'Your cart is empty.'], 400);
             }
             
-            // Create order
-            $order = Order::create([
-                'userID' => Auth::id(),
-                'cartID' => $cart->cartID,
-                'order_date' => now()
-            ]);
+            // Call ToyyibPay controller to create bill and process payment
+            $toyyibpayController = new ToyyibpayController();
+            return $toyyibpayController->createBill($cart->cartID);
             
-            // Create payment record with pending status
-            $payment = Payment::create([
-                'orderID' => $order->orderID,
-                'payment_date' => now(),
-                'payment_status' => 'pending'
-            ]);
-            
-            // Create tracking record with pending status
-            $tracking = Tracking::create([
-                'orderID' => $order->orderID,
-                'order_status' => 'pending',
-                'timestamp' => now()
-            ]);
-            
-            // Mark cart as inactive (ordered)
-            $cart->update(['status' => 'ordered']);
-            
-            DB::commit();
-            
-            return redirect()->route('order.view', $order->orderID)->with('success', 'Order placed successfully.');
         } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->back()->with('error', 'Failed to checkout: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Failed to checkout: ' . $e->getMessage()
+            ], 500);
         }
     }
     
@@ -269,5 +255,24 @@ class CartController extends Controller
         }
         
         $cart->update(['total_amount' => $total]);
+    }
+    
+    /**
+     * Count cart records for a given cart
+     */
+    public function countCart()
+    {
+        $cart = Cart::firstOrCreate(
+            ['userID' => Auth::id(), 'cart_status' => null],
+            ['total_amount' => 0]
+        );
+    
+        if (!$cart) {
+            return response()->json(['count' => 0]);
+        }
+    
+        $count = $cart->cartRecords()->count();
+        
+        return response()->json(['count' => $count ?: 0]);
     }
 }

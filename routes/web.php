@@ -7,6 +7,9 @@ use App\Http\Controllers\AdminController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\PromotionController;
+use App\Http\Controllers\ToyyibpayController; // Ensure ToyyibpayController is imported
+use App\Http\Controllers\OrderController; // Add this import
+
 // Public Routes
 Route::get('/', function () {
     return view('customer.dashboard');
@@ -100,7 +103,20 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/cart', [CartController::class, 'view'])->name('cart.view');
     Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/remove/{record}', [CartController::class, 'remove'])->name('cart.remove');
-    Route::get('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+    Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout'); // Changed from Route::get to Route::post
+    Route::get('/cart/count', [CartController::class, 'countCart'])->name('cart.count');
+});
+
+// Payment routes
+Route::middleware(['auth'])->group(function () {
+    // ToyyibPay routes
+    Route::get('/payment/status', [ToyyibpayController::class, 'paymentStatus'])->name('payment.status');
+    Route::post('/payment/callback', [ToyyibpayController::class, 'paymentCallback'])->name('payment.callback');
+    Route::post('/payment/notification', [ToyyibpayController::class, 'paymentCallback'])->name('payment.notification');
+
+    // Order status pages (after payment attempt)
+    Route::get('/order/success', [OrderController::class, 'success'])->name('order.success');
+    Route::get('/order/failed', [OrderController::class, 'failed'])->name('order.failed');
 });
 
 

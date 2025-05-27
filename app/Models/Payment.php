@@ -12,8 +12,13 @@ class Payment extends Model
     protected $primaryKey = 'paymentID';
     protected $fillable = [
         'orderID',
+        'bill_reference',
+        'bill_amount',
+        'billcode',
+        'transaction_id',
         'payment_date',
-        'payment_status'
+        'payment_status',
+        'status_msg'
     ];
 
     public function order()
