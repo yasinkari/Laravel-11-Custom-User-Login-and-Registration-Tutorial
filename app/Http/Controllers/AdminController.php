@@ -119,34 +119,58 @@ class AdminController extends Controller
     
     public function orders()
     {
-        $orders = Order::with(['cart.user', 'tracking'])
-            ->latest('order_date')
+        $query = Order::with(['cart.user', 'tracking']);
+        
+        if (request('status')) {
+            $query->whereHas('tracking', function($q) {
+                $q->where('tracking_status', request('status'));
+            });
+        }
+        
+        $orders = $query->latest('order_date')
             ->paginate(10);
         
-        return view('admin.orders', compact('orders'));
+        return view('admin.order.index', compact('orders'));
     }
     
     public function showOrder(Order $order)
     {
-        $order->load(['cart.user', 'cart.cartRecords.productVariant.product', 'tracking', 'payment']);
-        return view('admin.orders.show', compact('order'));
+        $order->load([
+            'cart.user',
+            'cart.cartRecords.productSizing', // Ensure productSizing is loaded
+            'cart.cartRecords.productSizing.productVariant.product',
+            'cart.cartRecords.productSizing.productVariant.color',
+            'tracking',
+            'payment'
+        ]);
+        return view('admin.order.show', compact('order'));
     }
     
     public function updateOrderStatus(Order $order, Request $request)
     {
         $request->validate([
-            'status' => 'required|in:pending,completed,canceled'
+            'tracking_number' => 'nullable|string|max:100'
         ]);
     
         $tracking = $order->tracking;
         if (!$tracking) {
             $tracking = new Tracking(['orderID' => $order->orderID]);
         }
-        
-        $tracking->order_status = $request->status;
-        $tracking->save();
     
-        return redirect()->back()->with('success', 'Order status updated successfully');
+        if ($request->filled('tracking_number')) {
+            $tracking->tracking_number = $request->tracking_number;
+            $tracking->tracking_status = 'shipped';
+            $order->order_status = 'to-receive';
+        } else {
+            $tracking->tracking_number = null;
+            $tracking->tracking_status = 'pending';
+            $order->order_status = 'pending';
+        }
+    
+        $tracking->save();
+        $order->save();
+    
+        return redirect()->back()->with('success', 'Order tracking updated successfully');
     }
 }
 

@@ -45,6 +45,44 @@ class ToyyibpayController extends Controller
     public function createBill($cartID)
     {
         try {
+            // Validate input parameter
+            if (!$cartID) {
+                \Log::error('Missing cart ID');
+                return response()->json(['error' => 'Cart ID is required'], 400);
+            }
+    
+            // Normalize cart_id/cartID parameter
+            $cartID = request()->input('cart_id', $cartID);
+            
+            // Find the cart with its order relationship
+            $cart = Cart::with(['order.payment'])
+                ->where('cartID', $cartID)
+                ->where('userID', Auth::id())
+                ->first();
+            
+            if (!$cart) {
+                \Log::error('Cart not found', ['cartID' => $cartID, 'userID' => Auth::id()]);
+                return response()->json(['error' => 'Cart not found'], 404);
+            }
+            
+            // Check if cart has an existing order with payment
+            if ($cart->order && $cart->order->payment) {
+                $payment = $cart->order->payment;
+                
+                // If there's an existing billcode, return it
+                if ($payment->billcode) {
+                    $paymentUrl = $this->redirectUrl . '/' . $payment->billcode;
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Existing payment bill found',
+                        'billCode' => $payment->billcode,
+                        'paymentUrl' => $paymentUrl,
+                        'orderID' => $cart->order->orderID
+                    ]);
+                }
+            }
+            
+            // Proceed with existing bill creation logic if no valid payment found
             // Log controller initialization
             \Log::debug('ToyyibpayController initialized', [
                 'userSecretKey' => $this->userSecretKey,
@@ -58,6 +96,7 @@ class ToyyibpayController extends Controller
                 ->where('userID', Auth::id())
                 ->first();
             
+            $totalDiscount = request()->input('total_discount', 0);
             if (!$cart) {
                 \Log::error('Cart not found', ['cartID' => $cartID, 'userID' => Auth::id()]);
                 return response()->json(['error' => 'Cart not found'], 404);
@@ -69,7 +108,11 @@ class ToyyibpayController extends Controller
             }
             
             // Calculate total amount (add RM 1 extra as requested)
-            $totalAmount = $cart->total_amount + 1.00;
+            // Calculate total amount with discount and fee
+            $totalAmount = ($cart->total_amount - $totalDiscount) + 1.00;
+            
+            // Replace the old line:
+            // $totalAmount = $cart->total_amount + 1.00;
             
             // Generate a unique bill reference
             $billReference = 'BILL-' . Str::random(8) . '-' . time();
@@ -137,7 +180,7 @@ class ToyyibpayController extends Controller
                             'userID' => Auth::id(),
                             // cartID is no longer on the orders table based on the migration history
                             'order_date' => now(),
-                            'order_status' => 'pending'
+                            'order_status' => 'to-pay'
                         ]);
     
                         // Update the cart with the newly created order's ID and status
@@ -160,7 +203,7 @@ class ToyyibpayController extends Controller
                             'payment_date' => now(),
                             'payment_status' => 'pending',
                             'bill_reference' => $billReference,
-                            'bill_amount' => $totalAmount,
+                            'bill_amount' => $totalAmount - 1.00,
                             'billcode' => $billCode,
                             'status_msg' => 'Payment Pending'
                         ]);
@@ -169,7 +212,7 @@ class ToyyibpayController extends Controller
                             'payment_date' => now(),
                             'payment_status' => 'pending',
                             'bill_reference' => $billReference,
-                            'bill_amount' => $totalAmount,
+                            'bill_amount' => $totalAmount -1.00,
                             'billcode' => $billCode,
                             'status_msg' => 'Payment Pending'
                         ]);
@@ -196,9 +239,6 @@ class ToyyibpayController extends Controller
                     // Redirect to ToyyibPay payment page
                     $paymentUrl = $this->redirectUrl . '/' . $billCode;
                     
-                    // Log the generated payment URL
-                    Log::info('ToyyibPay Payment URL: ' . $paymentUrl);
-
                     return response()->json([
                         'success' => true,
                         'message' => 'Payment bill created successfully',
@@ -265,7 +305,10 @@ class ToyyibpayController extends Controller
 
             // Update order status if payment is successful
             if ($status == 1) {
-                $payment->order->update(['order_status' => 'paid']);
+                $payment->order->update(['order_status' => 'to-ship']);
+                
+                // Deduct stock from product sizing
+                $this->deductProductStock($payment->order);
             }
         }
         
@@ -274,6 +317,54 @@ class ToyyibpayController extends Controller
             return redirect()->route('order.success')->with('success', 'Payment successful!');
         } else { // Payment failed
             return redirect()->route('order.failed')->with('error', 'Payment failed or cancelled.');
+        }
+    }
+    
+    /**
+     * Deduct product stock based on cart records
+     */
+    private function deductProductStock($order)
+    {
+        try {
+            // Get cart with cart records and product sizing
+            $cart = Cart::where('orderID', $order->orderID)
+                ->with(['cartRecords.productSizing'])
+                ->first();
+                
+            if (!$cart) {
+                \Log::error('Cart not found for order: ' . $order->orderID);
+                return;
+            }
+            
+            // Loop through cart records and update stock
+            foreach ($cart->cartRecords as $cartRecord) {
+                $productSizing = $cartRecord->productSizing;
+                
+                if ($productSizing) {
+                    // Calculate new stock level
+                    $newStock = max(0, $productSizing->product_stock - $cartRecord->quantity);
+                    
+                    // Update product stock
+                    $productSizing->update([
+                        'product_stock' => $newStock
+                    ]);
+                    
+                    \Log::info('Stock updated for product sizing ID: ' . $productSizing->product_sizingID, [
+                        'previous_stock' => $productSizing->product_stock,
+                        'quantity_ordered' => $cartRecord->quantity,
+                        'new_stock' => $newStock
+                    ]);
+                } else {
+                    \Log::warning('Product sizing not found for cart record: ' . $cartRecord->cart_recordID);
+                }
+            }
+            
+            \Log::info('Stock deduction completed for order: ' . $order->orderID);
+        } catch (\Exception $e) {
+            \Log::error('Error deducting stock: ' . $e->getMessage(), [
+                'order_id' => $order->orderID,
+                'exception' => $e
+            ]);
         }
     }
 

@@ -96,7 +96,7 @@ class PromotionController extends Controller
             DB::commit();
             Log::info('DB transaction committed for promotion creation', ['promotion_id' => $promotion->promotionID]);
             
-            return redirect()->route('promotions.index')
+            return redirect()->route('admin.promotions.index')
                 ->with('success', 'Promotion created successfully.');
                 
         } catch (\Exception $e) {
@@ -130,8 +130,6 @@ class PromotionController extends Controller
             ->get();
             
         $promotionTypes = [
-            'discount' => 'Discount (% off)',
-            'bundle' => 'Bundle (Buy multiple for discount)',
             'clearance' => 'Clearance Sale',
             'seasonal' => 'Seasonal Promotion'
         ];
@@ -219,7 +217,7 @@ class PromotionController extends Controller
             DB::commit();
             Log::info('DB transaction committed for promotion update', ['promotion_id' => $promotion->promotionID]);
             
-            return redirect()->route('promotions.index')
+            return redirect()->route('admin.promotions.index')
                 ->with('success', 'Promotion updated successfully.');
                 
         } catch (\Exception $e) {
@@ -251,7 +249,7 @@ class PromotionController extends Controller
             
             DB::commit();
             
-            return redirect()->route('promotions.index')
+            return redirect()->route('admin.promotions.index')
                 ->with('success', 'Promotion deleted successfully.');
                 
         } catch (\Exception $e) {

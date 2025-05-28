@@ -14,7 +14,7 @@
                 </ol>
             </nav>
         </div>
-        <a href="{{ route('products.create') }}" class="btn btn-primary">
+        <a href="{{ route('admin.products.create') }}" class="btn btn-primary">
             <i class="fas fa-plus-circle me-2"></i>Add New Product
         </a>
     </div>
@@ -83,11 +83,11 @@
                                     </button>
                                 </td>
                                 <td>
-                                    <a href="{{ route('products.edit', $product->productID) }}" 
+                                    <a href="{{ route('admin.products.edit', $product->productID) }}" 
                                        class="btn btn-sm btn-primary me-2">
                                         <i class="fas fa-edit"></i> Edit
                                     </a>
-                                    <form action="{{ route('products.destroy', $product->productID) }}" 
+                                    <form action="{{ route('admin.products.destroy', $product->productID) }}" 
                                           method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
@@ -170,11 +170,11 @@
                                                                 </td>
                                                                 <td>
                                                                     <div class="d-flex gap-2">
-                                                                        <a href="{{ route('products.variants.edit', $variant->product_variantID) }}" 
+                                                                        <a href="{{ route('admin.products.variants.edit', $variant->product_variantID) }}" 
                                                                                class="btn btn-sm btn-primary" title="Edit">
                                                                             <i class="fas fa-edit"></i>
                                                                         </a>
-                                                                        <form action="{{ route('products.variants.destroy', $variant->product_variantID) }}" 
+                                                                        <form action="{{ route('admin.products.variants.destroy', $variant->product_variantID) }}" 
                                                                                   method="POST" class="d-inline">
                                                                             @csrf
                                                                             @method('DELETE')
@@ -191,7 +191,7 @@
                                                             <tr>
                                                                 <td colspan="6" class="text-center py-3">
                                                                     <div class="text-muted">No variants found</div>
-                                                                    <a href="{{ route('products.variants.create', $product->productID) }}" 
+                                                                    <a href="{{ route('admin.products.variants.create', $product->productID) }}" 
                                                                            class="btn btn-sm btn-primary mt-2">
                                                                         <i class="fas fa-plus me-1"></i> Add Variant
                                                                     </a>

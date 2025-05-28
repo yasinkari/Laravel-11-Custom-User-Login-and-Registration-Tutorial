@@ -41,4 +41,9 @@ class PromotionRecord extends Model
     {
         return $this->belongsTo(Product::class, 'productID', 'productID');
     }
+
+    public function promotionRecords()
+{
+    return $this->hasMany(PromotionRecord::class, 'productID', 'productID');
+}
 }

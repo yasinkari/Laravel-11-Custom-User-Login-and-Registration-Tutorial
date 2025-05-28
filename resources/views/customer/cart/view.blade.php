@@ -65,7 +65,7 @@
                                     <div class="col-md-5">
                                         <h5 class="card-title">{{ $record->productVariant->product->product_name }}</h5>
                                         <p class="text-muted">
-                                            Size: {{ $record->productVariant->product_size }}
+                                            Size: {{ $record->productSizing->product_size }}
                                             @if($record->productVariant->tone)
                                                 | Tone: {{ $record->productVariant->tone->tone_name }}
                                             @endif
@@ -111,23 +111,81 @@
                 <div class="card cart-summary">
                     <div class="card-body">
                         <h5 class="card-title mb-4">Order Summary</h5>
+                        
+                        <!-- Product Promotions -->
+                        @php
+                            $totalDiscount = 0;
+                            $promotedProducts = [];
+                        @endphp
+                        
+                        @foreach($cart->cartRecords as $record)
+                            @php
+                                $product = $record->productSizing->productVariant->product;
+                                $activePromotion = $product->promotionRecords()
+                                    ->whereHas('promotion', function($query) {
+                                        $query->where('is_active', true)
+                                              ->where('start_date', '<=', now())
+                                              ->where('end_date', '>=', now());
+                                    })
+                                    ->first();
+                                
+                                if ($activePromotion) {
+                                    $promotedProducts[] = [
+                                        'name' => $product->product_name,
+                                        'promotion' => $activePromotion->promotion->promotion_name,
+                                        'original_price' => $product->product_price * $record->quantity,
+                                        'discount' => $product->product_price * $record->quantity * 0.1 // Assuming 10% discount
+                                    ];
+                                    $totalDiscount += $product->product_price * $record->quantity * 0.1;
+                                }
+                            @endphp
+                        @endforeach
+                        
+                        <!-- Show Original Subtotal -->
                         <div class="d-flex justify-content-between mb-3">
                             <span>Subtotal</span>
                             <span>RM {{ number_format($cart->total_amount, 2) }}</span>
                         </div>
+                        
+                        <!-- Show Applied Promotions -->
+                        @if(count($promotedProducts) > 0)
+                            <div class="promotions-applied mb-3">
+                                <h6 class="text-success mb-2">Promotions Applied</h6>
+                                @foreach($promotedProducts as $item)
+                                    <div class="promotion-item small mb-2">
+                                        <div class="d-flex justify-content-between">
+                                            <span class="text-muted">{{ $item['name'] }}</span>
+                                            <span class="text-success">-RM {{ number_format($item['discount'], 2) }}</span>
+                                        </div>
+                                        <div class="small text-muted">{{ $item['promotion'] }}</div>
+                                    </div>
+                                @endforeach
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mb-3 text-success">
+                                <span>Total Savings</span>
+                                <span>-RM {{ number_format($totalDiscount, 2) }}</span>
+                            </div>
+                        @endif
+                        
                         <div class="d-flex justify-content-between mb-3">
                             <span>Shipping</span>
                             <span>Free</span>
                         </div>
+                        
                         <div class="d-flex justify-content-between mb-3">
                             <span>Payment Gateway Fee</span>
                             <span>RM 1.00</span>
                         </div>
+                        
                         <hr>
+                        
+                        <!-- Final Total with Discounts -->
                         <div class="d-flex justify-content-between mb-4">
                             <strong>Total</strong>
-                            <strong>RM {{ number_format($cart->total_amount + 1, 2) }}</strong>
+                            <strong>RM {{ number_format($cart->total_amount - $totalDiscount + 1, 2) }}</strong>
                         </div>
+                        
                         <button onclick="handleCheckout()" type="button" class="btn btn-primary w-100">Proceed to Checkout</button>
                     </div>
                 </div>
@@ -166,10 +224,12 @@ function handleCheckout() {
         data: {
             _token: '{{ csrf_token() }}',
             cart_id: '{{ $cart ? $cart->cartID : "" }}',
-            payment_gateway_fee: 1.00
+            payment_gateway_fee: 1.00,
+            total_discount: {{ $totalDiscount }} // Add this line
         },
         success: function(response) {
             if (response.success) {
+                updateCartBadge();
                 window.location.href = response.paymentUrl;
             }
         },
@@ -184,6 +244,7 @@ $(document).ready(function() {
     
     // Remove item handler
     $('.remove-item').click(function() {
+        
         var recordId = $(this).data('record-id');
         if (confirm('Are you sure you want to remove this item?')) {
             $.ajax({
@@ -192,6 +253,7 @@ $(document).ready(function() {
                 data: { _token: '{{ csrf_token() }}' },
                 success: function(response) {
                     if (response.success) {
+                        updateCartBadge();
                         showToast('success', response.message, {duration: 3000, position: 'top'});
                         setTimeout(function() { location.reload(); }, 3000);
                     } else {

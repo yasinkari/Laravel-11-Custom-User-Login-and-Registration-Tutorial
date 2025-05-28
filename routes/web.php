@@ -9,6 +9,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\ToyyibpayController; // Ensure ToyyibpayController is imported
 use App\Http\Controllers\OrderController; // Add this import
+use App\Http\Controllers\ProfileController; 
 
 // Public Routes
 Route::get('/', function () {
@@ -29,11 +30,6 @@ Route::get('password/reset/{token}', [AuthController::class, 'showResetPasswordF
 Route::post('password/reset', [AuthController::class, 'resetPassword'])->name('password.update');
 Route::get('password/change', [AuthController::class, 'showChangePasswordForm'])->name('auth.change-password-form');
 Route::post('password/change', [AuthController::class, 'changePassword'])->name('auth.change-password');
-
-// Customer Routes
-Route::middleware(['auth'])->group(function () {
-    Route::get('dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
-});
 
 // Public Customer Product Routes (no auth required)
 Route::get('/products', [ProductController::class, 'showToCustomer'])->name('products.customer');
@@ -57,58 +53,48 @@ Route::middleware([AdminMiddleware::class])->prefix('admin')->name('admin.')->gr
     Route::get('orders', [AdminController::class, 'orders'])->name('orders.index');
     Route::get('orders/{order}', [AdminController::class, 'showOrder'])->name('orders.show');
     Route::patch('orders/{order}/status', [AdminController::class, 'updateOrderStatus'])->name('orders.updateStatus');
-});
 
-// Admin Product Management Routes (Protected by AdminMiddleware)
-Route::middleware([AdminMiddleware::class])->group(function () {
-    // Product Management Routes with explicit prefixes
-    Route::get('/admin/products', [ProductController::class, 'index'])->name('products.index');
-    Route::get('/admin/products/create', [ProductController::class, 'create'])->name('products.create');
-    Route::post('/admin/products', [ProductController::class, 'store'])->name('products.store');
-    Route::get('/admin/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
-    Route::put('/admin/products/{product}', [ProductController::class, 'update'])->name('products.update');
-    Route::delete('/admin/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
-    Route::patch('/admin/products/{id}/status', [ProductController::class, 'updateProductStatus'])->name('products.updateStatus');
-    Route::patch('/admin/products/{id}/visibility', [ProductController::class, 'updateVisibility'])->name('products.updateVisibility');
-    // Make sure this route exists and is correctly defined
-    Route::get('/admin/products/{product}/variants', [ProductController::class, 'getVariants'])->name('products.variants');
+    // Product Management
+    Route::get('products', [ProductController::class, 'index'])->name('products.index');
+    Route::get('products/create', [ProductController::class, 'create'])->name('products.create');
+    Route::post('products', [ProductController::class, 'store'])->name('products.store');
+    Route::get('products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
+    Route::put('products/{product}', [ProductController::class, 'update'])->name('products.update');
+    Route::delete('products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
+    Route::patch('products/{id}/status', [ProductController::class, 'updateProductStatus'])->name('products.updateStatus');
+    Route::patch('products/{id}/visibility', [ProductController::class, 'updateVisibility'])->name('products.updateVisibility');
+    Route::get('products/{product}/variants', [ProductController::class, 'getVariants'])->name('products.variants');
     
-    // Variant routes - organized together
-    Route::get('/admin/products/variants/{variant}/edit', [ProductController::class, 'editVariant'])->name('products.variants.edit');
-    // Change this line
-    Route::get('/admin/products/{product}/variants/create', [ProductController::class, 'createVariant'])->name('products.variants.create');
-    
-    // To something like this if you want to handle variant creation in the edit view
-    Route::get('/admin/products/{product}/variants/create', function($product) {
-        return redirect()->route('products.edit', $product)->with('openVariantForm', true);
+    // Product Variants
+    Route::get('products/variants/{variant}/edit', [ProductController::class, 'editVariant'])->name('products.variants.edit');
+    Route::get('products/{product}/variants/create', function($product) {
+        return redirect()->route('admin.products.edit', $product)->with('openVariantForm', true);
     })->name('products.variants.create');
-    Route::put('/admin/products/variants/{variant}', [ProductController::class, 'updateVariant'])->name('products.variants.update');
-    Route::post('/admin/products/{productID}/variants', [ProductController::class, 'storeVariant'])->name('products.variants.store');
-    Route::delete('/admin/products/variants/{variant}', [ProductController::class, 'destroyVariant'])->name('products.variants.destroy');
+    Route::put('products/variants/{variant}', [ProductController::class, 'updateVariant'])->name('products.variants.update');
+    Route::post('products/{productID}/variants', [ProductController::class, 'storeVariant'])->name('products.variants.store');
+    Route::delete('products/variants/{variant}', [ProductController::class, 'destroyVariant'])->name('products.variants.destroy');
     
-    // Promotion routes - admin only
-    Route::get('/admin/promotions', [PromotionController::class, 'index'])->name('promotions.index');
-    Route::get('/admin/promotions/create', [PromotionController::class, 'create'])->name('promotions.create');
-    Route::post('/admin/promotions', [PromotionController::class, 'store'])->name('promotions.store');
-    Route::get('/admin/promotions/{promotion}', [PromotionController::class, 'show'])->name('promotions.show');
-    Route::get('/admin/promotions/{promotion}/edit', [PromotionController::class, 'edit'])->name('promotions.edit');
-    Route::put('/admin/promotions/{promotion}', [PromotionController::class, 'update'])->name('promotions.update');
-    Route::delete('/admin/promotions/{promotion}', [PromotionController::class, 'destroy'])->name('promotions.destroy');
-    Route::patch('/admin/promotions/{promotion}/toggle-status', [PromotionController::class, 'toggleStatus'])->name('promotions.toggle-status');
+    // Promotions
+    Route::get('promotions', [PromotionController::class, 'index'])->name('promotions.index');
+    Route::get('promotions/create', [PromotionController::class, 'create'])->name('promotions.create');
+    Route::post('promotions', [PromotionController::class, 'store'])->name('promotions.store');
+    Route::get('promotions/{promotion}', [PromotionController::class, 'show'])->name('promotions.show');
+    Route::get('promotions/{promotion}/edit', [PromotionController::class, 'edit'])->name('promotions.edit');
+    Route::put('promotions/{promotion}', [PromotionController::class, 'update'])->name('promotions.update');
+    Route::delete('promotions/{promotion}', [PromotionController::class, 'destroy'])->name('promotions.destroy');
+    Route::patch('promotions/{promotion}/toggle-status', [PromotionController::class, 'toggleStatus'])->name('promotions.toggle-status');
 });
 
 // Cart routes
 Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     Route::get('/cart', [CartController::class, 'view'])->name('cart.view');
     Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/remove/{record}', [CartController::class, 'remove'])->name('cart.remove');
-    Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout'); // Changed from Route::get to Route::post
+    Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
     Route::get('/cart/count', [CartController::class, 'countCart'])->name('cart.count');
-});
 
-// Payment routes
-Route::middleware(['auth'])->group(function () {
     // ToyyibPay routes
     Route::get('/payment/status', [ToyyibpayController::class, 'paymentStatus'])->name('payment.status');
     Route::post('/payment/callback', [ToyyibpayController::class, 'paymentCallback'])->name('payment.callback');
@@ -117,6 +103,14 @@ Route::middleware(['auth'])->group(function () {
     // Order status pages (after payment attempt)
     Route::get('/order/success', [OrderController::class, 'success'])->name('order.success');
     Route::get('/order/failed', [OrderController::class, 'failed'])->name('order.failed');
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::post('/orders/{order}/receive', [OrderController::class, 'receive'])->name('orders.receive');
+    
+    // Profile routes
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile/change-password', [ProfileController::class, 'showChangePasswordForm'])->name('profile.password.form');
+    Route::put('/profile/change-password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
 });
 
 

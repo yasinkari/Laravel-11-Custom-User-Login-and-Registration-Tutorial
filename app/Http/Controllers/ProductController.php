@@ -178,7 +178,7 @@ class ProductController extends Controller
             }
     
             DB::commit();
-            return redirect()->route('products.index')->with('success', 'Product created successfully.');
+            return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withInput()->with('error', 'Failed to create product: ' . $e->getMessage());
@@ -243,11 +243,11 @@ class ProductController extends Controller
             
             $product->update($updateData);
 
-            return redirect()->route('products.edit', $product->productID)
+            return redirect()->route('admin.products.edit', $product->productID)
                 ->with('success', 'Product information updated successfully');
 
         } catch (\Exception $e) {
-            return redirect()->route('products.edit', $product->productID)
+            return redirect()->route('admin.products.edit', $product->productID)
                 ->with('error', 'Failed to update product. Please try again.')
                 ->withInput();
         }
@@ -385,11 +385,11 @@ class ProductController extends Controller
             $product->delete();
     
             DB::commit();
-            return redirect()->route('products.index')
+            return redirect()->route('admin.products.index')
                 ->with('success', 'Product deleted successfully');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->route('products.index')
+            return redirect()->route('admin.products.index')
                 ->with('error', 'Error deleting product: ' . $e->getMessage());
         }
     }

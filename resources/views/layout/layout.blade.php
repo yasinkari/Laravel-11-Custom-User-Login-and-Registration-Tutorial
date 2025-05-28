@@ -15,6 +15,14 @@
     </style>
 
 <style>
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    body {
+        overflow-x: hidden;
+    }
+    
     body {
       margin: 0;
       font-family: 'Arial', sans-serif;
@@ -744,26 +752,34 @@ input[type="checkbox"] {
 }
 
 @media (max-width: 576px) {
-.navbar-custom {
-    padding: 0.5rem;
+    .navbar-custom {
+        padding: 0.5rem;
+    }
+    .navbar-custom .logo {
+        font-size: 1.2rem;
+        align-self: center; /* Center logo on mobile */
+        margin-bottom: 10px;
+    }
+    .footer {
+        padding: 30px 0 10px;
+    }
+    .footer .row > div {
+        text-align: center; /* Center footer content on mobile */
+    }
+    .social-icons {
+        justify-content: center;
+    }
+    .footer .d-flex.gap-3 {
+        justify-content: center;
+    }
 }
-.navbar-custom .logo {
-    font-size: 1.2rem;
-    align-self: center; /* Center logo on mobile */
-    margin-bottom: 10px;
-}
-.footer {
-    padding: 30px 0 10px;
-}
-.footer .row > div {
-    text-align: center; /* Center footer content on mobile */
-}
-.social-icons {
-    justify-content: center;
-}
-.footer .d-flex.gap-3 {
-    justify-content: center;
-}
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus,
+.btn-outline-secondary:active,
+.btn-outline-secondary.active {
+    background-color: transparent !important;
+    color: #6c757d !important;
+    border-color: #6c757d !important;
 }
 </style>
     @yield('css')
@@ -773,6 +789,7 @@ input[type="checkbox"] {
     
     <!-- Add this for improved animations and transitions -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
 </head>
 <body>
     <!-- Replace the existing navbar section with this improved version -->
@@ -847,9 +864,9 @@ input[type="checkbox"] {
                                 <button class="btn btn-outline-secondary" type="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: transparent !important;">
                                     <i class="far fa-user-circle fs-5 me-1"></i> Account
                                 </button>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown" style="overflow:hidden; margin:0;">
                                     <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>My Profile</a></li>
-                                    <li><a class="dropdown-item" href="#"><i class="fas fa-box me-2"></i>My Orders</a></li>
+                                    <li><a class="dropdown-item" href="{{route('orders.index')}}"><i class="fas fa-box me-2"></i>My Orders</a></li>
                                     <li><a class="dropdown-item" href="#"><i class="fas fa-heart me-2"></i>Wishlist</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>

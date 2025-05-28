@@ -299,17 +299,17 @@
                 </a>
             </li>
             <li class="nav-item mb-2">
-                <a class="nav-link text-white" href="{{ route('products.index') }}">
+                <a class="nav-link text-white" href="{{ route('admin.products.index') }}">
                     <i class="fas fa-box"></i> Manage Products
                 </a>
             </li>
             <li class="nav-item mb-2">
-                <a class="nav-link text-white" href="{{ route('promotions.index') }}">
+                <a class="nav-link text-white" href="{{ route('admin.promotions.index') }}">
                     <i class="fas fa-tag"></i> Manage Promotions
                 </a>
             </li>
             <li class="nav-item mb-2">
-                <a class="nav-link text-white" href="#">
+                <a class="nav-link text-white" href="{{ route('admin.orders.index') }}">
                     <i class="fas fa-shopping-cart"></i> Manage Order
                 </a>
             </li>

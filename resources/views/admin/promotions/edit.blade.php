@@ -6,7 +6,7 @@
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 mb-0 text-gray-800">Edit Promotion</h1>
-        <a href="{{ route('promotions.index') }}" class="btn btn-secondary">
+        <a href="{{ route('admin.promotions.index') }}" class="btn btn-secondary">
             <i class="fas fa-arrow-left"></i> Back to Promotions
         </a>
     </div>
@@ -26,7 +26,7 @@
             <h6 class="m-0 font-weight-bold text-primary">Promotion Details</h6>
         </div>
         <div class="card-body">
-            <form action="{{ route('promotions.update', $promotion->promotionID) }}" method="POST">
+            <form action="{{ route('admin.promotions.update', $promotion->promotionID) }}" method="POST">
                 @csrf
                 @method('PUT')
                 

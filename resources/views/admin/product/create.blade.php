@@ -9,7 +9,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0">
                     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('products.index') }}">Products</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('admin.products.index') }}">Products</a></li>
                     <li class="breadcrumb-item active">Add New Product</li>
                 </ol>
             </nav>
@@ -26,7 +26,7 @@
         </div>
     @endif
 
-    <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data" id="productForm">
+    <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" id="productForm">
         @csrf
         <div class="card shadow-sm mb-4">
             <div class="card-header py-3">

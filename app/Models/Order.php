@@ -13,19 +13,31 @@ class Order extends Model
     
     protected $fillable = [
         'userID',
-        // Removed 'cartID'
         'order_date',
-        'order_status' // Added order_status column
+        'order_status'
+    ];
+
+    protected $casts = [
+        'order_date' => 'datetime'
     ];
 
     public function cart()
     {
-        // Changed to hasOne as cartID is removed from orders table and orderID is added to carts table
         return $this->hasOne(Cart::class, 'orderID');
     }
 
-    // Remove user() relationship as it's accessed through cart
-    // Remove products() relationship as there's no order_product table
+    public function cartRecords()
+    {
+        return $this->hasManyThrough(
+            CartRecord::class,
+            Cart::class,
+            'orderID', // Foreign key on carts table
+            'cartID',  // Foreign key on cart_records table
+            'orderID', // Local key on orders table
+            'cartID'   // Local key on carts table
+        );
+    }
+
     public function payment()
     {
         return $this->hasOne(Payment::class, 'orderID');

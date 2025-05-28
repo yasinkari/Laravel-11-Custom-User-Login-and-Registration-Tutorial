@@ -228,7 +228,7 @@ class CartController extends Controller
                 // Order exists, check tracking status
                 $tracking = Tracking::where('orderID', $order->orderID)->latest()->first();
                 
-                if ($tracking && $tracking->order_status != 'complete') {
+                if ($tracking && $tracking->tracking_status != 'complete') {
                     // Order status is not complete, so we can use this cart
                     return $existingCart;
                 }

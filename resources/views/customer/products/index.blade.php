@@ -276,6 +276,13 @@
         font-size: 14px;
         color: #666;
     }
+    .promotion-badges .badge {
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 0;
+    font-weight: 500;
+    background: linear-gradient(45deg, #0f2c1f, #2a5a4a);
+}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 @endsection
@@ -331,6 +338,25 @@
                             <img src="{{ asset('image/placeholder.jpg') }}" 
                                  alt="{{ $product->product_name }}">
                         @endif
+                        
+                        {{-- Add Promotion Badge --}}
+                        @php
+                            $activePromotion = $product->promotionRecords()
+                                ->whereHas('promotion', function($query) {
+                                    $query->where('is_active', true)
+                                          ->where('start_date', '<=', now())
+                                          ->where('end_date', '>=', now());
+                                })
+                                ->with('promotion')
+                                ->first();
+                        @endphp
+                        
+                        @if($activePromotion)
+                            <div class="product-discount-badge">
+                                {{ $activePromotion->promotion->promotion_name }}
+                                <small class="promotion-period">Valid until {{ $activePromotion->promotion->end_date->format('d M Y') }}</small>
+                            </div>
+                        @endif
                     </div>
                     <div class="product-info">
                         <h5 class="product-title">{{ $product->product_name }}</h5>
@@ -338,21 +364,18 @@
                             @if($product->actual_price < $product->product_price)
                                 <span class="product-original-price">RM{{ number_format($product->product_price, 2) }}</span>
                                 <span class="product-price">RM{{ number_format($product->actual_price, 2) }}</span>
+                                @if($activePromotion)
+                                    <div class="promotion-info">
+                                        <span class="promotion-type">{{ $activePromotion->promotion->promotion_type }}</span>
+                                        
+                                    </div>
+                                @endif
                             @else
                                 <span class="product-price">RM{{ number_format($product->product_price, 2) }}</span>
                             @endif
                         </div>
                         <div class="d-grid gap-2">
                             <a href="{{ route('products.view', $product) }}" class="btn btn-view-details">View Details</a>
-                            <form action="{{ route('cart.add') }}" method="POST" class="w-100">
-                                @csrf
-                                <input type="hidden" name="product_id" value="{{ $product->productID }}">
-                                <input type="hidden" name="quantity" value="1">
-                                <button type="submit" class="btn-add-to-cart">
-                                    <i class="fas fa-shopping-cart"></i>
-                                    <span>Add to Cart</span>
-                                </button>
-                            </form>
                         </div>
                     </div>
                 </div>

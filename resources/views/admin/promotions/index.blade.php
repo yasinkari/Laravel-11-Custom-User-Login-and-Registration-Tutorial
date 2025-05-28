@@ -6,7 +6,7 @@
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 mb-0 text-gray-800">Manage Promotions</h1>
-        <a href="{{ route('promotions.create') }}" class="btn btn-primary">
+        <a href="{{ route('admin.promotions.create') }}" class="btn btn-primary">
             <i class="fas fa-plus"></i> Add New Promotion
         </a>
     </div>
@@ -92,7 +92,7 @@
                                     </td>
                                     <td>
                                         <div class="btn-group" role="group">
-                                            <a href="{{ route('promotions.edit', $promotion->promotionID) }}" 
+                                            <a href="{{ route('admin.promotions.edit', $promotion->promotionID) }}" 
                                                class="btn btn-sm btn-primary">
                                                 <i class="fas fa-edit"></i>
                                             </a>

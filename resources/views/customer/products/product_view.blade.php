@@ -269,6 +269,7 @@
 
         // Function to collect selected color, size, and quantity for adding to cart
         window.addToCart = function() {
+            
             const selectedColorVariantId = $('input[name="selected_color"]:checked').val();
             const selectedSizeId = $('input[name="selected_size"]:checked').val();
             const quantity = $('#quantity').val();
@@ -292,6 +293,7 @@
                 },
                 success: function(response) {
                     if (response.success) {
+                        updateCartBadge();
                         showToast('success', response.message);
                         if (response.cart_count) {
                             // Update cart count in UI
