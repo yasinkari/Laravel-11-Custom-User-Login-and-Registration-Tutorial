@@ -965,9 +965,9 @@ input[type="checkbox"] {
           <div class="col-md-3 col-sm-6 mb-4">
             <h5>SHOP WITH US</h5>
             <ul>
-              <li><a href="#">Men's Collection</a></li>
-              <li><a href="#">Men's Sampin</a></li>
-              <li><a href="#">Fragrance</a></li>
+              <li><a href="{{ route('products.customer') }}">Men's Collection</a></li>
+              <li><a href="{{ route('products.customer') }}">Men's Sampin</a></li>
+              <li><a href="{{ route('products.customer') }}">Fragrance</a></li>
             </ul>
           </div>
           

@@ -249,12 +249,12 @@ span, a, a:hover {
               <div class="carousel-item row">
                 <div class="col-lg-6 col-md-12 pl-0">
                   <div class="history-img">
-                    <img class="img-fluid" src="https://i.ibb.co/CKNmhMX/blog1.jpg" alt="Humble Beginnings" />
+                    <img class="img-fluid" src="{{asset('image/imageAboutUs/IMG_NillScarf.jpg')}}" alt="Humble Beginnings" />
                   </div>
                 </div>
                 <div class="col-lg-6 col-md-12 pr-0">
                   <div class="history-content">
-                    <p class="title-bg-small primary-bg wow fadeInUp" data-wow-duration="1.5s" data-wow-delay="500ms">2018</p>
+                    <p class="title-bg-small wow fadeInUp" data-wow-duration="1.5s" data-wow-delay="500ms" style="background-color: #667eea; color: #ffffff;">2018</p>
                     <h2 class="column-title wow fadeInUp" data-wow-duration="1.5s" data-wow-delay="700ms">Humble <span>Beginnings</span></h2>
                     <p>The story of Nillconcept began in 2018 as a small home-based business selling tudung (headscarves). With a focus on clean designs, quality materials, and personal customer service, the brand slowly built trust within its community.</p>
                     <p>Every piece was packed by hand, marketed through social media, and delivered with care. These early steps taught the brand the value of consistency, simplicity, and connection.</p>
@@ -265,12 +265,12 @@ span, a, a:hover {
               <div class="carousel-item row">
                 <div class="col-lg-6 col-md-12 pl-0">
                   <div class="history-img">
-                    <img class="img-fluid" src="https://i.ibb.co/m5yGbdR/blog2.jpg" alt="Testing the Waters" />
+                    <img class="img-fluid" src="{{asset('image/imageAboutUs/NILL_og.jpg')}}" alt="Testing the Waters" />
                   </div>
                 </div>
                 <div class="col-lg-6 col-md-12 pr-0">
                   <div class="history-content">
-                    <p class="title-bg-small primary-bg wow fadeInUp" data-wow-duration="1.5s" data-wow-delay="500ms">2019</p>
+                    <p class="title-bg-small wow fadeInUp" data-wow-duration="1.5s" data-wow-delay="500ms" style="background-color: #667eea; color: #ffffff;">2019</p>
                     <h2 class="column-title wow fadeInUp" data-wow-duration="1.5s" data-wow-delay="700ms">Testing the <span>Waters</span></h2>
                     <p>In 2019, the business started to experiment beyond tudung. The founder began exploring the idea of creating menswear, particularly Baju Melayu, that was clean, well-fitted, and different from the usual market offerings.</p>
                     <p>Samples were made, feedback was collected, and a small group of early supporters helped shape the direction. It was a quiet year of trial and error—laying the foundation for what would soon become Nillconcept.</p>
@@ -281,12 +281,12 @@ span, a, a:hover {
               <div class="carousel-item row">
                 <div class="col-lg-6 col-md-12 pl-0">
                   <div class="history-img">
-                    <img class="img-fluid" src="https://i.ibb.co/YXV3zmh/blog3.jpg" alt="The Birth of Nillconcept" />
+                    <img class="img-fluid" src="{{asset('image/imageAboutUs/2020.jpg')}}" alt="The Birth of Nillconcept" />
                   </div>
                 </div>
                 <div class="col-lg-6 col-md-12 pr-0">
                   <div class="history-content">
-                    <p class="title-bg-small primary-bg wow fadeInUp" data-wow-duration="1.5s" data-wow-delay="500ms">2020</p>
+                    <p class="title-bg-small wow fadeInUp" data-wow-duration="1.5s" data-wow-delay="500ms" style="background-color: #667eea; color: #ffffff;">2020</p>
                     <h2 class="column-title wow fadeInUp" data-wow-duration="1.5s" data-wow-delay="700ms">The Birth of <span>Nillconcept</span></h2>
                     <p>2020 marked the official birth of Nillconcept, a brand with a clear vision: to elevate traditional menswear with modern, minimalist design. The first full collection of Baju Melayu was prepared—but just as plans were forming, the COVID-19 pandemic brought everything to a sudden halt.</p>
                     <p>Launches were postponed, events were canceled, and uncertainty filled the air. Still, behind the scenes, the brand continued refining its identity and preparing for a stronger comeback.</p>
@@ -297,12 +297,12 @@ span, a, a:hover {
               <div class="carousel-item row active">
                 <div class="col-lg-6 col-md-12 pl-0">
                   <div class="history-img">
-                    <img class="img-fluid" src="https://i.ibb.co/CKNmhMX/blog1.jpg" alt="A Quiet Comeback" />
+                    <img class="img-fluid" src="{{asset('image/imageAboutUs/2021.jpg')}}" alt="A Quiet Comeback" />
                   </div>
                 </div>
                 <div class="col-lg-6 col-md-12 pr-0">
                   <div class="history-content">
-                    <p class="title-bg-small primary-bg wow fadeInUp" data-wow-duration="1.5s" data-wow-delay="500ms">2021</p>
+                    <p class="title-bg-small wow fadeInUp" data-wow-duration="1.5s" data-wow-delay="500ms" style="background-color: #667eea; color: #ffffff;">2021</p>
                     <h2 class="column-title wow fadeInUp" data-wow-duration="1.5s" data-wow-delay="700ms">A Quiet <span>Comeback</span></h2>
                     <p>After a year of pause, 2021 became the year of return. Nillconcept reintroduced its pieces with improved cuts, better materials, and a sharper visual direction. The Raya season marked a turning point, as customers began to notice the brand's distinct identity—elegant, modern, and rooted in tradition.</p>
                     <p>This quiet comeback proved that patience and purpose always pay off.</p>
@@ -313,12 +313,12 @@ span, a, a:hover {
               <div class="carousel-item row">
                 <div class="col-lg-6 col-md-12 pl-0">
                   <div class="history-img">
-                    <img class="img-fluid" src="https://i.ibb.co/m5yGbdR/blog2.jpg" alt="Embracing Community" />
+                    <img class="img-fluid" src="{{asset('image/imageAboutUs/2022.jpg')}}" alt="Embracing Community" />
                   </div>
                 </div>
                 <div class="col-lg-6 col-md-12 pr-0">
                   <div class="history-content">
-                    <p class="title-bg-small primary-bg wow fadeInUp" data-wow-duration="1.5s" data-wow-delay="500ms">2022</p>
+                    <p class="title-bg-small wow fadeInUp" data-wow-duration="1.5s" data-wow-delay="500ms" style="background-color: #667eea; color: #ffffff;">2022</p>
                     <h2 class="column-title wow fadeInUp" data-wow-duration="1.5s" data-wow-delay="700ms">Embracing <span>Community</span></h2>
                     <p>In 2022, Nillconcept stepped out from behind the screen and into real spaces. The brand took part in festive pop-ups, collaborated with local creators, and built relationships with returning customers. Each sale wasn't just a transaction—it was a connection.</p>
                     <p>The feedback and interaction helped the brand evolve, while the values of slow fashion and mindful design remained at the core.</p>
@@ -329,12 +329,12 @@ span, a, a:hover {
               <div class="carousel-item row">
                 <div class="col-lg-6 col-md-12 pl-0">
                   <div class="history-img">
-                    <img class="img-fluid" src="https://i.ibb.co/YXV3zmh/blog3.jpg" alt="Creative Growth" />
+                    <img class="img-fluid" src="{{asset('image/imageAboutUs/2023.jpg')}}" alt="Creative Growth" />
                   </div>
                 </div>
                 <div class="col-lg-6 col-md-12 pr-0">
                   <div class="history-content">
-                    <p class="title-bg-small primary-bg wow fadeInUp" data-wow-duration="1.5s" data-wow-delay="500ms">2023</p>
+                    <p class="title-bg-small wow fadeInUp" data-wow-duration="1.5s" data-wow-delay="500ms" style="background-color: #667eea; color: #ffffff;">2023</p>
                     <h2 class="column-title wow fadeInUp" data-wow-duration="1.5s" data-wow-delay="700ms">Creative <span>Growth</span></h2>
                     <p>2023 became a year of creativity. The team explored new silhouettes, richer textures, and limited capsule collections. Nillconcept started to shape its own visual language—blending culture, architecture, and fashion. Social media content evolved into storytelling, and each campaign carried deeper meaning.</p>
                     <p>The brand was no longer just selling clothing—it was building an identity.</p>
@@ -345,12 +345,12 @@ span, a, a:hover {
               <div class="carousel-item row">
                 <div class="col-lg-6 col-md-12 pl-0">
                   <div class="history-img">
-                    <img class="img-fluid" src="https://i.ibb.co/CKNmhMX/blog1.jpg" alt="Strength in Simplicity" />
+                    <img class="img-fluid" src="{{asset('image/imageAboutUs/2024.jpg')}}" alt="Strength in Simplicity" />
                   </div>
                 </div>
                 <div class="col-lg-6 col-md-12 pr-0">
                   <div class="history-content">
-                    <p class="title-bg-small primary-bg wow fadeInUp" data-wow-duration="1.5s" data-wow-delay="500ms">2024</p>
+                    <p class="title-bg-small wow fadeInUp" data-wow-duration="1.5s" data-wow-delay="500ms" style="background-color: #667eea; color: #ffffff;">2024</p>
                     <h2 class="column-title wow fadeInUp" data-wow-duration="1.5s" data-wow-delay="700ms">Strength in <span>Simplicity</span></h2>
                     <p>In 2024, Nillconcept focused on improving every detail, from production to packaging. Systems were refined, sizing was made more inclusive, and the team worked closely with tailors and suppliers to ensure long-term quality.</p>
                     <p>The pieces became wardrobe staples—timeless, comfortable, and beautiful in their simplicity. The brand solidified its position as a trusted name for modern traditionalwear.</p>
@@ -361,12 +361,12 @@ span, a, a:hover {
               <div class="carousel-item row">
                 <div class="col-lg-6 col-md-12 pl-0">
                   <div class="history-img">
-                    <img class="img-fluid" src="https://i.ibb.co/m5yGbdR/blog2.jpg" alt="Looking Forward" />
+                    <img class="img-fluid" src="{{asset('image/imageAboutUs/2025.jpg')}}" alt="Looking Forward" />
                   </div>
                 </div>
                 <div class="col-lg-6 col-md-12 pr-0">
                   <div class="history-content">
-                    <p class="title-bg-small primary-bg wow fadeInUp" data-wow-duration="1.5s" data-wow-delay="500ms">2025</p>
+                    <p class="title-bg-small wow fadeInUp" data-wow-duration="1.5s" data-wow-delay="500ms" style="background-color: #667eea; color: #ffffff;">2025</p>
                     <h2 class="column-title wow fadeInUp" data-wow-duration="1.5s" data-wow-delay="700ms">Looking <span>Forward</span></h2>
                     <p>Now in 2025, Nillconcept continues to grow while staying true to its roots. With plans to expand custom sizing, explore collaborations, and introduce new design categories, the brand is entering a new chapter.</p>
                     <p>What started as a small tudung business in 2018 is now a respected name in modern Malay menswear. Through every year, one thing has remained the same—Nillconcept designs not just for occasions, but for people, stories, and lasting meaning.</p>

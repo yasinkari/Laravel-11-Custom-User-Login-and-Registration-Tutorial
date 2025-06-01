@@ -168,14 +168,21 @@
   }
   
   /* Professional Collection Cards - Faster Animations */
+  /* Simplified Collection Cards - Minimal Animation */
+  /* Global Styling */
+  body {
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+  }
+  
+  /* Collection Cards - No Animation */
   .collection-card {
     position: relative;
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     margin-bottom: 40px;
     height: 550px;
-    transition: all 0.3s ease; /* Changed from 0.5s to 0.3s */
     background: #ffffff;
   }
   
@@ -183,18 +190,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: all 0.4s ease; /* Changed from 0.8s to 0.4s */
-    filter: brightness(0.9) contrast(1.1);
-  }
-  
-  .collection-card:hover {
-    transform: translateY(-15px) scale(1.02);
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
-  }
-  
-  .collection-card:hover img {
-    transform: scale(1.08);
-    filter: brightness(0.95) contrast(1.15);
+    filter: brightness(0.9);
   }
   
   .collection-content {
@@ -204,18 +200,14 @@
     width: 100%;
     padding: 40px 30px;
     background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0.3) 80%, transparent 100%);
-    color: white;
-    text-align: center;
-    z-index: 2;
   }
   
   .collection-content h3 {
-    font-size: 2.2rem;
+    font-size: 2.5rem;
     font-weight: 800;
-    margin-bottom: 20px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    color: #ffffff;
+    margin-bottom: 25px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
     line-height: 1.2;
   }
   
@@ -223,44 +215,19 @@
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
-    padding: 15px 30px;
+    padding: 15px 35px;
     border-radius: 50px;
-    font-weight: 700;
+    font-weight: 600;
     font-size: 1rem;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .shop-now-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transition: left 0.6s;
-  }
-  
-  .shop-now-btn:hover::before {
-    left: 100%;
-  }
-  
-  .shop-now-btn:hover {
-    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
-    color: #ffffff;
+    letter-spacing: 1px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
   }
   
   /* Enhanced Grid Layout */
   .collections-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 40px;
     margin-top: 60px;
   }
@@ -280,35 +247,15 @@
   /* Enhanced Responsive Design */
   @media (max-width: 1200px) {
     .collections-grid {
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 30px;
     }
   }
   
   @media (max-width: 768px) {
-    .carousel-image {
-      height: 400px;
-    }
-    
-    .carousel-title {
-      font-size: 2.2rem;
-    }
-    
-    .carousel-subtitle {
-      font-size: 1.1rem;
-    }
-    
-    .carousel-caption {
-      padding: 2.5rem 1.5rem 2rem;
-    }
-    
-    .collections-section {
-      padding: 60px 0;
-    }
-    
-    .collections-section h2 {
-      font-size: 2.5rem;
-      margin-bottom: 40px;
+    .collections-grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
     }
     
     .collection-card {
@@ -324,54 +271,12 @@
       font-size: 1.8rem;
       margin-bottom: 15px;
     }
-    
-    .collections-grid {
-      grid-template-columns: 1fr;
-      gap: 20px;
-    }
   }
   
   @media (max-width: 480px) {
-    .carousel-image {
-      height: 300px;
-    }
-    
-    .carousel-title {
-      font-size: 1.8rem;
-    }
-    
-    .carousel-subtitle {
-      font-size: 1rem;
-    }
-    
-    .btn-primary-custom {
-      padding: 12px 25px;
-      font-size: 0.95rem;
-    }
-    
     .shop-now-btn {
       padding: 12px 25px;
       font-size: 0.9rem;
-    }
-  }
-  
-  /* Loading Animation */
-  .collection-card {
-    animation: fadeInUp 0.8s ease-out;
-  }
-  
-  .collection-card:nth-child(2) {
-    animation-delay: 0.2s;
-  }
-  
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
     }
   }
 </style>
@@ -460,6 +365,22 @@
         <img src="{{asset('image/imageHomeBaju/JauharLilacPurple1.jpg')}}" alt="Teluk Belanga Collection">
         <div class="collection-content">
           <h3>Teluk Belanga<br>Collection</h3>
+          <a href="{{ route('products.customer') }}" class="btn shop-now-btn">Shop Now</a>
+        </div>
+      </div>
+
+      <div class="collection-card">
+        <img src="{{asset('image/imageHomeBaju/(Habeeb)Black1.jpg')}}" alt="Men in Black Edition">
+        <div class="collection-content">
+          <h3>Men in Black<br>Edition</h3>
+          <a href="{{ route('products.customer') }}" class="btn shop-now-btn">Shop Now</a>
+        </div>
+      </div>
+
+      <div class="collection-card">
+        <img src="{{asset('image/imageHomeBaju/Maroon2.jpg')}}" alt="Maroon Collection">
+        <div class="collection-content">
+          <h3>Maroon<br>Collection</h3>
           <a href="{{ route('products.customer') }}" class="btn shop-now-btn">Shop Now</a>
         </div>
       </div>

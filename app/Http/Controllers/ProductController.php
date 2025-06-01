@@ -12,6 +12,7 @@ use App\Models\ProductColor;
 use App\Models\ToneCollection;
 use App\Models\VariantImage;
 use App\Models\ProductSizing;
+use App\Models\Review;  // Add this line
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 
@@ -407,14 +408,35 @@ class ProductController extends Controller
     }
 
     // Update the showProductDetails method to check visibility
-    public function showProductDetails(Product $product)
+    public function showProductDetails($id)
     {
+        $product = Product::findOrFail($id);
+        
         if (!$product->is_visible) {
             abort(404);
         }
         
-        $product->load(['variants.tones', 'variants.color', 'variants.productSizings', 'variants.variantImages']);
-
+        // Fetch reviews for this product through orders
+        $reviews = Review::whereHas('order', function($query) use ($id) {
+            $query->whereHas('cartRecords.productSizing.productVariant', function($subQuery) use ($id) {
+                $subQuery->where('productID', $id);
+            });
+        })->with('order.user')->latest()->get();
+    
+        // Calculate review statistics
+        $totalReviews = $reviews->count();
+        $averageRating = $totalReviews > 0 ? round($reviews->avg('rating'), 1) : 0;
+        
+        // Rating breakdown
+        $ratingBreakdown = [];
+        for ($i = 5; $i >= 1; $i--) {
+            $count = $reviews->where('rating', $i)->count();
+            $ratingBreakdown[$i] = [
+                'count' => $count,
+                'percentage' => $totalReviews > 0 ? round(($count / $totalReviews) * 100) : 0
+            ];
+        }
+    
         // Restructure the data array to match requested format
         $product_variant = [
             "product"=> [
@@ -437,7 +459,7 @@ class ProductController extends Controller
         
         // Restructure the data array
         $data = [];
-
+    
         foreach ($product->variants as $variant) {
             $data[$variant->product_variantID] = [
                 'color' => $variant->color ? $variant->color->color_code : null,
@@ -463,7 +485,7 @@ class ProductController extends Controller
             ];
         }
         
-        return view('customer.products.product_view', compact('data', 'product_variant', 'relatedProducts', 'product'));
+        return view('customer.products.product_view', compact('data', 'product_variant', 'relatedProducts', 'product', 'reviews', 'totalReviews', 'averageRating', 'ratingBreakdown'));
     }
 
     public function storeVariant(Request $request, $productID)
