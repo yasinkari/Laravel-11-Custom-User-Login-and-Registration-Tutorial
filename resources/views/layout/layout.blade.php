@@ -618,29 +618,60 @@ input[type="checkbox"] {
     left: 100%;
 }
 .btn-primary-custom {
-  background-color: #ff6347; /* Use the specified color */
-  color: #fff; /* White text for contrast */
-  border: 1px solid #ff6347; /* Border matching the background */
-  padding: 10px 20px; /* Standard padding */
-  border-radius: 5px; /* Slightly rounded corners */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.5px;
   cursor: pointer;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  position: relative;
+  overflow: hidden;
 }
 
 .btn-primary-custom:hover {
-  background-color: #e0513a; /* Slightly darker shade on hover */
-  border-color: #e0513a;
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  color: #fff;
 }
 
 .btn-primary-custom:active {
-  background-color: #c74631; /* Even darker shade when active */
-  border-color: #c74631;
+  background: linear-gradient(135deg, #4c51bf 0%, #553c9a 100%);
+  transform: translateY(0);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary-custom:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
 }
 
 .btn-primary-custom:disabled {
-  background-color: #cccccc;
-  border-color: #cccccc;
+  background: #e2e8f0;
+  color: #a0aec0;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-primary-custom::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-primary-custom:hover::before {
+  left: 100%;
 }
 #accountDropdown:hover, #accountDropdown:active, #accountDropdown:focus {
     background-color: transparent !important;

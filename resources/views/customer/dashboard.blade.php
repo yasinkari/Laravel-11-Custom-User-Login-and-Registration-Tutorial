@@ -1,51 +1,200 @@
 @extends("layout.layout")
 @section("css")
 <style>
-  /* Hero Carousel Styling */
-  #productCarousel .carousel-item img {
-    width: 100%;
-    height: 500px;
+  /* Global Styling */
+  body {
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+  }
+  
+  /* Hero Carousel Styling - Professional Enhancement */
+  #productCarousel {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  }
+  
+  .carousel-image {
+    height: 600px;
     object-fit: cover;
+    filter: brightness(0.75) contrast(1.1);
+    transition: all 0.8s ease;
   }
   
-  #productCarousel .carousel-caption {
-    background-color: rgba(0, 0, 0, 0.5);
-    padding: 20px;
-    border-radius: 10px;
+  .carousel-item:hover .carousel-image {
+    transform: scale(1.02);
+    filter: brightness(0.8) contrast(1.15);
   }
   
-  /* 2025 Collections Styling */
+  .carousel-caption {
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.3) 70%, transparent 100%);
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 4rem 2rem 3rem;
+    text-align: center;
+    border-radius: 0;
+  }
+  
+  .carousel-title {
+    font-size: 3.2rem;
+    font-weight: 800;
+    color: #ffffff;
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+    margin-bottom: 1.2rem;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  
+  .carousel-subtitle {
+    font-size: 1.4rem;
+    color: #f8f9fa;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    margin-bottom: 2rem;
+    font-weight: 400;
+    opacity: 0.95;
+  }
+  
+  /* Enhanced Button Styling */
+  .btn-primary-custom {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    padding: 15px 35px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .btn-primary-custom::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.6s;
+  }
+  
+  .btn-primary-custom:hover::before {
+    left: 100%;
+  }
+  
+  .btn-primary-custom:hover {
+    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+    color: #ffffff;
+  }
+  
+  /* Carousel Indicators Enhancement */
+  .carousel-indicators {
+    bottom: 30px;
+    margin-bottom: 0;
+  }
+  
+  .carousel-indicators button {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    margin: 0 8px;
+    background-color: rgba(255,255,255,0.4);
+    border: 3px solid rgba(255,255,255,0.8);
+    transition: all 0.3s ease;
+  }
+  
+  .carousel-indicators button.active {
+    background-color: #667eea;
+    border-color: #ffffff;
+    transform: scale(1.2);
+  }
+  
+  .carousel-indicators button:hover {
+    background-color: rgba(255,255,255,0.7);
+    transform: scale(1.1);
+  }
+  
+  /* Enhanced Collections Section */
   .collections-section {
-    padding: 60px 0;
-    background-color: #f8f9fa;
+    padding: 100px 0;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    position: relative;
+  }
+  
+  .collections-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>') repeat;
+    opacity: 0.3;
+  }
+  
+  .collections-section .container {
+    position: relative;
+    z-index: 2;
   }
   
   .collections-section h2 {
-    font-size: 32px;
-    font-weight: 700;
-    margin-bottom: 40px;
+    font-size: 3.5rem;
+    font-weight: 900;
+    margin-bottom: 60px;
     text-align: center;
     color: #2c3e50;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    position: relative;
   }
   
+  .collections-section h2::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 4px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 2px;
+  }
+  
+  /* Professional Collection Cards - Faster Animations */
   .collection-card {
     position: relative;
-    border-radius: 10px;
+    border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    margin-bottom: 30px;
-    height: 500px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    margin-bottom: 40px;
+    height: 550px;
+    transition: all 0.3s ease; /* Changed from 0.5s to 0.3s */
+    background: #ffffff;
   }
   
   .collection-card img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease;
+    transition: all 0.4s ease; /* Changed from 0.8s to 0.4s */
+    filter: brightness(0.9) contrast(1.1);
+  }
+  
+  .collection-card:hover {
+    transform: translateY(-15px) scale(1.02);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
   }
   
   .collection-card:hover img {
-    transform: scale(1.05);
+    transform: scale(1.08);
+    filter: brightness(0.95) contrast(1.15);
   }
   
   .collection-content {
@@ -53,92 +202,235 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    padding: 30px;
-    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    padding: 40px 30px;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0.3) 80%, transparent 100%);
     color: white;
     text-align: center;
+    z-index: 2;
   }
   
   .collection-content h3 {
-    font-size: 28px;
-    font-weight: 700;
-    margin-bottom: 15px;
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: 20px;
     text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    line-height: 1.2;
   }
   
   .shop-now-btn {
-    background-color: #e74c3c;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
-    padding: 10px 25px;
-    border-radius: 5px;
-    font-weight: 600;
-    transition: all 0.3s ease;
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .shop-now-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.6s;
+  }
+  
+  .shop-now-btn:hover::before {
+    left: 100%;
   }
   
   .shop-now-btn:hover {
-    background-color: #c0392b;
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+    color: #ffffff;
   }
   
-  
-  
-  .payment-icons, .delivery-icons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 20px;
+  /* Enhanced Grid Layout */
+  .collections-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 40px;
+    margin-top: 60px;
   }
   
-  .payment-icons img, .delivery-icons img {
-    height: 30px;
-    object-fit: contain;
-  }
-  
-  .copyright {
+  /* Professional Typography */
+  .section-subtitle {
+    font-size: 1.2rem;
+    color: #6c757d;
     text-align: center;
-    padding-top: 20px;
-    margin-top: 30px;
-    border-top: 1px solid #e9ecef;
-    color: #95a5a6;
-    font-size: 14px;
+    margin-bottom: 50px;
+    font-weight: 400;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
   }
   
+  /* Enhanced Responsive Design */
+  @media (max-width: 1200px) {
+    .collections-grid {
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 30px;
+    }
+  }
   
+  @media (max-width: 768px) {
+    .carousel-image {
+      height: 400px;
+    }
+    
+    .carousel-title {
+      font-size: 2.2rem;
+    }
+    
+    .carousel-subtitle {
+      font-size: 1.1rem;
+    }
+    
+    .carousel-caption {
+      padding: 2.5rem 1.5rem 2rem;
+    }
+    
+    .collections-section {
+      padding: 60px 0;
+    }
+    
+    .collections-section h2 {
+      font-size: 2.5rem;
+      margin-bottom: 40px;
+    }
+    
+    .collection-card {
+      height: 400px;
+      margin-bottom: 30px;
+    }
+    
+    .collection-content {
+      padding: 25px 20px;
+    }
+    
+    .collection-content h3 {
+      font-size: 1.8rem;
+      margin-bottom: 15px;
+    }
+    
+    .collections-grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+  }
   
-  .privacy-text {
-    margin-top: 20px;
-    color: #7f8c8d;
-    font-size: 13px;
-    line-height: 1.6;
+  @media (max-width: 480px) {
+    .carousel-image {
+      height: 300px;
+    }
+    
+    .carousel-title {
+      font-size: 1.8rem;
+    }
+    
+    .carousel-subtitle {
+      font-size: 1rem;
+    }
+    
+    .btn-primary-custom {
+      padding: 12px 25px;
+      font-size: 0.95rem;
+    }
+    
+    .shop-now-btn {
+      padding: 12px 25px;
+      font-size: 0.9rem;
+    }
+  }
+  
+  /* Loading Animation */
+  .collection-card {
+    animation: fadeInUp 0.8s ease-out;
+  }
+  
+  .collection-card:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 </style>
 @endsection
+
 @section("content")
- 
-<!-- Hero Section with NILL -->
-<div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+<!-- Professional Hero Carousel -->
+<div id="productCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
   <div class="carousel-inner">
-    <!-- NILL Item 1 -->
+    <!-- Carousel Item 1 - Baju Melayu Jauhar -->
     <div class="carousel-item active">
-      <img src="{{asset('image/IMG_7282.jpg')}}" height="50px" alt="Baju Melayu Jauhar">
-      <div class="carousel-caption">
-        <h1>New Arrival: Baju Melayu Jauhar 1.0</h1>
-        <p>Men's Collection - Stylish, Comfortable & Trendy</p>
-        <a href="#" class="btn btn-primary-custom">Shop Now!</a>
+      <img src="{{asset('image/IMG_7282.jpg')}}" class="d-block w-100 carousel-image" alt="Baju Melayu Jauhar">
+      <div class="carousel-caption d-none d-md-block">
+        <h1 class="carousel-title">New Arrival: Baju Melayu Jauhar 1.0</h1>
+        <p class="carousel-subtitle">Men's Collection - Stylish, Comfortable & Trendy</p>
+        <a href="{{ route('products.customer') }}" class="btn btn-primary-custom btn-lg">Shop Now!</a>
       </div>
     </div>
-    <!-- NILL Item 2 -->
+    
+    <!-- Carousel Item 2 - Exclusive Jubah -->
     <div class="carousel-item">
-      <img src="{{asset('image/imageProducts/IMG_1229.jpg')}}" height="50px" alt="Baju Melayu Habeeb">
-      <div class="carousel-caption">
-        <h1>Exclusive Jubah Release</h1>
-        <p>Elegant Designs in Vibrant Colors</p>
-        <a href="#" class="btn btn-primary-custom">Explore More</a>
+      <img src="{{asset('image/imageProducts/IMG_1229.JPG')}}" class="d-block w-100 carousel-image" alt="Exclusive Jubah">
+      <div class="carousel-caption d-none d-md-block">
+        <h1 class="carousel-title">Exclusive Jubah Release</h1>
+        <p class="carousel-subtitle">Elegant Designs in Vibrant Colors</p>
+        <a href="{{ route('products.customer') }}" class="btn btn-primary-custom btn-lg">Explore More</a>
+      </div>
+    </div>
+    
+    <!-- Carousel Item 3 - Habeeb Collection -->
+    <div class="carousel-item">
+      <img src="{{asset('image/imageHomeBaju/HabeebEmeraldGreen2.jpg')}}" class="d-block w-100 carousel-image" alt="Habeeb Emerald Green">
+      <div class="carousel-caption d-none d-md-block">
+        <h1 class="carousel-title">Habeeb Emerald Collection</h1>
+        <p class="carousel-subtitle">Premium Quality Traditional Wear</p>
+        <a href="{{ route('products.customer') }}" class="btn btn-primary-custom btn-lg">Discover Now</a>
+      </div>
+    </div>
+    
+    <!-- Carousel Item 4 - Jauhar Purple Collection -->
+    <div class="carousel-item">
+      <img src="{{asset('image/imageHomeBaju/JauharLilacPurple1.jpg')}}" class="d-block w-100 carousel-image" alt="Jauhar Lilac Purple">
+      <div class="carousel-caption d-none d-md-block">
+        <h1 class="carousel-title">Jauhar Lilac Purple</h1>
+        <p class="carousel-subtitle">Sophisticated Style for Modern Gentlemen</p>
+        <a href="{{ route('products.customer') }}" class="btn btn-primary-custom btn-lg">Shop Collection</a>
       </div>
     </div>
   </div>
+  
+  <!-- Enhanced Carousel Indicators -->
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#productCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+    <button type="button" data-bs-target="#productCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+    <button type="button" data-bs-target="#productCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    <button type="button" data-bs-target="#productCarousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
+  </div>
+  
+  <!-- Carousel Controls -->
   <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
     <span class="visually-hidden">Previous</span>
@@ -149,33 +441,30 @@
   </button>
 </div>
 
-<!-- 2025 Collections Section -->
+<!-- Professional 2025 Collections Section -->
 <section class="collections-section">
   <div class="container">
     <h2>2025 Collections</h2>
-    <div class="row">
-      <div class="col-md-6">
-        <div class="collection-card">
-          <img src="{{asset('image/imageHomeBaju/HabeebEmeraldGreen2.jpg')}}" alt="Baju Melayu Traditional Fit" style="width: 100%; height: 100%; object-fit: cover;">
-          <div class="collection-content">
-            <h3>Baju Melayu<br>Traditional Fit</h3>
-            <a href="{{ route('products.customer') }}" class="btn shop-now-btn">Shop Now</a>
-          </div>
+    <p class="section-subtitle">Discover our latest traditional wear collections, crafted with premium materials and modern designs for the contemporary gentleman.</p>
+    
+    <div class="collections-grid">
+      <div class="collection-card">
+        <img src="{{asset('image/imageHomeBaju/HabeebEmeraldGreen2.jpg')}}" alt="Baju Melayu Traditional Fit">
+        <div class="collection-content">
+          <h3>Baju Melayu<br>Traditional Fit</h3>
+          <a href="{{ route('products.customer') }}" class="btn shop-now-btn">Shop Now</a>
         </div>
       </div>
-      <div class="col-md-6">
-        <div class="collection-card">
-          <img src="{{asset('image/imageHomeBaju/JauharLilacPurple1.jpg')}}" alt="Sisters Collection" style="width: 100%; height: 100%; object-fit: cover;">
-          <div class="collection-content">
-            <h3>Teluk Belanga Collection</h3>
-            <a href="{{ route('products.customer') }}" class="btn shop-now-btn">Shop Now</a>
-          </div>
+      
+      <div class="collection-card">
+        <img src="{{asset('image/imageHomeBaju/JauharLilacPurple1.jpg')}}" alt="Teluk Belanga Collection">
+        <div class="collection-content">
+          <h3>Teluk Belanga<br>Collection</h3>
+          <a href="{{ route('products.customer') }}" class="btn shop-now-btn">Shop Now</a>
         </div>
       </div>
     </div>
   </div>
 </section>
-
-
 @endsection
 
