@@ -78,16 +78,40 @@
       <!-- Login Form -->
       <div class="form-container">
         <img src="{{asset('image/IMG_7281-removebg-preview.png')}}" width="100px" alt="Logo">
+        
+        @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          {{ session('success') }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        @endif
+    
+        @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          {{ session('error') }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        @endif
+        
         <p>Fill the credential</p>
         <h2 class="mb-3">Register</h2>
         <form method="POST" action="{{ route('register.post') }}">
           @csrf
           <div class="col-12">
             <div class="form-floating mb-3">
-              <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" id="name" placeholder="name@example.com" required>
+              <!-- Change this line (around line 85) -->
+              <input type="text" class="form-control @error('user_name') is-invalid @enderror" name="user_name" id="user_name" placeholder="Your name" required>
               <label for="name" class="form-label">{{ __('Name') }}</label>
             </div>
+            <!-- Change this (around line 89) -->
             @error('name')
+                  <span class="text-danger" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+            @enderror
+            
+            <!-- To this -->
+            @error('user_name')
                   <span class="text-danger" role="alert">
                     <strong>{{ $message }}</strong>
                 </span>
@@ -126,6 +150,30 @@
                 </span>
             @enderror
           </div>
+          <!-- Add after password confirmation field -->
+          <div class="col-12">
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control @error('user_phone') is-invalid @enderror" name="user_phone" id="user_phone" placeholder="Your phone number" required>
+              <label for="user_phone" class="form-label">{{ __('Phone Number') }}</label>
+            </div>
+            @error('user_phone')
+                <span class="text-danger" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+            @enderror
+          </div>
+          
+          <div class="col-12">
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control @error('user_address') is-invalid @enderror" name="user_address" id="user_address" placeholder="Your address" required>
+              <label for="user_address" class="form-label">{{ __('Address') }}</label>
+            </div>
+            @error('user_address')
+                <span class="text-danger" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+            @enderror
+          </div>
           <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
               <input type="checkbox" id="remember" name="remember">
@@ -142,5 +190,20 @@
       </div>
     </div>
   </div>
+  <!-- Add this before closing body tag -->
+  <script>
+    // Auto-dismiss alerts after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+      const alerts = document.querySelectorAll('.alert');
+      alerts.forEach(function(alert) {
+        setTimeout(function() {
+          const closeButton = alert.querySelector('.btn-close');
+          if (closeButton) {
+            closeButton.click();
+          }
+        }, 5000);
+      });
+    });
+  </script>
 </body>
 </html>

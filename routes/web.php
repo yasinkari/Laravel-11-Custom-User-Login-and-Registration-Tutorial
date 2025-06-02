@@ -11,6 +11,8 @@ use App\Http\Controllers\ToyyibpayController; // Ensure ToyyibpayController is i
 use App\Http\Controllers\OrderController; // Add this import
 use App\Http\Controllers\ProfileController; 
 use App\Http\Controllers\ReviewController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 
 // Public Routes
 Route::get('/', function () {
@@ -21,7 +23,8 @@ Route::get('/', function () {
 Route::get('login', [AuthController::class, 'index'])->name(name: 'login');
 Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post'); 
 Route::get('registration', [AuthController::class, 'registration'])->name('register');
-Route::post('post-registration', [AuthController::class, 'postRegistration'])->name('register.post'); 
+Route::post('post-registration', [AuthController::class, 'postRegistration'])->name('register.post');
+Route::post('register', [AuthController::class, 'registerAdmin'])->name('admin.register.post'); // Changed name
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
 // Password Management Routes
@@ -88,7 +91,10 @@ Route::middleware([AdminMiddleware::class])->prefix('admin')->name('admin.')->gr
 
 // Cart routes
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+    // Example of a protected route that requires email verification
+    Route::get('/dashboard', [AuthController::class, 'dashboard'])
+        ->middleware(['auth', 'verified'])
+        ->name('dashboard');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     Route::get('/cart', [CartController::class, 'view'])->name('cart.view');
     Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
@@ -130,6 +136,34 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->name('admi
     // Display reviews by cartID
     Route::get('reviews/cart/{cartID}', [ReviewController::class, 'showByCartID'])->name('reviews.byCart');
 });
+
+// Email Verification Routes
+// Remove these lines (around line 141-146)
+// Change this route
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+
+// To this more explicit version
+// Email Verification Routes - Keep only this version
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->middleware(['web', 'auth'])->name('verification.notice');
+
+// And keep just this version:
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->middleware(['web', 'auth'])->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/dashboard')->withSuccess('Email verified successfully!');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->withSuccess('Verification link sent!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 
 

@@ -30,10 +30,17 @@ class AuthController extends Controller
             'email' => 'required',
             'password' => 'required',
         ]);
-
+    
         $credentials = $request->only('email', 'password');
         
         if (Auth::attempt($credentials)) {
+            // Check if email is verified
+            if (!Auth::user()->hasVerifiedEmail()) {
+                Auth::logout();
+                return redirect('login')
+                    ->withErrors(['email' => 'You need to verify your email address before logging in.']);
+            }
+            
             if (Auth::user()->user_role === 'admin') {
                 return redirect()->route('admin.dashboard')->withSuccess('Welcome, Admin!');
             } else {
@@ -53,6 +60,7 @@ class AuthController extends Controller
         return redirect("login")->withErrors(['email' => 'Invalid credentials.']);
     }
 
+    // Change the validation in postRegistration method (around line 65)
     public function postRegistration(Request $request): RedirectResponse
     {
         $request->validate([
@@ -62,12 +70,23 @@ class AuthController extends Controller
             'user_phone' => 'required',
             'user_address' => 'required',
         ]);
-
-        $data = $request->all();
-        $user = $this->create($data);
+    
+        $user = User::create([
+            'user_name' => $request->user_name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'user_phone' => $request->user_phone,
+            'user_address' => $request->user_address,
+            'user_role' => 'user'
+        ]);
+        
+        // Send email verification notification
+        $user->sendEmailVerificationNotification();
+        
+        // Log the user in and redirect to verification notice
         Auth::login($user);
-
-        return redirect("login")->withSuccess('Registration successful! Please log in.');
+        return redirect()->route('verification.notice')
+            ->withSuccess('Registration successful! Please check your email to verify your account.');
     }
 
     public function create(array $data)
