@@ -10,6 +10,7 @@ use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\ToyyibpayController; // Ensure ToyyibpayController is imported
 use App\Http\Controllers\OrderController; // Add this import
 use App\Http\Controllers\ProfileController; 
+use App\Http\Controllers\ReviewController;
 
 // Public Routes
 Route::get('/', function () {
@@ -111,6 +112,23 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('/profile/change-password', [ProfileController::class, 'showChangePasswordForm'])->name('profile.password.form');
     Route::put('/profile/change-password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
+});
+
+// Review routes for authenticated users
+Route::middleware(['auth'])->group(function () {
+    Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+    Route::get('/reviews/cart-record/{cartRecordID}', [ReviewController::class, 'showByCartRecordID'])->name('reviews.byCartRecord');
+});
+
+// Admin review routes
+Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->name('admin.')->group(function () {
+    // Review management routes
+    Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
+    Route::get('/reviews/{review}/edit', [ReviewController::class, 'edit'])->name('reviews.edit');
+    Route::put('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
+    Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+    // Display reviews by cartID
+    Route::get('reviews/cart/{cartID}', [ReviewController::class, 'showByCartID'])->name('reviews.byCart');
 });
 
 

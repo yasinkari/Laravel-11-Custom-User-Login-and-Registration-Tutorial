@@ -13,7 +13,8 @@ class Review extends Model
     protected $fillable = [
         'orderID',
         'comment',
-        'rating'
+        'rating',
+        'showName'
     ];
     
     public function order()
@@ -33,5 +34,32 @@ class Review extends Model
             }
         }
         return $stars;
+    }
+    
+    // New method to get reviews by cartID
+    public static function getReviewsByCartID($cartID)
+    {
+        return self::whereHas('order.cart', function($query) use ($cartID) {
+            $query->where('cartID', $cartID);
+        })->with(['order.user', 'order.cartRecords.productSizing.productVariant.product'])
+          ->latest()
+          ->get();
+    }
+    
+    // Method to get reviews by cartRecordID
+    public static function getReviewsByCartRecordID($cartRecordID)
+    {
+        $cartRecord = CartRecord::find($cartRecordID);
+        
+        if (!$cartRecord) {
+            return collect();
+        }
+        
+        return self::whereHas('order.cartRecords', function($query) use ($cartRecord) {
+            $query->where('cart_recordID', $cartRecord->cart_recordID)
+                  ->where('product_sizingID', $cartRecord->product_sizingID);
+        })->with(['order.user'])
+          ->latest()
+          ->get();
     }
 }

@@ -47,22 +47,17 @@
                 @endif
             </div>
 
-            {{-- Updated Rating Display --}}
+            {{-- Assuming you have a rating system or placeholder --}}
             <div class="mb-3">
                 <div class="d-flex align-items-center">
                     <div class="text-warning me-2">
-                        @for($i = 1; $i <= 5; $i++)
-                            @if($i <= floor($averageRating))
-                                <i class="fas fa-star"></i>
-                            @elseif($i == ceil($averageRating) && $averageRating - floor($averageRating) >= 0.5)
-                                <i class="fas fa-star-half-alt"></i>
-                            @else
-                                <i class="far fa-star"></i>
-                            @endif
-                        @endfor
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
                     </div>
-                    <span class="me-2">{{ $averageRating }} out of 5</span>
-                    <span class="text-muted">({{ $totalReviews }} {{ $totalReviews == 1 ? 'review' : 'reviews' }})</span>
+                    <span class="text-muted">(128 reviews)</span> {{-- Placeholder --}}
                 </div>
             </div>
 
@@ -147,10 +142,14 @@
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Product Reviews Section -->
-    <div class="row mt-5">
+<!-- Customer Reviews Section -->
+<div class="container py-5">
+    <div class="row">
         <div class="col-12">
+            <h2 class="mb-4">Customer Reviews</h2>
+            
             <div class="card">
                 <div class="card-header">
                     <h3 class="mb-0">Product Ratings</h3>
@@ -194,23 +193,10 @@
                             </div>
                         </div>
 
-                        <!-- Filter Buttons -->
-                        <div class="mb-4">
-                            <div class="btn-group" role="group">
-                                <button type="button" class="btn btn-outline-primary active" data-filter="all">All</button>
-                                @foreach($ratingBreakdown as $rating => $data)
-                                    @if($data['count'] > 0)
-                                        <button type="button" class="btn btn-outline-primary" data-filter="{{ $rating }}">{{ $rating }} Star ({{ $data['count'] }})</button>
-                                    @endif
-                                @endforeach
-                                <button type="button" class="btn btn-outline-primary" data-filter="comments">With Comments ({{ $reviews->where('comment', '!=', '')->count() }})</button>
-                            </div>
-                        </div>
-
                         <!-- Individual Reviews -->
                         <div class="reviews-container">
                             @foreach($reviews as $review)
-                                <div class="review-item border-bottom pb-3 mb-3" data-rating="{{ $review->rating }}" data-has-comment="{{ !empty($review->comment) ? 'true' : 'false' }}">
+                                <div class="review-item border-bottom pb-3 mb-3">
                                     <div class="d-flex align-items-start">
                                         <div class="me-3">
                                             <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
@@ -219,7 +205,13 @@
                                         </div>
                                         <div class="flex-grow-1">
                                             <div class="d-flex align-items-center mb-1">
-                                                <strong class="me-2">{{ $review->order->user->name ?? 'Anonymous' }}</strong>
+                                                <strong class="me-2">
+                                                    @if($review->showName)
+                                                        {{ $review->order->user->user_name ?? 'Anonymous' }}
+                                                    @else
+                                                        Anonymous
+                                                    @endif
+                                                </strong>
                                                 <div class="text-warning me-2">
                                                     {!! $review->star_display !!}
                                                 </div>
@@ -235,9 +227,9 @@
                         </div>
                     @else
                         <div class="text-center py-5">
-                            <i class="fas fa-star-o fa-3x text-muted mb-3"></i>
+                            <i class="fas fa-star fa-3x text-muted mb-3"></i>
                             <h5>No reviews yet</h5>
-                            <p class="text-muted">Be the first to review this product!</p>
+                            <p class="text-muted">Be the first to review this product.</p>
                         </div>
                     @endif
                 </div>
@@ -558,27 +550,17 @@
             padding: 0.5rem 1rem;
         }
     }
+</style>
 
-    .review-item {
-        transition: opacity 0.3s ease;
-    }
-    
-    .progress {
-        background-color: #e9ecef;
-    }
-    
-    .btn-group .btn {
-        border-radius: 0;
-    }
-    
-    .btn-group .btn:first-child {
-        border-top-left-radius: 0.375rem;
-        border-bottom-left-radius: 0.375rem;
-    }
-    
-    .btn-group .btn:last-child {
-        border-top-right-radius: 0.375rem;
-        border-bottom-right-radius: 0.375rem;
+
+
+<!-- CSS for Reviews -->
+<style>
+    .review-item:last-child {
+        border-bottom: none !important;
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
     }
 </style>
+
 @endsection

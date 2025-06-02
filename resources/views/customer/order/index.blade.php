@@ -289,6 +289,13 @@
                                 Size: {{ $cartRecord->productSizing->size }}
                             </p>
                             <p class="text-muted mb-0">Quantity: {{ $cartRecord->quantity }}</p>
+                            
+                            <!-- Add Review Link -->
+                            <div class="mt-2">
+                                <a href="{{ route('reviews.byCartRecord', ['cartRecordID' => $cartRecord->cart_recordID]) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-star-fill me-1"></i> View Reviews
+                                </a>
+                            </div>
                         </div>
                         <div class="order-product-price text-end">
                             <h6 class="mb-0">RM {{ number_format($cartRecord->productSizing->productVariant->product->product_price * $cartRecord->quantity, 2) }}</h6>

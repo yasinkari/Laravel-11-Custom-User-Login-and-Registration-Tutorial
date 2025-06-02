@@ -893,7 +893,7 @@ input[type="checkbox"] {
                         @if(Auth::check())
                             <div class="dropdown">
                                 <button class="btn btn-outline-secondary" type="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: transparent !important;">
-                                    <i class="far fa-user-circle fs-5 me-1"></i> Account
+                                    <i class="far fa-user-circle fs-5 me-1"></i> {{ Auth::user()->user_name }}
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown" style="overflow:hidden; margin:0;">
                                     <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>My Profile</a></li>
