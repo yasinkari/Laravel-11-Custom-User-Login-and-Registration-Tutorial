@@ -40,7 +40,7 @@
     
     .left-section {
       flex: 1;
-      background: url('{{asset("/image/IMG_7363.jpg")}}') center/cover no-repeat;
+      background: url('{{asset("/image/DustyPink1.jpg")}}') center/cover no-repeat;
       position: relative;
       display: flex;
       flex-direction: column;
