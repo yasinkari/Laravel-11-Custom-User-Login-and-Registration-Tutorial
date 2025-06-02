@@ -138,32 +138,19 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->name('admi
 });
 
 // Email Verification Routes
-// Remove these lines (around line 141-146)
-// Change this route
 Route::get('/email/verify', function () {
     return view('auth.verify-email');
-})->middleware('auth')->name('verification.notice');
-
-// To this more explicit version
-// Email Verification Routes - Keep only this version
-Route::get('/email/verify', function () {
-    return view('auth.verify-email');
-})->middleware(['web', 'auth'])->name('verification.notice');
-
-// And keep just this version:
-Route::get('/email/verify', function () {
-    return view('auth.verify-email');
-})->middleware(['web', 'auth'])->name('verification.notice');
+})->name('verification.notice');
 
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
     return redirect('/dashboard')->withSuccess('Email verified successfully!');
-})->middleware(['auth', 'signed'])->name('verification.verify');
+})->name('verification.verify');
 
 Route::post('/email/verification-notification', function (Request $request) {
     $request->user()->sendEmailVerificationNotification();
     return back()->withSuccess('Verification link sent!');
-})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+})->name('verification.send');
 
 
 
