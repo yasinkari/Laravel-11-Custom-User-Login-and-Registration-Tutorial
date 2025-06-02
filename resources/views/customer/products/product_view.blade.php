@@ -550,17 +550,16 @@
             padding: 0.5rem 1rem;
         }
     }
-</style>
 
-
-
-<!-- CSS for Reviews -->
-<style>
     .review-item:last-child {
         border-bottom: none !important;
         margin-bottom: 0 !important;
         padding-bottom: 0 !important;
     }
 </style>
+
+
+
+
 
 @endsection

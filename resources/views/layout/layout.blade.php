@@ -873,12 +873,12 @@ input[type="checkbox"] {
                 <!-- Right side icons -->
                 <div class="d-flex align-items-center">
                     <!-- Wishlist with counter -->
-                    <div class="position-relative me-3">
+                    {{-- <div class="position-relative me-3">
                         <a href="#" class="nav-link">
                             <i class="far fa-heart fs-5"></i>
                             <span class="position-absolute top-0  badge rounded-pill bg-danger">0</span>
                         </a>
-                    </div>
+                    </div> --}}
                     
                     <!-- Cart with counter -->
                     <div class="position-relative me-3">
@@ -896,9 +896,9 @@ input[type="checkbox"] {
                                     <i class="far fa-user-circle fs-5 me-1"></i> {{ Auth::user()->user_name }}
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown" style="overflow:hidden; margin:0;">
-                                    <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>My Profile</a></li>
+                                    <li><a class="dropdown-item" href="{{route("profile.index")}}"><i class="fas fa-user me-2"></i>My Profile</a></li>
                                     <li><a class="dropdown-item" href="{{route('orders.index')}}"><i class="fas fa-box me-2"></i>My Orders</a></li>
-                                    <li><a class="dropdown-item" href="#"><i class="fas fa-heart me-2"></i>Wishlist</a></li>
+                                    {{-- <li><a class="dropdown-item" href="#"><i class="fas fa-heart me-2"></i>Wishlist</a></li> --}}
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
                                         <a class="dropdown-item text-danger" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
