@@ -127,7 +127,7 @@
                     <div class="mt-4">
                         <div class="d-flex align-items-center mb-2">
                             <i class="fas fa-truck text-primary me-2"></i>
-                            <span>Free shipping on orders over $50</span> {{-- Placeholder --}}
+                            <span>Free shipping over RM250</span> {{-- Placeholder --}}
                         </div>
                         <div class="d-flex align-items-center mb-2">
                             <i class="fas fa-undo text-primary me-2"></i>
@@ -135,7 +135,7 @@
                         </div>
                         <div class="d-flex align-items-center">
                             <i class="fas fa-shield-alt text-primary me-2"></i>
-                            <span>2-year warranty</span> {{-- Placeholder --}}
+                            <span>2-years warranty</span> Placeholder 
                         </div>
                     </div>
                 </form>
