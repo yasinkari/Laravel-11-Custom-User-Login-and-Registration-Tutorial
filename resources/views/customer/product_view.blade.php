@@ -211,7 +211,7 @@
         background-color: #333;
     }
     
-    .wishlist-btn {
+    /* .wishlist-btn {
         background-color: #fff;
         color: #000;
         border: 1px solid #000;
@@ -225,15 +225,15 @@
         display: flex;
         align-items: center;
         justify-content: center;
-    }
+    } */
     
-    .wishlist-btn i {
+    /* .wishlist-btn i {
         margin-right: 8px;
     }
     
     .wishlist-btn:hover {
         background-color: #f5f5f5;
-    }
+    } */
     
     .product-meta {
         margin-top: 30px;
@@ -441,7 +441,7 @@
                         <input type="hidden" name="quantity" id="quantity-value" value="1">
                         <button type="submit" class="add-to-cart-btn">Add to Cart</button>
                     </form>
-                    <button class="wishlist-btn"><i class="far fa-heart"></i> Add to Wishlist</button>
+                    {{-- <button class="wishlist-btn"><i class="far fa-heart"></i> Add to Wishlist</button> --}}
                     
                     <div class="product-meta">
                         <div class="meta-item">
