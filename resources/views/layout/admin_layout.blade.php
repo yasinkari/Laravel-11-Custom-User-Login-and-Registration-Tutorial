@@ -531,7 +531,7 @@
                 </ul>
             </div>
 
-            <div class="nav-section">
+            {{-- <div class="nav-section">
                 <div class="nav-section-title">Analytics</div>
                 <ul class="nav flex-column">
                     <li class="nav-item">
@@ -547,7 +547,7 @@
                         </a>
                     </li>
                 </ul>
-            </div>
+            </div> --}}
         </nav>
 
         <div class="sidebar-footer">

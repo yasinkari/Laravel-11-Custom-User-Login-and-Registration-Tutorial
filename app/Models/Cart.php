@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class Cart extends Model
 {
@@ -33,5 +34,27 @@ class Cart extends Model
     {
         // Changed to belongsTo as orderID is now on the carts table
         return $this->belongsTo(Order::class, 'orderID');
+    }
+    
+    // Add a relationship to access payment information directly
+    public function payment()
+    {
+        return $this->hasOneThrough(
+            Payment::class,
+            Order::class,
+            'orderID', // Foreign key on the orders table
+            'orderID', // Foreign key on the payments table
+            'orderID', // Local key on the carts table
+            'orderID'  // Local key on the orders table
+        );
+    }
+    
+    // Add a scope to filter carts by month and year
+    public function scopeByMonthYear(Builder $query, $month, $year)
+    {
+        return $query->whereHas('order', function (Builder $orderQuery) use ($month, $year) {
+            $orderQuery->whereMonth('order_date', $month)
+                      ->whereYear('order_date', $year);
+        });
     }
 }

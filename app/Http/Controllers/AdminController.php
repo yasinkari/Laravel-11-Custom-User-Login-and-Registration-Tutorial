@@ -8,8 +8,9 @@ use Illuminate\Support\Facades\Session;
 use App\Models\Product;
 use App\Models\Order;
 use App\Models\Tracking;
-use App\Models\ProductVariant; // Add this import
-use App\Models\Cart;          // Add this import
+use App\Models\ProductVariant; 
+use App\Models\Cart;          
+use App\Models\Payment;       // Add Payment model import
 
 class AdminController extends Controller
 {
@@ -47,13 +48,17 @@ class AdminController extends Controller
         return redirect()->route('login')->with('success', 'Logged out successfully.');
     }
 
-    public function dashboard()
+    public function dashboard(Request $request)
     {
+        // Get month and year from request or use current date
+        $month = $request->input('month', date('n'));
+        $year = $request->input('year', date('Y'));
+        
         // Get total sales from completed orders through cart
         $totalSales = Order::whereHas('tracking', function($query) {
             $query->where('order_status', 'completed');
         })
-        ->join('carts', 'carts.orderID', '=', 'orders.orderID') // Corrected join condition
+        ->join('carts', 'carts.orderID', '=', 'orders.orderID') 
         ->sum('carts.total_amount');
     
         // Get total orders
@@ -77,7 +82,7 @@ class AdminController extends Controller
         $monthlySales = Order::whereHas('tracking', function($query) {
             $query->where('order_status', 'completed');
         })
-        ->join('carts', 'carts.orderID', '=', 'orders.orderID') // Corrected join condition
+        ->join('carts', 'carts.orderID', '=', 'orders.orderID') 
         ->selectRaw('MONTH(orders.order_date) as month, SUM(carts.total_amount) as total')
         ->whereYear('orders.order_date', now()->year)
         ->groupBy('month')
@@ -104,6 +109,11 @@ class AdminController extends Controller
             $productChartData['labels'][] = $product->product_name;
             $productChartData['data'][] = $product->variants_count;
         }
+        
+        // Get carts filtered by month and year with payment information
+        $monthlyCarts = Cart::byMonthYear($month, $year)
+            ->with(['order', 'payment', 'user'])
+            ->get();
     
         return view('admin.admin_dashboard', compact(
             'totalSales',
@@ -111,7 +121,10 @@ class AdminController extends Controller
             'totalVariants',
             'latestOrders',
             'salesChartData',
-            'productChartData'
+            'productChartData',
+            'monthlyCarts',
+            'month',
+            'year'
         ));
     }
 

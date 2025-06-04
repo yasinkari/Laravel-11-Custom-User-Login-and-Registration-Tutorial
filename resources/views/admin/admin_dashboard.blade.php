@@ -264,7 +264,129 @@
         </main>
     </div>
 </div>
-
+<!-- Monthly Cart Analysis Section -->
+<div class="row g-4 mt-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-0 fw-semibold"><i class="fas fa-shopping-cart me-2 text-primary"></i>Monthly Cart Analysis</h5>
+                        <small class="text-muted">Cart data with payment information</small>
+                    </div>
+                    <div class="d-flex">
+                        <form action="{{ route('admin.dashboard') }}" method="get" class="d-flex">
+                            <select name="month" class="form-select form-select-sm me-2">
+                                @for ($i = 1; $i <= 12; $i++)
+                                    <option value="{{ $i }}" {{ $month == $i ? 'selected' : '' }}>{{ date('F', mktime(0, 0, 0, $i, 1)) }}</option>
+                                @endfor
+                            </select>
+                            <select name="year" class="form-select form-select-sm me-2">
+                                @for ($i = date('Y'); $i >= date('Y')-3; $i--)
+                                    <option value="{{ $i }}" {{ $year == $i ? 'selected' : '' }}>{{ $i }}</option>
+                                @endfor
+                            </select>
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="fas fa-filter me-1"></i>Filter
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="border-0 fw-semibold">Cart ID</th>
+                                <th class="border-0 fw-semibold">Order ID</th>
+                                <th class="border-0 fw-semibold">Customer</th>
+                                <th class="border-0 fw-semibold">Amount</th>
+                                <th class="border-0 fw-semibold">Payment Status</th>
+                                <th class="border-0 fw-semibold">Date</th>
+                                <th class="border-0 fw-semibold">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($monthlyCarts as $cart)
+                            <tr>
+                                <td class="align-middle">
+                                    <span class="fw-semibold text-primary">#{{ $cart->cartID }}</span>
+                                </td>
+                                <td class="align-middle">
+                                    <span class="fw-semibold">#{{ $cart->orderID }}</span>
+                                </td>
+                                <td class="align-middle">
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-light rounded-circle me-2 d-flex align-items-center justify-content-center">
+                                            <i class="fas fa-user text-muted"></i>
+                                        </div>
+                                        <span class="fw-medium">{{ $cart->user->user_name ?? 'N/A' }}</span>
+                                    </div>
+                                </td>
+                                <td class="align-middle">
+                                    <span class="fw-semibold">RM {{ number_format($cart->total_amount, 2) }}</span>
+                                </td>
+                                <td class="align-middle">
+                                    @if($cart->payment)
+                                        @switch($cart->payment->payment_status)
+                                            @case('success')
+                                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2">
+                                                    <i class="fas fa-check me-1"></i>Paid
+                                                </span>
+                                                @break
+                                            @case('pending')
+                                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-3 py-2">
+                                                    <i class="fas fa-clock me-1"></i>Pending
+                                                </span>
+                                                @break
+                                            @case('failed')
+                                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-2">
+                                                    <i class="fas fa-times me-1"></i>Failed
+                                                </span>
+                                                @break
+                                            @default
+                                                <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-3 py-2">
+                                                    {{ ucfirst($cart->payment->payment_status) }}
+                                                </span>
+                                        @endswitch
+                                    @else
+                                        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-3 py-2">
+                                            <i class="fas fa-question me-1"></i>No Payment
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="align-middle">
+                                    <span class="text-muted">{{ $cart->order ? \Carbon\Carbon::parse($cart->order->order_date)->format('M d, Y') : 'N/A' }}</span>
+                                    <br>
+                                    <small class="text-muted">{{ $cart->order ? \Carbon\Carbon::parse($cart->order->order_date)->format('h:i A') : '' }}</small>
+                                </td>
+                                <td class="align-middle">
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ route('admin.orders.show', $cart->orderID) }}" class="btn btn-sm btn-outline-primary" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="7" class="text-center py-5">
+                                    <div class="text-muted">
+                                        <i class="fas fa-shopping-cart fa-3x mb-3 d-block"></i>
+                                        <h6>No carts found for this period</h6>
+                                        <p class="mb-0">Try selecting a different month or year.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Custom Styles -->
 <style>
 .card-hover {
@@ -353,6 +475,7 @@
     color: #0dcaf0 !important;
 }
 </style>
+@endsection
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -479,4 +602,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @endpush
-@endsection
+
+
+
