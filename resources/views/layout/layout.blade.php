@@ -858,6 +858,7 @@ input[type="checkbox"] {
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url('/contact') }}">Contact Us</a>
                     </li>
+                    
                 </ul>
                 
                 <!-- Search bar (hidden on small screens) -->
@@ -872,7 +873,7 @@ input[type="checkbox"] {
                 
                 <!-- Right side icons -->
                 <div class="d-flex align-items-center">
-                    <!-- Wishlist with counter -->
+                    {{-- <!-- Wishlist with counter --> --}}
                     {{-- <div class="position-relative me-3">
                         <a href="#" class="nav-link">
                             <i class="far fa-heart fs-5"></i>
@@ -950,7 +951,7 @@ input[type="checkbox"] {
             <ul>
               <li><a href="{{ route('contact') }}">Contact Us</a></li>
               <li><a href="#">Track Order</a></li>
-              <li><a href="#">FAQ</a></li>
+              <li><a href="{{ route('faq') }}">FAQ</a></li>
               <li><a href="#">Shipping Information</a></li>
               <li><a href="#">Exchange & Refund Policy</a></li>
             </ul>

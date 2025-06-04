@@ -40,6 +40,8 @@ Route::get('/products', [ProductController::class, 'showToCustomer'])->name('pro
 Route::get('/products/{product}', [ProductController::class, 'showProductDetails'])->name('products.view');
 Route::get('/about', function () { return view('customer.about'); })->name('about');
 Route::get('/contact', function () { return view('customer.contact'); })->name('contact');
+// Add this route for the FAQ page
+Route::get('/faq', function () { return view('customer.faq'); })->name('faq');
 
 // Admin Authentication Routes (Unprotected)
 // Route::get('admin/login', [AdminController::class, 'showLoginForm'])->name('admin.login');
