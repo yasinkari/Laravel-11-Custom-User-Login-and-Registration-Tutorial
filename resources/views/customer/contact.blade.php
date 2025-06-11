@@ -16,14 +16,14 @@
             <div class="carousel-inner">
                 <div class="carousel-item active">
                     <div class="carousel-image-container">
-                        <img src="{{ asset('storage/product_images/DyF02AbGakdPrETCZiV4bg8y6jl8tD0kX2882AgB.jpg') }}" 
+                        <img src="{{ asset('storage/imageContactUs/MintGreen1.jpg') }}" 
                              class="carousel-image" alt="NILL Collection 1">
                     </div>
                     <div class="carousel-overlay"></div>
                 </div>
                 <div class="carousel-item">
                     <div class="carousel-image-container">
-                        <img src="{{ asset('storage/product_images/JnM8tq2vEwu6JHPNjtupH7H2J8vEKAO97TpfPeh8.jpg') }}" 
+                        <img src="{{ asset('storage/imageContactUs/JnM8tq2vEwu6JHPNjtupH7H2J8vEKAO97TpfPeh8.jpg') }}" 
                              class="carousel-image" alt="NILL Collection 2">
                     </div>
                     <div class="carousel-overlay"></div>
