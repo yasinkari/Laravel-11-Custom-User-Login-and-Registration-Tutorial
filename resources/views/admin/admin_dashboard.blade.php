@@ -5,97 +5,158 @@
 @section('content')
 <div class="container-fluid">
     <div class="row">
-        <main class="ms-sm-auto px-md-4" style="margin-left: 200px;">
-            <!-- Welcome Header -->
+        <main class="col-md-12 ms-sm-auto px-md-4" style="margin-left: 200px;">
+            <!-- Dashboard Header Section with improved filter and download buttons -->
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <div>
-                    <h1 class="h2 text-primary"><i class="fas fa-tachometer-alt me-2"></i>Dashboard Overview</h1>
-                    <p class="text-muted mb-0">Welcome back! Here's what's happening with your store today.</p>
-                </div>
+                <h1 class="h2">Dashboard</h1>
                 <div class="btn-toolbar mb-2 mb-md-0">
-                    <div class="btn-group me-2">
-                        <button type="button" class="btn btn-sm btn-outline-secondary">
-                            <i class="fas fa-download me-1"></i>Export
+                    <!-- Centralized Month/Year Filter with improved design -->
+                    <form action="{{ route('admin.dashboard') }}" method="get" class="d-flex me-3">
+                        <div class="input-group">
+                            <select name="month" class="form-select form-select-sm">
+                                @for ($i = 1; $i <= 12; $i++)
+                                    <option value="{{ $i }}" {{ $month == $i ? 'selected' : '' }}>{{ date('F', mktime(0, 0, 0, $i, 1)) }}</option>
+                                @endfor
+                            </select>
+                            <select name="year" class="form-select form-select-sm">
+                                @for ($i = date('Y'); $i >= date('Y')-3; $i--)
+                                    <option value="{{ $i }}" {{ $year == $i ? 'selected' : '' }}>{{ $i }}</option>
+                                @endfor
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-primary">
+                                <i class="fas fa-filter me-1"></i>Apply
+                            </button>
+                        </div>
+                    </form>
+                    <div class="btn-group">
+                        <button id="exportPdfBtn" class="btn btn-sm btn-success">
+                            <i class="fas fa-file-pdf me-1"></i>Export PDF
                         </button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="window.location.reload();">
                             <i class="fas fa-sync-alt me-1"></i>Refresh
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Enhanced Dashboard Cards -->
+            <!-- Stats Cards Section -->
             <div class="row g-4 mb-4">
-                <div class="col-xl-3 col-md-6">
-                    <div class="card border-0 shadow-sm h-100 card-hover">
+                <!-- Total Sales Card -->
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm card-hover">
                         <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-shrink-0">
-                                    <div class="bg-primary bg-gradient rounded-circle p-3 text-white">
-                                        <i class="fas fa-dollar-sign fa-lg"></i>
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="text-muted fw-normal mb-0">Total Sales</h6>
+                                    <h3 class="fw-bold mt-2 mb-0">RM {{ number_format($totalSales, 2) }}</h3>
+                                    <div class="mt-2">
+                                        @if($salesChangePercentage > 0)
+                                            <span class="badge bg-success-subtle text-success">
+                                                <i class="fas fa-arrow-up me-1"></i>{{ $salesChangePercentage }}%
+                                            </span>
+                                            <small class="text-muted ms-1">vs previous period</small>
+                                        @elseif($salesChangePercentage < 0)
+                                            <span class="badge bg-danger-subtle text-danger">
+                                                <i class="fas fa-arrow-down me-1"></i>{{ abs($salesChangePercentage) }}%
+                                            </span>
+                                            <small class="text-muted ms-1">vs previous period</small>
+                                        @else
+                                            <span class="badge bg-secondary-subtle text-secondary">
+                                                <i class="fas fa-minus me-1"></i>0%
+                                            </span>
+                                            <small class="text-muted ms-1">vs previous period</small>
+                                        @endif
                                     </div>
                                 </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <h6 class="text-muted mb-1 fw-normal">Total Sales</h6>
-                                    <h3 class="mb-0 fw-bold text-primary">RM {{ number_format($totalSales, 2) }}</h3>
-                                    <small class="text-success"><i class="fas fa-arrow-up"></i> +12.5% from last month</small>
+                                <div class="avatar-md rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-dollar-sign fa-lg text-primary"></i>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="col-xl-3 col-md-6">
-                    <div class="card border-0 shadow-sm h-100 card-hover">
+                <!-- Total Orders Card -->
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm card-hover">
                         <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-shrink-0">
-                                    <div class="bg-success bg-gradient rounded-circle p-3 text-white">
-                                        <i class="fas fa-shopping-cart fa-lg"></i>
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="text-muted fw-normal mb-0">Total Orders</h6>
+                                    <h3 class="fw-bold mt-2 mb-0">{{ $totalOrders }}</h3>
+                                    <div class="mt-2">
+                                        @if($ordersChangePercentage > 0)
+                                            <span class="badge bg-success-subtle text-success">
+                                                <i class="fas fa-arrow-up me-1"></i>{{ $ordersChangePercentage }}%
+                                            </span>
+                                            <small class="text-muted ms-1">vs previous period</small>
+                                        @elseif($ordersChangePercentage < 0)
+                                            <span class="badge bg-danger-subtle text-danger">
+                                                <i class="fas fa-arrow-down me-1"></i>{{ abs($ordersChangePercentage) }}%
+                                            </span>
+                                            <small class="text-muted ms-1">vs previous period</small>
+                                        @else
+                                            <span class="badge bg-secondary-subtle text-secondary">
+                                                <i class="fas fa-minus me-1"></i>0%
+                                            </span>
+                                            <small class="text-muted ms-1">vs previous period</small>
+                                        @endif
                                     </div>
                                 </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <h6 class="text-muted mb-1 fw-normal">Total Orders</h6>
-                                    <h3 class="mb-0 fw-bold text-success">{{ $totalOrders }}</h3>
-                                    <small class="text-success"><i class="fas fa-arrow-up"></i> +8.2% from last month</small>
+                                <div class="avatar-md rounded-circle bg-success-subtle d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-shopping-bag fa-lg text-success"></i>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="col-xl-3 col-md-6">
-                    <div class="card border-0 shadow-sm h-100 card-hover">
+                <!-- Product Variants Card -->
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm card-hover">
                         <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-shrink-0">
-                                    <div class="bg-info bg-gradient rounded-circle p-3 text-white">
-                                        <i class="fas fa-box fa-lg"></i>
-                                    </div>
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="text-muted fw-normal mb-0">Product Variants</h6>
+                                    <h3 class="fw-bold mt-2 mb-0">{{ $totalVariants }}</h3>
                                 </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <h6 class="text-muted mb-1 fw-normal">Product Variants</h6>
-                                    <h3 class="mb-0 fw-bold text-info">{{ $totalVariants }}</h3>
-                                    <small class="text-info"><i class="fas fa-minus"></i> No change</small>
+                                <div class="avatar-md rounded-circle bg-warning-subtle d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-tags fa-lg text-warning"></i>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="col-xl-3 col-md-6">
-                    <div class="card border-0 shadow-sm h-100 card-hover">
+                <!-- Active Customers Card -->
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm card-hover">
                         <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-shrink-0">
-                                    <div class="bg-warning bg-gradient rounded-circle p-3 text-white">
-                                        <i class="fas fa-users fa-lg"></i>
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="text-muted fw-normal mb-0">Active Customers</h6>
+                                    <h3 class="fw-bold mt-2 mb-0">{{ $activeCustomers }}</h3>
+                                    <div class="mt-2">
+                                        @if($customersChangePercentage > 0)
+                                            <span class="badge bg-success-subtle text-success">
+                                                <i class="fas fa-arrow-up me-1"></i>{{ $customersChangePercentage }}%
+                                            </span>
+                                            <small class="text-muted ms-1">vs previous period</small>
+                                        @elseif($customersChangePercentage < 0)
+                                            <span class="badge bg-danger-subtle text-danger">
+                                                <i class="fas fa-arrow-down me-1"></i>{{ abs($customersChangePercentage) }}%
+                                            </span>
+                                            <small class="text-muted ms-1">vs previous period</small>
+                                        @else
+                                            <span class="badge bg-secondary-subtle text-secondary">
+                                                <i class="fas fa-minus me-1"></i>0%
+                                            </span>
+                                            <small class="text-muted ms-1">vs previous period</small>
+                                        @endif
                                     </div>
                                 </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <h6 class="text-muted mb-1 fw-normal">Active Customers</h6>
-                                    <h3 class="mb-0 fw-bold text-warning">{{ $totalOrders > 0 ? $latestOrders->count() : 0 }}</h3>
-                                    <small class="text-success"><i class="fas fa-arrow-up"></i> +5.1% from last month</small>
+                                <div class="avatar-md rounded-circle bg-info-subtle d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-users fa-lg text-info"></i>
                                 </div>
                             </div>
                         </div>
@@ -103,59 +164,59 @@
                 </div>
             </div>
 
-            <!-- Enhanced Charts Section -->
+            <!-- Charts Section (Redesigned) -->
             <div class="row g-4 mb-4">
-                <div class="col-lg-8">
-                    <div class="card border-0 shadow-sm h-100">
+                <!-- Sales Chart -->
+                <div class="col-md-8">
+                    <div class="card border-0 shadow-sm">
                         <div class="card-header bg-white border-0 py-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <h5 class="mb-0 fw-semibold"><i class="fas fa-chart-line me-2 text-primary"></i>Sales Analytics</h5>
-                                    <small class="text-muted">Monthly revenue trends</small>
-                                </div>
-                                <div class="dropdown">
-                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                        <i class="fas fa-calendar me-1"></i>Last 12 months
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="#">Last 6 months</a></li>
-                                        <li><a class="dropdown-item" href="#">Last 12 months</a></li>
-                                        <li><a class="dropdown-item" href="#">This year</a></li>
-                                    </ul>
+                                    <small class="text-muted">Monthly sales data for {{ $year }}</small>
                                 </div>
                             </div>
                         </div>
                         <div class="card-body">
-                            <canvas id="salesChart" height="100"></canvas>
+                            <div style="height: 300px;">
+                                <canvas id="salesChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="col-lg-4">
-                    <div class="card border-0 shadow-sm h-100">
+                <!-- Product Chart -->
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm">
                         <div class="card-header bg-white border-0 py-3">
-                            <h5 class="mb-0 fw-semibold"><i class="fas fa-chart-pie me-2 text-success"></i>Top Products</h5>
-                            <small class="text-muted">By variant count</small>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="mb-0 fw-semibold"><i class="fas fa-chart-pie me-2 text-success"></i>Top Products</h5>
+                                    <small class="text-muted">Product variant distribution</small>
+                                </div>
+                            </div>
                         </div>
                         <div class="card-body">
-                            <canvas id="productChart"></canvas>
+                            <div style="height: 300px;">
+                                <canvas id="productChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Enhanced Recent Orders Table -->
-            <div class="row g-4">
+            <!-- Recent Orders Section -->
+            <div class="row g-4 mb-4">
                 <div class="col-12">
                     <div class="card border-0 shadow-sm">
                         <div class="card-header bg-white border-0 py-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <h5 class="mb-0 fw-semibold"><i class="fas fa-list-alt me-2 text-info"></i>Recent Orders</h5>
-                                    <small class="text-muted">Latest customer transactions</small>
+                                    <h5 class="mb-0 fw-semibold"><i class="fas fa-shopping-cart me-2 text-primary"></i>Recent Orders</h5>
+                                    <small class="text-muted">Latest 5 orders across the system</small>
                                 </div>
-                                <a href="{{ route('admin.orders.index') }}" class="btn btn-primary btn-sm">
-                                    <i class="fas fa-eye me-1"></i>View All Orders
+                                <a href="{{ route('admin.orders.index') }}" class="btn btn-sm btn-outline-primary">
+                                    View All Orders
                                 </a>
                             </div>
                         </div>
@@ -183,11 +244,11 @@
                                                     <div class="avatar-sm bg-light rounded-circle me-2 d-flex align-items-center justify-content-center">
                                                         <i class="fas fa-user text-muted"></i>
                                                     </div>
-                                                    <span class="fw-medium">{{ $order->cart->user->user_name }}</span>
+                                                    <span class="fw-medium">{{ $order->cart->user->user_name ?? 'N/A' }}</span>
                                                 </div>
                                             </td>
                                             <td class="align-middle">
-                                                <span class="fw-semibold">RM {{ number_format($order->cart->total_amount, 2) }}</span>
+                                                <span class="fw-semibold">RM {{ number_format($order->cart->total_amount ?? 0, 2) }}</span>
                                             </td>
                                             <td class="align-middle">
                                                 @if($order->tracking)
@@ -195,6 +256,11 @@
                                                         @case('pending')
                                                             <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-3 py-2">
                                                                 <i class="fas fa-clock me-1"></i>Pending
+                                                            </span>
+                                                            @break
+                                                        @case('processing')
+                                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-2">
+                                                                <i class="fas fa-cog me-1"></i>Processing
                                                             </span>
                                                             @break
                                                         @case('completed')
@@ -264,6 +330,7 @@
         </main>
     </div>
 </div>
+
 <!-- Monthly Cart Analysis Section -->
 <div class="row g-4 mt-4">
     <div class="col-12">
@@ -272,24 +339,13 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h5 class="mb-0 fw-semibold"><i class="fas fa-shopping-cart me-2 text-primary"></i>Monthly Cart Analysis</h5>
-                        <small class="text-muted">Cart data with payment information</small>
+                        <small class="text-muted">Cart data with payment information for {{ date('F', mktime(0, 0, 0, $month, 1)) }} {{ $year }}</small>
                     </div>
-                    <div class="d-flex">
-                        <form action="{{ route('admin.dashboard') }}" method="get" class="d-flex">
-                            <select name="month" class="form-select form-select-sm me-2">
-                                @for ($i = 1; $i <= 12; $i++)
-                                    <option value="{{ $i }}" {{ $month == $i ? 'selected' : '' }}>{{ date('F', mktime(0, 0, 0, $i, 1)) }}</option>
-                                @endfor
-                            </select>
-                            <select name="year" class="form-select form-select-sm me-2">
-                                @for ($i = date('Y'); $i >= date('Y')-3; $i--)
-                                    <option value="{{ $i }}" {{ $year == $i ? 'selected' : '' }}>{{ $i }}</option>
-                                @endfor
-                            </select>
-                            <button type="submit" class="btn btn-primary btn-sm">
-                                <i class="fas fa-filter me-1"></i>Filter
-                            </button>
-                        </form>
+
+                    <div>
+                        <button id="exportPdfBtn2" class="btn btn-sm btn-success">
+                            <i class="fas fa-file-pdf me-1"></i>Export PDF
+                        </button>
                     </div>
                 </div>
             </div>
@@ -387,6 +443,7 @@
         </div>
     </div>
 </div>
+
 <!-- Custom Styles -->
 <style>
 .card-hover {
@@ -396,6 +453,11 @@
 .card-hover:hover {
     transform: translateY(-5px);
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.avatar-md {
+    width: 48px;
+    height: 48px;
 }
 
 .avatar-sm {
@@ -483,7 +545,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Enhanced Sales Chart
     const salesCtx = document.getElementById('salesChart').getContext('2d');
-    new Chart(salesCtx, {
+    const salesChart = new Chart(salesCtx, {
         type: 'line',
         data: {
             labels: {!! json_encode($salesChartData['labels']) !!},
@@ -552,7 +614,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Enhanced Product Chart
     const productCtx = document.getElementById('productChart').getContext('2d');
-    new Chart(productCtx, {
+    const productChart = new Chart(productCtx, {
         type: 'doughnut',
         data: {
             labels: {!! json_encode($productChartData['labels']) !!},
@@ -594,11 +656,131 @@ document.addEventListener('DOMContentLoaded', function() {
             cutout: '60%'
         }
     });
-
-    // Auto-refresh functionality
-    setInterval(function() {
-        // Add auto-refresh logic here if needed
-    }, 300000); // Refresh every 5 minutes
+    
+    // PDF Export functionality
+    function generatePDF() {
+        // Show loading indicator
+        const loadingEl = document.createElement('div');
+        loadingEl.className = 'position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-dark bg-opacity-50';
+        loadingEl.style.zIndex = '9999';
+        loadingEl.innerHTML = '<div class="spinner-border text-light" role="status"><span class="visually-hidden">Loading...</span></div>';
+        document.body.appendChild(loadingEl);
+        
+        // Get current month and year from URL params or form
+        const urlParams = new URLSearchParams(window.location.search);
+        const month = urlParams.get('month') || document.querySelector('select[name="month"]').value;
+        const year = urlParams.get('year') || document.querySelector('select[name="year"]').value;
+        
+        // Fetch chart data from API
+        fetch(`{{ route('admin.dashboard.chart.data') }}?month=${month}&year=${year}`)
+            .then(response => response.json())
+            .then(data => {
+                // Initialize jsPDF
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Cover Page
+                doc.setFontSize(28);
+                doc.setTextColor(13, 110, 253); // #0d6efd
+                doc.text('Dashboard Report', 105, 80, { align: 'center' });
+                
+                doc.setFontSize(20);
+                doc.setTextColor(33, 37, 41); // #212529
+                doc.text(`${data.monthName} ${data.year}`, 105, 100, { align: 'center' });
+                
+                doc.setFontSize(16);
+                doc.text(`Generated on: ${data.currentDate}`, 105, 130, { align: 'center' });
+                
+                // Add new page for charts
+                doc.addPage();
+                
+                // Sales Chart
+                doc.setFontSize(18);
+                doc.setTextColor(13, 110, 253); // #0d6efd
+                doc.text('Sales Analytics', 14, 20);
+                
+                // Convert canvas to image
+                const salesCanvas = document.getElementById('salesChart');
+                const salesImgData = salesCanvas.toDataURL('image/png', 1.0);
+                doc.addImage(salesImgData, 'PNG', 14, 30, 180, 80);
+                
+                // Add sales analysis
+                doc.setFontSize(12);
+                doc.setTextColor(33, 37, 41); // #212529
+                doc.text('Analysis:', 14, 120);
+                
+                const salesAnalysis = data.chartAnalysis.sales;
+                const salesAnalysisLines = doc.splitTextToSize(salesAnalysis, 180);
+                doc.text(salesAnalysisLines, 14, 130);
+                
+                // Product Chart
+                doc.setFontSize(18);
+                doc.setTextColor(13, 110, 253); // #0d6efd
+                doc.text('Top Products by Variants', 14, 160);
+                
+                // Convert canvas to image
+                const productCanvas = document.getElementById('productChart');
+                const productImgData = productCanvas.toDataURL('image/png', 1.0);
+                doc.addImage(productImgData, 'PNG', 64, 170, 80, 80);
+                
+                // Add new page for table
+                doc.addPage();
+                
+                // Monthly Cart Analysis Table
+                doc.setFontSize(18);
+                doc.setTextColor(13, 110, 253); // #0d6efd
+                doc.text(`Monthly Cart Analysis - ${data.monthName} ${data.year}`, 14, 20);
+                
+                // Create table with autoTable plugin
+                doc.autoTable({
+                    startY: 30,
+                    head: [['Cart ID', 'Order ID', 'Customer', 'Amount (RM)', 'Payment Status', 'Date']],
+                    body: data.monthlyCarts.map(cart => [
+                        cart.cartID,
+                        cart.orderID,
+                        cart.customer,
+                        cart.amount,
+                        cart.paymentStatus,
+                        cart.date
+                    ]),
+                    headStyles: {
+                        fillColor: [13, 110, 253],
+                        textColor: [255, 255, 255],
+                        fontStyle: 'bold'
+                    },
+                    alternateRowStyles: {
+                        fillColor: [240, 240, 240]
+                    },
+                    styles: {
+                        fontSize: 10
+                    }
+                });
+                
+                // Add footer
+                const pageCount = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= pageCount; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(10);
+                    doc.setTextColor(108, 117, 125); // #6c757d
+                    doc.text(`© ${new Date().getFullYear()} NILLforMan - All Rights Reserved`, 105, 290, { align: 'center' });
+                }
+                
+                // Save the PDF
+                doc.save(`dashboard-report-${data.monthName}-${data.year}.pdf`);
+                
+                // Remove loading indicator
+                document.body.removeChild(loadingEl);
+            })
+            .catch(error => {
+                console.error('Error generating PDF:', error);
+                alert('Error generating PDF. Please try again.');
+                document.body.removeChild(loadingEl);
+            });
+    }
+    
+    // Attach event listeners to PDF export buttons
+    document.getElementById('exportPdfBtn').addEventListener('click', generatePDF);
+    document.getElementById('exportPdfBtn2').addEventListener('click', generatePDF);
 });
 </script>
 @endpush

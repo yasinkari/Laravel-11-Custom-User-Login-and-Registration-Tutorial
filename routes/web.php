@@ -51,6 +51,7 @@ Route::get('/faq', function () { return view('customer.faq'); })->name('faq');
 Route::middleware([AdminMiddleware::class])->prefix('admin')->name('admin.')->group(function () {
     // Admin Dashboard & Authentication
     Route::get('dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('dashboard/download', [AdminController::class, 'downloadDashboardData'])->name('dashboard.download');
     Route::post('logout', [AdminController::class, 'logout'])->name('logout');
     Route::get('register', [AdminController::class, 'showRegisterForm'])->name('register');
     Route::post('register', [AuthController::class, 'registerAdmin'])->name('register.post');
@@ -89,6 +90,9 @@ Route::middleware([AdminMiddleware::class])->prefix('admin')->name('admin.')->gr
     Route::put('promotions/{promotion}', [PromotionController::class, 'update'])->name('promotions.update');
     Route::delete('promotions/{promotion}', [PromotionController::class, 'destroy'])->name('promotions.destroy');
     Route::patch('promotions/{promotion}/toggle-status', [PromotionController::class, 'toggleStatus'])->name('promotions.toggle-status');
+    
+    // Add this new API route for chart data
+    Route::get('dashboard/api/chart-data', [AdminController::class, 'getChartData'])->name('dashboard.chart.data');
 });
 
 // Cart routes
