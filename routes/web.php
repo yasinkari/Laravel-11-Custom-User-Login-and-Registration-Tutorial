@@ -146,17 +146,17 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->name('admi
 // Email Verification Routes
 Route::get('/email/verify', function () {
     return view('auth.verify-email');
-})->name('verification.notice');
+})->middleware('auth')->name('verification.notice');
 
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
     return redirect('/dashboard')->withSuccess('Email verified successfully!');
-})->name('verification.verify');
+})->middleware(['auth', 'signed'])->name('verification.verify');
 
 Route::post('/email/verification-notification', function (Request $request) {
     $request->user()->sendEmailVerificationNotification();
     return back()->withSuccess('Verification link sent!');
-})->name('verification.send');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 
 

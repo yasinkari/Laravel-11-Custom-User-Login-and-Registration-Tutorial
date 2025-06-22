@@ -950,15 +950,16 @@ input[type="checkbox"] {
             <h5>QUICKLINKS</h5>
             <ul>
               <li><a href="{{ route('contact') }}">Contact Us</a></li>
-              <li><a href="#">Track Order</a></li>
+              <li><a href="{{ route('orders.index') }}">Track Order</a></li>
               <li><a href="{{ route('faq') }}">FAQ</a></li>
-              <li><a href="#">Shipping Information</a></li>
+              <li><a href="{{ route('faq') }}">Shipping Information</a></li>
               <li><a href="#">Exchange & Refund Policy</a></li>
             </ul>
             <div class="social-icons">
-              <a href="#"><i class="fab fa-facebook-f"></i></a>
               <a href="https://www.instagram.com/nillforman/" target="_blank"><i class="fab fa-instagram"></i></a>
-              <a href="#"><i class="fab fa-twitter"></i></a>
+              <a href="https://www.tiktok.com/@nill_2017?_t=ZS-8xOVW6Agm17&_r=1" class="social-icon" target="_blank" title="TikTok">
+                <i class="fab fa-tiktok fa-lg"></i>
+              </a>
             </div>
           </div>
           

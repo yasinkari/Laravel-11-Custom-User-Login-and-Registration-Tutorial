@@ -303,7 +303,7 @@
                 <span>1 item</span>
             </div>
             
-            <div class="d-flex">
+            {{-- <div class="d-flex">
                 <select class="filter-dropdown me-3">
                     <option>Sort By</option>
                     <option>Price: Low to High</option>
@@ -323,7 +323,7 @@
                     <option>In Stock</option>
                     <option>Out of Stock</option>
                 </select>
-            </div>
+            </div> --}}
         </div>
         
         <div class="row">

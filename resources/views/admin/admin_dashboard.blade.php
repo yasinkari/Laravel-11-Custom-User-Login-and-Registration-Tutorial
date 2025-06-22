@@ -252,7 +252,7 @@
                                             </td>
                                             <td class="align-middle">
                                                 @if($order->tracking)
-                                                    @switch($order->tracking->order_status)
+                                                    @switch($order->payment->payment_status)
                                                         @case('pending')
                                                             <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-3 py-2">
                                                                 <i class="fas fa-clock me-1"></i>Pending
@@ -280,7 +280,7 @@
                                                             @break
                                                         @default
                                                             <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-3 py-2">
-                                                                {{ ucfirst($order->tracking->order_status) }}
+                                                                {{ ucfirst($order->tracking->tracking_status) }}
                                                             </span>
                                                     @endswitch
                                                 @else

@@ -295,16 +295,10 @@
                     <div class="social-links">
                         <h5 class="fw-bold mb-3">Connect With Us</h5>
                         <div class="d-flex gap-3">
-                            <a href="https://www.facebook.com/nillforman" class="social-icon" target="_blank" title="Facebook">
-                                <i class="fab fa-facebook-f fa-lg"></i>
-                            </a>
                             <a href="https://www.instagram.com/nillforman/" class="social-icon" target="_blank" title="Instagram">
                                 <i class="fab fa-instagram fa-lg"></i>
                             </a>
-                            <a href="https://twitter.com/nillforman" class="social-icon" target="_blank" title="Twitter">
-                                <i class="fab fa-twitter fa-lg"></i>
-                            </a>
-                            <a href="https://www.tiktok.com/@nillforman" class="social-icon" target="_blank" title="TikTok">
+                            <a href="https://www.tiktok.com/@nill_2017?_t=ZS-8xOVW6Agm17&_r=1" class="social-icon" target="_blank" title="TikTok">
                                 <i class="fab fa-tiktok fa-lg"></i>
                             </a>
                         </div>

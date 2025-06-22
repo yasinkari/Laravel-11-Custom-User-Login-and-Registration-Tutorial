@@ -50,14 +50,14 @@
             {{-- Assuming you have a rating system or placeholder --}}
             <div class="mb-3">
                 <div class="d-flex align-items-center">
-                    <div class="text-warning me-2">
+                    {{-- <div class="text-warning me-2">
                         <i class="fas fa-star"></i>
                         <i class="fas fa-star"></i>
                         <i class="fas fa-star"></i>
                         <i class="fas fa-star"></i>
                         <i class="fas fa-star-half-alt"></i>
-                    </div>
-                    <span class="text-muted">(128 reviews)</span> {{-- Placeholder --}}
+                    </div> --}}
+                    {{-- <span class="text-muted">(128 reviews)</span> Placeholder --}}
                 </div>
             </div>
 
@@ -178,16 +178,16 @@
 
                             <!-- Rating Breakdown -->
                             <div class="col-md-8 mb-4">
-                                @foreach($ratingBreakdown as $rating => $data)
+                                @foreach($ratingBreakdown as $rating => $ratingData)
                                     <div class="d-flex align-items-center mb-2">
                                         <span class="me-2">{{ $rating }} Star</span>
                                         <div class="progress flex-grow-1 me-2" style="height: 8px;">
                                             <div class="progress-bar bg-warning" role="progressbar" 
-                                                 style="width: {{ $data['percentage'] }}%" 
-                                                 aria-valuenow="{{ $data['percentage'] }}" 
+                                                 style="width: {{ $ratingData['percentage'] }}%" 
+                                                 aria-valuenow="{{ $ratingData['percentage'] }}" 
                                                  aria-valuemin="0" aria-valuemax="100"></div>
                                         </div>
-                                        <span class="text-muted">({{ $data['count'] }})</span>
+                                        <span class="text-muted">({{ $ratingData['count'] }})</span>
                                     </div>
                                 @endforeach
                             </div>
@@ -240,6 +240,8 @@
 @endsection
 
 @push('scripts')
+<script>console.log('Product Data:', @json($data));
+console.log('Product Variants:', @json($product_variant));</script>
 <script>
     $(document).ready(function() {
         // Initialize tooltips
@@ -251,6 +253,13 @@
 
         // Function to update size options based on selected variant
         function updateSizeOptions(variantId) {
+            // Make sure variantId is a valid key in productData
+            if (!productData.hasOwnProperty(variantId)) {
+                console.error('Variant ID not found in productData:', variantId);
+                $('#size-options').html('<p>No sizes available for this color.</p>');
+                return;
+            }
+            
             const variant = productData[variantId];
             const availableSizings = variant ? variant.sizings : [];
             let firstAvailableSizeId = null;

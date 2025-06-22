@@ -76,6 +76,11 @@
           @csrf
           <button type="submit" class="btn btn-primary w-100">Resend Verification Email</button>
         </form>
+        
+        <!-- Add Back to Home button -->
+        <div class="mt-3">
+          <a href="/" class="btn btn-outline-secondary w-100">Back to Home</a>
+        </div>
       </div>
     </div>
   </div>

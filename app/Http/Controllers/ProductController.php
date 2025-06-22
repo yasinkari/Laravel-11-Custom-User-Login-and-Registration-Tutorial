@@ -457,10 +457,13 @@ class ProductController extends Controller
             ->limit(4)
             ->get();
         
-        // Restructure the data array
+        // Restructure the data array - THIS IS THE FIXED PART
         $data = [];
     
         foreach ($product->variants as $variant) {
+            // Make sure to load all relationships
+            $variant->load(['variantImages', 'productSizings', 'tones']);
+            
             $data[$variant->product_variantID] = [
                 'color' => $variant->color ? $variant->color->color_code : null,
                 'variant_images' => $variant->variantImages->map(function($image) {

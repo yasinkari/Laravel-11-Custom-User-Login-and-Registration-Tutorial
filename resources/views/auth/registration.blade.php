@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>Register - NILL for MAN</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -433,6 +434,21 @@
             alert.remove();
           }, 300);
         }, 5000);
+      });
+      
+      // Prevent multiple form submissions
+      const form = document.querySelector('form');
+      form.addEventListener('submit', function() {
+        // Disable the submit button
+        const submitButton = this.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+        submitButton.innerHTML = 'Processing... <span class="arrow">→</span>';
+        
+        // Enable the button again after 10 seconds (in case of errors)
+        setTimeout(function() {
+          submitButton.disabled = false;
+          submitButton.innerHTML = 'Register <span class="arrow">→</span>';
+        }, 10000);
       });
     });
   </script>
