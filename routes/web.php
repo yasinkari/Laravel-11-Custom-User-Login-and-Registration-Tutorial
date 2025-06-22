@@ -37,7 +37,8 @@ Route::post('password/change', [AuthController::class, 'changePassword'])->name(
 
 // Public Customer Product Routes (no auth required)
 Route::get('/products', [ProductController::class, 'showToCustomer'])->name('products.customer');
-Route::get('/products/{product}', [ProductController::class, 'showProductDetails'])->name('products.view');
+Route::get('/products/search', [ProductController::class, 'search'])->name('products.search'); // Add this line
+Route::get('/products/{id}', [ProductController::class, 'showProductDetails'])->name('products.view');
 Route::get('/about', function () { return view('customer.about'); })->name('about');
 Route::get('/contact', function () { return view('customer.contact'); })->name('contact');
 // Add this route for the FAQ page
@@ -157,6 +158,9 @@ Route::post('/email/verification-notification', function (Request $request) {
     $request->user()->sendEmailVerificationNotification();
     return back()->withSuccess('Verification link sent!');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
+// Add this route within your authenticated routes group
+Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])->name('cart.updateQuantity');
 
 
 

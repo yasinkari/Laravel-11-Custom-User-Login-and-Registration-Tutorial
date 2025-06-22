@@ -55,13 +55,12 @@
                 <div class="accordion-item mb-3 border">
                     <h2 class="accordion-header" id="headingFour">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-                            What is your return policy?
+                            What is your refund policy?
                         </button>
                     </h2>
                     <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
                         <div class="accordion-body">
-                            We offer a 30-day return policy. If you're not satisfied with your purchase, you can return it within 30 days for a full refund or exchange.
-                        </div>
+                            We offer a 30-day refund policy. If you're not satisfied with your purchase, you may request a refund and return the products within 30 days. For any refund requests, kindly contact us via WhatsApp through the Contact Us page for further assistance.                        </div>
                     </div>
                 </div>
                 
@@ -74,8 +73,7 @@
                     </h2>
                     <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#faqAccordion">
                         <div class="accordion-body">
-                            Once your order is shipped, you will receive a tracking number via email. You can use this number to track your package on our website or the courier's website.
-                        </div>
+                            Once your order has been shipped, you may track its status through the “My Orders” page. After receiving your item, you are welcome to leave a comment or review to share your feedback.                        </div>
                     </div>
                 </div>
             </div>

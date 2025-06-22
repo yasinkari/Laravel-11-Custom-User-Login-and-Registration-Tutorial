@@ -25,7 +25,12 @@ class ProductColorSeeder extends Seeder
             ['color_name' => 'Sky Blue', 'color_code' => '#87CEEB'],
             ['color_name' => 'Black', 'color_code' => '#000000'],
             ['color_name' => 'Pink', 'color_code' => '#FFC0CB'],
-            ['color_name' => 'Pastel Blue', 'color_code' => '#ADD8E6']
+            ['color_name' => 'Pastel Blue', 'color_code' => '#ADD8E6'],
+            // New colors added
+            ['color_name' => 'Nude', 'color_code' => '#E3BC9A'],
+            ['color_name' => 'Dusty Pink', 'color_code' => '#D8A1A6'],
+            ['color_name' => 'Mint Green', 'color_code' => '#98D8C8'],
+            ['color_name' => 'Soft Yellow', 'color_code' => '#F8E9A1']
         ];
 
         foreach ($colors as $color) {

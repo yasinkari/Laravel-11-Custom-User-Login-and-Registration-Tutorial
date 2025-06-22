@@ -8,35 +8,45 @@ if ($colorSuggestions === null) {
             'Brown' => '#8B4513',
             'Burgundy' => '#800020',
             'Green' => '#006400',
-            'Olive' => '#808000'
+            'Olive' => '#808000',
+            'Dusty Pink' => '#D8A1A6',
+            'Mint Green' => '#98D8C8'
         ],
         'Olive' => [
             'Burgundy' => '#800020',
             'Maroon' => '#800000',
             'Purple' => '#800080',
             'Green' => '#006400',
-            'Navy' => '#000080'
+            'Navy' => '#000080',
+            'Nude' => '#E3BC9A',
+            'Royal Blue' => '#4169E1'
         ],
         'Light Brown' => [
             'Navy' => '#000080',
             'Royal Blue' => '#4169E1',
             'Teal' => '#008080',
             'Grey' => '#808080',
-            'Burgundy' => '#800020'
+            'Burgundy' => '#800020',
+            'Mint Green' => '#98D8C8',
+            'Soft Yellow' => '#F8E9A1'
         ],
         'Brown' => [
             'Navy' => '#000080',
             'Mid Blue' => '#0000CD',
             'Green' => '#006400',
             'Bright Yellow' => '#FFFF00',
-            'Sky Blue' => '#87CEEB'
+            'Sky Blue' => '#87CEEB',
+            'Royal Blue' => '#4169E1',
+            'Nude' => '#E3BC9A'
         ],
         'Black Brown' => [
             'Black' => '#000000',
             'Navy' => '#000080',
             'Burgundy' => '#800020',
             'Pink' => '#FFC0CB',
-            'Pastel Blue' => '#ADD8E6'
+            'Pastel Blue' => '#ADD8E6',
+            'Dusty Pink' => '#D8A1A6',
+            'Royal Blue' => '#4169E1'
         ]
     ];
 }

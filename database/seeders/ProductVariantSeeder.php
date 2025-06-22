@@ -19,11 +19,11 @@ class ProductVariantSeeder extends Seeder
         $colors = ProductColor::all();
         
         $colorMappings = [
-            'Fair' => ['Navy', 'Brown', 'Burgundy', 'Green', 'Olive'],
-            'Olive' => ['Burgundy', 'Maroon', 'Purple', 'Green', 'Navy'],
-            'Light Brown' => ['Navy', 'Royal Blue', 'Teal', 'Grey', 'Burgundy'],
-            'Brown' => ['Navy', 'Mid Blue', 'Green', 'Bright Yellow', 'Sky Blue'],
-            'Black Brown' => ['Black', 'Navy', 'Burgundy', 'Pink', 'Pastel Blue']
+            'Fair' => ['Navy', 'Brown', 'Burgundy', 'Green', 'Olive', 'Dusty Pink', 'Mint Green'],
+            'Olive' => ['Burgundy', 'Maroon', 'Purple', 'Green', 'Navy', 'Nude', 'Royal Blue'],
+            'Light Brown' => ['Navy', 'Royal Blue', 'Teal', 'Grey', 'Burgundy', 'Mint Green', 'Soft Yellow'],
+            'Brown' => ['Navy', 'Mid Blue', 'Green', 'Bright Yellow', 'Sky Blue', 'Royal Blue', 'Nude'],
+            'Black Brown' => ['Black', 'Navy', 'Burgundy', 'Pink', 'Pastel Blue', 'Dusty Pink', 'Royal Blue']
         ];
 
         foreach ($products as $product) {

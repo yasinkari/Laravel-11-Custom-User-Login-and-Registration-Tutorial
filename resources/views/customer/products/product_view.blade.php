@@ -118,7 +118,7 @@
                     <div class="d-grid gap-2">
                         <button type="button" class="btn btn-primary-custom" onclick="addToCart()">Add to Cart</button>
                         {{-- Add to Wishlist Button (Placeholder) --}}
-                        <button class="btn btn-outline-secondary" type="button">
+                        {{-- <button class="btn btn-outline-secondary" type="button"> --}}
                             {{-- <i class="far fa-heart me-2"></i>Add to Wishlist --}}
                         </button>
                     </div>

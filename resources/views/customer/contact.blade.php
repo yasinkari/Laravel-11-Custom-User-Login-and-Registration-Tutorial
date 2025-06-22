@@ -23,14 +23,14 @@
                 </div>
                 <div class="carousel-item">
                     <div class="carousel-image-container">
-                        <img src="{{ asset('storage/imageContactUs/JnM8tq2vEwu6JHPNjtupH7H2J8vEKAO97TpfPeh8.jpg') }}" 
+                        <img src="{{ asset('storage/imageContactUs/(Jauhar)EmeraldGreen3.jpg') }}" 
                              class="carousel-image" alt="NILL Collection 2">
                     </div>
                     <div class="carousel-overlay"></div>
                 </div>
                 <div class="carousel-item">
                     <div class="carousel-image-container">
-                        <img src="{{ asset('storage/product_images/2KZJoJoynrUYbX984XD40XqS4lOEM3FNKqlvh5pW.jpg') }}" 
+                        <img src="{{ asset('storage/imageContactUs/royalblue3.jpg') }}" 
                              class="carousel-image" alt="NILL Collection 3">
                     </div>
                     <div class="carousel-overlay"></div>
@@ -104,10 +104,10 @@
                     <div class="col-lg-8 text-center">
                         <h1 class="display-4 text-white fw-bold mb-3">Get in Touch</h1>
                         <p class="lead text-white mb-4 px-4">Your satisfaction is our priority. Let us know how we can assist you.</p>
-                        <div class="d-flex justify-content-center gap-3">
+                        {{-- <div class="d-flex justify-content-center gap-3">
                             <a href="#contact-section" class="btn btn-light px-4 py-2">Contact Us</a>
                             <a href="#business-hours" class="btn btn-outline-light px-4 py-2">Business Hours</a>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             </div>
@@ -221,7 +221,7 @@
                         <p>Instantly connect with our representative via WhatsApp.</p>
                         <p class="text-muted small">(Available 24/7)</p>
                         <div class="mt-auto">
-                            <a href="https://wa.me/+601110280504" class="btn btn-outline-dark w-100">Chat With Us</a>
+                            <a href="https://wa.me/+60137471569" class="btn btn-outline-dark w-100">Chat With Us</a>
                         </div>
                     </div>
                 </div>
@@ -238,7 +238,7 @@
                         <p>Speak with us from:</p>
                         <p class="text-muted">9:00AM - 5:00PM, Mon - Fri</p>
                         <div class="mt-auto">
-                            <a href="tel:+601110280504" class="btn btn-outline-dark w-100">Call Us</a>
+                            <a href="tel:+60137471569" class="btn btn-outline-dark w-100">Call Us</a>
                         </div>
                     </div>
                 </div>
@@ -254,7 +254,7 @@
                         <h4 class="fw-bold mb-3">Email Us</h4>
                         <p>Reach out for any business inquiries or opportunities.</p>
                         <div class="mt-auto">
-                            <a href="mailto:yasinibrahim304@gmail.com" class="btn btn-outline-dark w-100">Email Us</a>
+                            <a href="mailto:nillconcept@gmail.com" class="btn btn-outline-dark w-100">Email Us</a>
                         </div>
                     </div>
                 </div>

@@ -835,8 +835,8 @@ input[type="checkbox"] {
             
             <!-- Search bar for mobile (shows only on small screens) -->
             <div class="d-lg-none w-100 mt-2 mb-2">
-                <form class="d-flex position-relative">
-                    <input class="form-control me-2 rounded-pill search-input" type="search" placeholder="Search products..." aria-label="Search">
+                <form class="d-flex position-relative" action="{{ route('products.search') }}" method="GET">
+                    <input class="form-control me-2 rounded-pill search-input" type="search" name="query" placeholder="Search products..." aria-label="Search">
                     <button class="btn position-absolute end-0 bg-transparent border-0" type="submit">
                         <i class="fas fa-search"></i>
                     </button>
@@ -863,8 +863,8 @@ input[type="checkbox"] {
                 
                 <!-- Search bar (hidden on small screens) -->
                 <div class="d-none d-lg-block me-3 flex-grow-1 mx-lg-4" style="max-width: 400px;">
-                    <form class="d-flex position-relative">
-                        <input class="form-control me-2 rounded-pill search-input" type="search" placeholder="Search products..." aria-label="Search">
+                    <form class="d-flex position-relative" action="{{ route('products.search') }}" method="GET">
+                        <input class="form-control me-2 rounded-pill search-input" type="search" name="query" placeholder="Search products..." aria-label="Search">
                         <button class="btn position-absolute end-0 bg-transparent border-0" type="submit">
                             <i class="fas fa-search"></i>
                         </button>
@@ -953,7 +953,7 @@ input[type="checkbox"] {
               <li><a href="{{ route('orders.index') }}">Track Order</a></li>
               <li><a href="{{ route('faq') }}">FAQ</a></li>
               <li><a href="{{ route('faq') }}">Shipping Information</a></li>
-              <li><a href="#">Exchange & Refund Policy</a></li>
+              <li><a href="{{ route('faq') }}">Exchange & Refund Policy</a></li>
             </ul>
             <div class="social-icons">
               <a href="https://www.instagram.com/nillforman/" target="_blank"><i class="fab fa-instagram"></i></a>
@@ -969,7 +969,7 @@ input[type="checkbox"] {
             <ul>
               <li><a href="{{ route('products.customer') }}">Men's Collection</a></li>
               <li><a href="{{ route('products.customer') }}">Men's Sampin</a></li>
-              <li><a href="{{ route('products.customer') }}">Fragrance</a></li>
+              {{-- <li><a href="{{ route('products.customer') }}">Fragrance</a></li> --}}
             </ul>
           </div>
           

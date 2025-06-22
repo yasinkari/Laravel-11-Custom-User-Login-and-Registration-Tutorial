@@ -299,12 +299,12 @@
                                                     <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-sm btn-outline-primary" title="View Details">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary" title="Quick Actions" data-bs-toggle="dropdown">
-                                                        <i class="fas fa-ellipsis-v"></i>
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" title="More Actions">
+                                                        <span class="visually-hidden">Toggle Dropdown</span>
                                                     </button>
                                                     <ul class="dropdown-menu">
-                                                        <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i>Edit Status</a></li>
-                                                        <li><a class="dropdown-item" href="#"><i class="fas fa-print me-2"></i>Print Invoice</a></li>
+                                                        <li><a class="dropdown-item" href="{{ route('admin.orders.show', $order) }}"><i class="fas fa-edit me-2"></i>Edit Status</a></li>
+                                                        <li><a class="dropdown-item" href="#" onclick="window.print()"><i class="fas fa-print me-2"></i>Print Invoice</a></li>
                                                     </ul>
                                                 </div>
                                             </td>

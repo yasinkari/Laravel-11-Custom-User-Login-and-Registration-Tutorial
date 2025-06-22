@@ -456,19 +456,19 @@
             <h1 class="header-title mb-0">@yield('page-title', 'Dashboard')</h1>
         </div>
         <div class="header-actions">
-            <button class="notification-btn">
+            {{-- <button class="notification-btn">
                 <i class="fas fa-bell"></i>
                 <span class="notification-badge">3</span>
-            </button>
+            </button> --}}
             <div class="dropdown">
                 <button class="btn btn-link dropdown-toggle" type="button" data-bs-toggle="dropdown">
                     <i class="fas fa-user-circle"></i>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                    {{-- <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
                     <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
                     <li><hr class="dropdown-divider"></li>
-                    <li>
+                    <li> --}}
                         <form method="POST" action="{{ route('admin.logout') }}">
                             @csrf
                             <button type="submit" class="dropdown-item text-danger">

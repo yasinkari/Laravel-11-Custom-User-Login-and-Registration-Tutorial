@@ -296,38 +296,31 @@
             <a href="#" class="active">Products</a>
         </div>
         
-        <h1 class="page-title">BAJU MELAYU</h1>
+        @if(isset($query))
+            <h1 class="page-title">SEARCH RESULTS FOR "{{ $query }}"</h1>
+        @else
+            <h1 class="page-title">BAJU MELAYU</h1>
+        @endif
         
         <div class="filter-row">
             <div class="product-count">
-                <span>1 item</span>
+                <span>{{ $products->count() }} {{ Str::plural('item', $products->count()) }}</span>
             </div>
             
-            {{-- <div class="d-flex">
-                <select class="filter-dropdown me-3">
-                    <option>Sort By</option>
-                    <option>Price: Low to High</option>
-                    <option>Price: High to Low</option>
-                    <option>Newest First</option>
-                </select>
-                
-                <select class="filter-dropdown me-3">
-                    <option>Below RM 50</option>
-                    <option>RM 50 - RM 100</option>
-                    <option>RM 100 - RM 150</option>
-                    <option>Above RM 150</option>
-                </select>
-                
-                <select class="filter-dropdown">
-                    <option>Select Stock</option>
-                    <option>In Stock</option>
-                    <option>Out of Stock</option>
-                </select>
-            </div> --}}
+            {{-- Filter dropdowns... --}}
         </div>
         
         <div class="row">
-            @foreach($products as $product)
+            @if($products->isEmpty())
+                <div class="col-12 text-center py-5">
+                    <h3>No products found</h3>
+                    @if(isset($query))
+                        <p>No results found for "{{ $query }}". Please try another search term.</p>
+                        <a href="{{ route('products.customer') }}" class="btn btn-primary mt-3">View All Products</a>
+                    @endif
+                </div>
+            @else
+                @foreach($products as $product)
             <div class="col-md-3 mb-4">
                 <div class="card product-card">
                     <div class="product-image">
@@ -381,6 +374,7 @@
                 </div>
             </div>
             @endforeach
+            @endif
         </div>
     </div>
 </div>

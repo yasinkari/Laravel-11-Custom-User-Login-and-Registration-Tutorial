@@ -64,14 +64,14 @@ class ProductController extends Controller
             ],
             'Light Brown' => [
                 'Navy' => '#000080',
-                'Royal Blue' => '#4169E1',
+                'Mid Blue' => '#0000CD',  // Changed from Royal Blue to Mid Blue
                 'Teal' => '#008080',
                 'Grey' => '#808080',
                 'Burgundy' => '#800020'
             ],
             'Brown' => [
                 'Navy' => '#000080',
-                'Mid Blue' => '#0000CD',
+                'Royal Blue' => '#4169E1',  // Changed from Mid Blue to Royal Blue
                 'Green' => '#006400',
                 'Bright Yellow' => '#FFFF00',
                 'Sky Blue' => '#87CEEB'
@@ -550,5 +550,23 @@ class ProductController extends Controller
         $colors = ProductColor::orderBy('color_name')->get();
         
         return view('admin.product.create_variant', compact('product', 'tones', 'colors'));
+    }
+    
+    // Add this method to handle product search
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+        
+        $products = Product::with([
+            'variants.tones', 
+            'variants.color', 
+            'variants.productSizings',
+            'variants.variantImages'
+        ])
+        ->where('product_name', 'LIKE', "%{$query}%")
+        ->orWhere('product_description', 'LIKE', "%{$query}%")
+        ->get();
+        
+        return view('customer.products.index', compact('products', 'query'));
     }
 }

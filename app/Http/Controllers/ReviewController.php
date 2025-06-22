@@ -74,7 +74,7 @@ class ReviewController extends Controller
         }
     
         // Redirect to the product view page with a success message
-        return redirect()->route('products.view', ['product' => $validated['productID']])
+        return redirect()->route('products.view', $validated['productID'])
             ->with('success', $message);
     }
 

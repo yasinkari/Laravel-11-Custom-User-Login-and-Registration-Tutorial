@@ -275,4 +275,66 @@ class CartController extends Controller
         
         return response()->json(['count' => $count ?: 0]);
     }
+    
+    /**
+     * Update individual cart item quantity (AJAX)
+     */
+    public function updateQuantity(Request $request)
+    {
+        $request->validate([
+            'record_id' => 'required|exists:cart_records,cart_recordID',
+            'quantity' => 'required|integer|min:1|max:100'
+        ]);
+    
+        try {
+            DB::beginTransaction();
+            
+            $cartRecord = CartRecord::findOrFail($request->record_id);
+            
+            // Verify this cart record belongs to the current user
+            if ($cartRecord->cart->userID !== Auth::id()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized access'
+                ], 403);
+            }
+            
+            // Check stock availability
+            $availableStock = $cartRecord->productSizing->product_stock;
+            if ($request->quantity > $availableStock) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only ' . $availableStock . ' items available in stock'
+                ], 400);
+            }
+            
+            // Update quantity
+            $cartRecord->update(['quantity' => $request->quantity]);
+            
+            // Recalculate cart total
+            $cart = $cartRecord->cart;
+            $this->updateCartTotal($cart);
+            
+            // Calculate item total
+            $itemTotal = $cartRecord->quantity * $cartRecord->productSizing->productVariant->product->actual_price;
+            
+            DB::commit();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Quantity updated successfully',
+                'item_total' => number_format($itemTotal, 2),
+                'cart_subtotal' => number_format($cart->total_amount, 2),
+                'cart_total' => number_format($cart->total_amount + 1, 2), // +1 for payment gateway fee
+                'cart_count' => $cart->cartRecords()->sum('quantity')
+            ]);
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update quantity: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }
